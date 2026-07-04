@@ -2,12 +2,11 @@ import type { ReactNode } from 'react';
 import {
   DATA_SCOPE_META,
   DATA_SCOPE_OPTIONS,
-  hasSyntheticRuntime,
   type DataScope,
 } from '../profileMeta';
 
-type PageId = 'benchmark' | 'coverage' | 'serving' | 'simulator' | 'simulator_v2' | 'gpu';
-type NavPage = { id: PageId; label: string; icon: ReactNode };
+type PageId = 'benchmark' | 'simulator';
+type NavPage = { id: PageId; label: string; icon: ReactNode; badge?: string };
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,7 +19,7 @@ interface LayoutProps {
   scopePending?: boolean;
 }
 
-const BENCHMARK_NAV_PAGES: NavPage[] = [
+const NAV_PAGES: NavPage[] = [
   {
     id: 'benchmark',
     label: 'Home',
@@ -31,45 +30,9 @@ const BENCHMARK_NAV_PAGES: NavPage[] = [
     ),
   },
   {
-    id: 'coverage',
-    label: 'Coverage',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-      </svg>
-    ),
-  },
-];
-
-const RUNTIME_NAV_PAGES: NavPage[] = [
-  {
-    id: 'gpu',
-    label: 'GPUs',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-        <rect x="8" y="8" width="8" height="8" rx="1" />
-        <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
-      </svg>
-    ),
-  },
-  {
-    id: 'serving',
-    label: 'Matrix',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19V5" />
-        <path d="M4 19h16" />
-        <path d="m7 15 4-4 3 3 5-7" />
-      </svg>
-    ),
-  },
-  {
     id: 'simulator',
     label: 'Simulator',
+    badge: 'WIP',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 19V5" />
@@ -77,20 +40,6 @@ const RUNTIME_NAV_PAGES: NavPage[] = [
         <path d="M7 15h3" />
         <path d="M12 11h3" />
         <path d="M17 7h3" />
-      </svg>
-    ),
-  },
-  {
-    id: 'simulator_v2',
-    label: 'Simulator v2',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19V5" />
-        <path d="M4 19h16" />
-        <path d="M7 15h3" />
-        <path d="M12 11h3" />
-        <path d="M17 7h3" />
-        <circle cx="20" cy="5" r="2" />
       </svg>
     ),
   },
@@ -107,7 +56,6 @@ export function Layout({
   scopePending = false,
 }: LayoutProps) {
   const scopeMeta = DATA_SCOPE_META[dataScope];
-  const showRuntimeNav = hasSyntheticRuntime(dataScope);
 
   const renderNavButton = (page: NavPage) => (
     <button
@@ -121,6 +69,11 @@ export function Layout({
     >
       {page.icon}
       {page.label}
+      {page.badge && (
+        <span className="rounded bg-amber-500/20 px-1 py-0.5 text-[9px] font-semibold tracking-wide text-amber-300">
+          {page.badge}
+        </span>
+      )}
     </button>
   );
 
@@ -146,22 +99,13 @@ export function Layout({
                 </svg>
               </div>
               <h1 className="hidden text-base font-semibold tracking-tight md:block lg:text-lg">
-                Inference Benchmark
+                QuettaBoard
               </h1>
             </button>
 
             {/* Page nav pills */}
             <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
-              {BENCHMARK_NAV_PAGES.map(renderNavButton)}
-              {showRuntimeNav && (
-                <>
-                  <span className="mx-1 h-5 w-px shrink-0 bg-[#30363d]" aria-hidden="true" />
-                  <span className="hidden shrink-0 px-1 text-[10px] font-semibold uppercase tracking-wide text-[#6e7681] sm:inline">
-                    Runtime
-                  </span>
-                  {RUNTIME_NAV_PAGES.map(renderNavButton)}
-                </>
-              )}
+              {NAV_PAGES.map(renderNavButton)}
             </div>
           </div>
 
@@ -177,25 +121,10 @@ export function Layout({
                 <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#58a6ff]" />
                 Updating view...
               </span>
-            ) : showRuntimeNav && activePage === 'gpu' ? (
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#58a6ff]" />
-                GPU state loaded
-              </span>
-            ) : showRuntimeNav && activePage === 'serving' ? (
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#58a6ff]" />
-                Matrix loaded
-              </span>
-            ) : showRuntimeNav && (activePage === 'simulator' || activePage === 'simulator_v2') ? (
+            ) : activePage === 'simulator' ? (
               <span className="flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-[#58a6ff]" />
                 Simulator target loaded
-              </span>
-            ) : activePage === 'coverage' ? (
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#3fb950]" />
-                Coverage loaded
               </span>
             ) : (
               <span className="flex items-center gap-2">
@@ -222,21 +151,10 @@ export function Layout({
             </span>
             <span className="text-[#6e7681]">{scopeMeta.eyebrow}</span>
             <span className="hidden text-[#8b949e] md:inline">{scopeMeta.description}</span>
-            {!showRuntimeNav && (
-              <span className="rounded border border-[#30363d] bg-[#161b22] px-2 py-0.5 text-[10px] font-medium text-[#8b949e]">
-                Runtime tabs are synthetic-only
-              </span>
-            )}
             <span className="ml-auto hidden font-mono text-[#6e7681] sm:inline">
-              {showRuntimeNav && activePage === 'gpu'
-                ? 'live GPU state'
-                : showRuntimeNav && activePage === 'serving'
-                  ? 'matrix'
-                  : showRuntimeNav && (activePage === 'simulator' || activePage === 'simulator_v2')
-                    ? 'H100 / Llama-3.1-8B'
-                    : activePage === 'coverage'
-                      ? 'coverage view'
-                    : `${totalRuns} ${scopeMeta.rowsLabel}`}
+              {activePage === 'simulator'
+                ? 'simulator (WIP)'
+                : `${totalRuns} ${scopeMeta.rowsLabel}`}
             </span>
           </div>
         </div>
