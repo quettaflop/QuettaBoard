@@ -108,7 +108,7 @@ function App() {
         onDataScopeChange={setDataScope}
         scopePending={scopePending}
       >
-        <div className="flex h-64 items-center justify-center rounded-lg border border-[#f97583]/30 bg-[#f97583]/10 text-[#f97583]">
+        <div className="flex h-64 items-center justify-center rounded-lg border border-[#ff3b30]/30 bg-[#ff3b30]/10 text-[#ff3b30]">
           <div className="text-center">
             <div className="mb-2 text-lg font-semibold">Failed to load data</div>
             <div className="text-sm">{error}</div>
@@ -130,8 +130,8 @@ function App() {
     >
       {activePage === 'simulator' ? (
         <>
-          <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-            <span className="mt-0.5 rounded bg-amber-500/20 px-1.5 py-0.5 text-xs font-semibold tracking-wide text-amber-300">WIP</span>
+          <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <span className="mt-0.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold tracking-wide text-amber-700">WIP</span>
             <span>
               The simulator is a work in progress. H100 and A100 Llama-3.1-8B deployments are
               calibrated against measured ground truth; other configurations are analytic
@@ -139,14 +139,14 @@ function App() {
             </span>
           </div>
           <ServingPredictionsPage
-            dataScope={dataScope}
+            dataScope="synthetic_distributional"
             predictionsUrl={simulatorV2SimPredictionsJsonUrl}
             pageKind="simulator"
           />
         </>
       ) : loading ? (
         <div className="flex h-64 items-center justify-center">
-          <div className="text-[#8b949e]">Loading benchmark data...</div>
+          <div className="text-[#6e6e73]">Loading benchmark data...</div>
         </div>
       ) : (
         <>

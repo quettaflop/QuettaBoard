@@ -29,7 +29,7 @@ export const DATA_SCOPE_META: Record<DataScope, DataScopeMeta> = {
     shortLabel: 'Trace replay',
     eyebrow: 'HF subset',
     description: 'Filtered real trace replay data aligned with the Hugging Face dataset naming.',
-    accent: '#8b949e',
+    accent: '#6e6e73',
     rowsLabel: 'trace replay rows',
   },
   synthetic_distributional: {
@@ -37,7 +37,7 @@ export const DATA_SCOPE_META: Record<DataScope, DataScopeMeta> = {
     shortLabel: 'Synthetic',
     eyebrow: 'APC-aware',
     description: 'Validated APC-aware synthetic replay grid. Uses synthetic-suffixed profiles derived from the active sweep state, without coding-singleturn.',
-    accent: '#3fb950',
+    accent: '#34c759',
     rowsLabel: 'synthetic rows',
   },
   archived: {
@@ -45,7 +45,7 @@ export const DATA_SCOPE_META: Record<DataScope, DataScopeMeta> = {
     shortLabel: 'Archived',
     eyebrow: 'retired scopes',
     description: 'Retired canonical, fixed-grid, and MSE result scopes kept for reference but not used as the active Hugging Face dataset surface.',
-    accent: '#00bcd4',
+    accent: '#0071e3',
     rowsLabel: 'archived rows',
   },
 };
@@ -185,11 +185,11 @@ export const PROFILE_META: Record<string, ProfileMeta> = {
 
 // Color for agent type badges
 export const AGENT_TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  'chat':         { bg: 'rgba(63,185,80,0.12)',   text: '#3fb950', border: 'rgba(63,185,80,0.3)' },
-  'coding':       { bg: 'rgba(0,188,212,0.12)',   text: '#00bcd4', border: 'rgba(0,188,212,0.3)' },
-  'terminal':     { bg: 'rgba(249,117,131,0.12)', text: '#f97583', border: 'rgba(249,117,131,0.3)' },
+  'chat':         { bg: 'rgba(63,185,80,0.12)',   text: '#34c759', border: 'rgba(63,185,80,0.3)' },
+  'coding':       { bg: 'rgba(0,0,0,0.03)',   text: '#0071e3', border: 'rgba(0,188,212,0.3)' },
+  'terminal':     { bg: 'rgba(249,117,131,0.12)', text: '#ff3b30', border: 'rgba(249,117,131,0.3)' },
   'computer-use': { bg: 'rgba(236,72,153,0.12)',  text: '#ec4899', border: 'rgba(236,72,153,0.3)' },
-  'stress':       { bg: 'rgba(255,152,0,0.12)',   text: '#ff9800', border: 'rgba(255,152,0,0.3)' },
+  'stress':       { bg: 'rgba(255,152,0,0.12)',   text: '#ff9f0a', border: 'rgba(255,152,0,0.3)' },
 };
 
 // Color for data source badges
@@ -198,12 +198,12 @@ export const DATA_SOURCE_COLORS: Record<string, { bg: string; text: string; bord
   'SWEBench':      { bg: 'rgba(121,192,255,0.12)', text: '#79c0ff', border: 'rgba(121,192,255,0.3)' },
   'TerminalBench': { bg: 'rgba(255,183,77,0.12)',  text: '#ffb74d', border: 'rgba(255,183,77,0.3)' },
   'OSWorld':       { bg: 'rgba(20,184,166,0.12)',  text: '#14b8a6', border: 'rgba(20,184,166,0.3)' },
-  'Random':        { bg: 'rgba(255,152,0,0.12)',   text: '#ff9800', border: 'rgba(255,152,0,0.3)' },
+  'Random':        { bg: 'rgba(255,152,0,0.12)',   text: '#ff9f0a', border: 'rgba(255,152,0,0.3)' },
 };
 
 export const FALLBACK_META_COLORS = {
   bg: 'rgba(139,148,158,0.12)',
-  text: '#8b949e',
+  text: '#6e6e73',
   border: 'rgba(139,148,158,0.3)',
 };
 

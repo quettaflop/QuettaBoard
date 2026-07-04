@@ -42,7 +42,7 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
 
   if (seriesData.size < 1) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#21262d] bg-[#161b22] text-[#8b949e]">
+      <div className="flex h-64 items-center justify-center rounded-lg border border-[#e8e8ed] bg-[#ffffff] text-[#6e6e73]">
         Need at least one series to compare. Adjust filters.
       </div>
     );
@@ -78,13 +78,13 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
   return (
     <div className="space-y-4">
       {/* Selectors */}
-      <div className="grid grid-cols-1 gap-3 rounded-lg border border-[#21262d] bg-[#161b22] p-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-xs text-[#8b949e]">Series A</label>
+          <label className="mb-1 block text-xs text-[#6e6e73]">Series A</label>
           <select
             value={seriesA}
             onChange={(e) => setSeriesA(e.target.value)}
-            className="w-full rounded-md border border-[#21262d] bg-[#0d1117] px-3 py-1.5 text-xs text-[#e6edf3] outline-none focus:border-[#00bcd4]"
+            className="w-full rounded-md border border-[#e8e8ed] bg-[#f5f5f7] px-3 py-1.5 text-xs text-[#1d1d1f] outline-none focus:border-[#0071e3]"
           >
             {seriesNames.map((name) => (
               <option key={name} value={name}>
@@ -94,11 +94,11 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-[#8b949e]">Series B</label>
+          <label className="mb-1 block text-xs text-[#6e6e73]">Series B</label>
           <select
             value={seriesB}
             onChange={(e) => setSeriesB(e.target.value)}
-            className="w-full rounded-md border border-[#21262d] bg-[#0d1117] px-3 py-1.5 text-xs text-[#e6edf3] outline-none focus:border-[#00bcd4]"
+            className="w-full rounded-md border border-[#e8e8ed] bg-[#f5f5f7] px-3 py-1.5 text-xs text-[#1d1d1f] outline-none focus:border-[#0071e3]"
           >
             {seriesNames.map((name) => (
               <option key={name} value={name}>
@@ -108,11 +108,11 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-[#8b949e]">Metric</label>
+          <label className="mb-1 block text-xs text-[#6e6e73]">Metric</label>
           <select
             value={metric}
             onChange={(e) => setMetric(e.target.value)}
-            className="w-full rounded-md border border-[#21262d] bg-[#0d1117] px-3 py-1.5 text-xs text-[#e6edf3] outline-none focus:border-[#00bcd4]"
+            className="w-full rounded-md border border-[#e8e8ed] bg-[#f5f5f7] px-3 py-1.5 text-xs text-[#1d1d1f] outline-none focus:border-[#0071e3]"
           >
             {METRIC_OPTIONS.map((m) => (
               <option key={m.value} value={m.value}>
@@ -124,37 +124,37 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
       </div>
 
       {/* Chart */}
-      <div className="rounded-lg border border-[#21262d] bg-[#161b22] p-4">
+      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
         <div className="mb-3 flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-[#e6edf3]">{metricLabel} Comparison</h3>
-          <span className="rounded bg-[#21262d] px-1.5 py-0.5 text-[10px] font-medium text-[#8b949e]">vs concurrency</span>
+          <h3 className="text-sm font-semibold text-[#1d1d1f]">{metricLabel} Comparison</h3>
+          <span className="rounded bg-[#e8e8ed] px-1.5 py-0.5 text-[10px] font-medium text-[#6e6e73]">vs concurrency</span>
         </div>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e8e8ed" />
             <XAxis
               dataKey="concurrency"
               scale="log"
               domain={['dataMin', 'dataMax']}
               type="number"
-              tick={{ fill: '#8b949e', fontSize: 11 }}
-              axisLine={{ stroke: '#21262d' }}
-              tickLine={{ stroke: '#21262d' }}
-              label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#8b949e', fontSize: 11 }}
+              tick={{ fill: '#6e6e73', fontSize: 11 }}
+              axisLine={{ stroke: '#e8e8ed' }}
+              tickLine={{ stroke: '#e8e8ed' }}
+              label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#6e6e73', fontSize: 11 }}
             />
             <YAxis
-              tick={{ fill: '#8b949e', fontSize: 11 }}
-              axisLine={{ stroke: '#21262d' }}
-              tickLine={{ stroke: '#21262d' }}
-              label={{ value: metricLabel, angle: -90, position: 'insideLeft', fill: '#8b949e', fontSize: 11 }}
+              tick={{ fill: '#6e6e73', fontSize: 11 }}
+              axisLine={{ stroke: '#e8e8ed' }}
+              tickLine={{ stroke: '#e8e8ed' }}
+              label={{ value: metricLabel, angle: -90, position: 'insideLeft', fill: '#6e6e73', fontSize: 11 }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#161b22',
-                border: '1px solid #30363d',
+                backgroundColor: '#ffffff',
+                border: '1px solid #d2d2d7',
                 borderRadius: '8px',
                 fontSize: '12px',
-                color: '#e6edf3',
+                color: '#1d1d1f',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
               }}
               labelFormatter={(v) => `Concurrency: ${v}`}
@@ -162,22 +162,24 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
               itemSorter={(item: any) => -(Number(item.value) || 0)}
             />
             <Line
+              isAnimationActive={false}
               type="monotone"
               dataKey="Series A"
               name={shortenSeriesKey(seriesA)}
-              stroke="#00bcd4"
+              stroke="#0071e3"
               strokeWidth={2}
-              dot={{ r: 4, fill: '#00bcd4' }}
+              dot={{ r: 4, fill: '#0071e3' }}
               activeDot={{ r: 6 }}
               connectNulls
             />
             <Line
+              isAnimationActive={false}
               type="monotone"
               dataKey="Series B"
               name={shortenSeriesKey(seriesB)}
-              stroke="#ff9800"
+              stroke="#ff9f0a"
               strokeWidth={2}
-              dot={{ r: 4, fill: '#ff9800' }}
+              dot={{ r: 4, fill: '#ff9f0a' }}
               activeDot={{ r: 6 }}
               connectNulls
             />

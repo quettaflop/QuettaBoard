@@ -63,14 +63,14 @@ export function Layout({
       onClick={() => onPageChange(page.id)}
       className={`flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
         activePage === page.id
-          ? 'bg-[#00bcd4]/12 text-[#00bcd4]'
-          : 'text-[#8b949e] hover:bg-[#21262d] hover:text-[#c9d1d9]'
+          ? 'bg-[#0071e3]/12 text-[#0071e3]'
+          : 'text-[#6e6e73] hover:bg-[#e8e8ed] hover:text-[#424245]'
       }`}
     >
       {page.icon}
       {page.label}
       {page.badge && (
-        <span className="rounded bg-amber-500/20 px-1 py-0.5 text-[9px] font-semibold tracking-wide text-amber-300">
+        <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-amber-700">
           {page.badge}
         </span>
       )}
@@ -78,9 +78,9 @@ export function Layout({
   );
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-[#e6edf3]" aria-busy={loading || scopePending}>
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]" aria-busy={loading || scopePending}>
       {/* Sticky nav */}
-      <nav className="sticky top-0 z-50 border-b border-[#21262d] bg-[#161b22]/95 backdrop-blur-sm">
+      <nav className="sticky top-0 z-50 border-b border-[#e8e8ed] bg-[#ffffff]/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
           {/* Left: logo + page switcher */}
           <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -88,11 +88,11 @@ export function Layout({
               type="button"
               onClick={() => onPageChange('benchmark')}
               aria-label="Home"
-              className="flex shrink-0 items-center gap-3 rounded-md text-left transition-colors hover:text-[#00bcd4] focus:outline-none focus:ring-2 focus:ring-[#00bcd4]/50"
+              className="flex shrink-0 items-center gap-3 rounded-md text-left transition-colors hover:text-[#0071e3] focus:outline-none focus:ring-2 focus:ring-[#0071e3]/50"
             >
               <div
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00bcd4]/15 text-[#00bcd4]"
-                style={{ boxShadow: '0 0 0 1px rgba(0,188,212,0.2), 0 0 8px rgba(0,188,212,0.12)' }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0071e3]/15 text-[#0071e3]"
+                style={{ boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 0 8px rgba(0,0,0,0.03)' }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
@@ -110,32 +110,33 @@ export function Layout({
           </div>
 
           {/* Right: status */}
-          <div className="hidden shrink-0 items-center gap-3 text-sm text-[#8b949e] lg:flex">
+          <div className="hidden shrink-0 items-center gap-3 text-sm text-[#6e6e73] lg:flex">
             {loading ? (
               <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#ff9800]" />
+                <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#ff9f0a]" />
                 Loading...
               </span>
             ) : scopePending ? (
               <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#58a6ff]" />
+                <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#0071e3]" />
                 Updating view...
               </span>
             ) : activePage === 'simulator' ? (
               <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#58a6ff]" />
+                <span className="inline-block h-2 w-2 rounded-full bg-[#0071e3]" />
                 Simulator target loaded
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#3fb950]" />
+                <span className="inline-block h-2 w-2 rounded-full bg-[#34c759]" />
                 <span className="font-mono">{totalRuns}</span> runs loaded
               </span>
             )}
           </div>
         </div>
 
-        <div className="border-t border-[#21262d] bg-[#0d1117]">
+        {activePage === 'benchmark' && (
+        <div className="border-t border-[#e8e8ed] bg-[#f5f5f7]">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-xs sm:px-6">
             <ScopeSwitcher
               dataScope={dataScope}
@@ -149,15 +150,14 @@ export function Layout({
             >
               {scopeMeta.label}
             </span>
-            <span className="text-[#6e7681]">{scopeMeta.eyebrow}</span>
-            <span className="hidden text-[#8b949e] md:inline">{scopeMeta.description}</span>
-            <span className="ml-auto hidden font-mono text-[#6e7681] sm:inline">
-              {activePage === 'simulator'
-                ? 'simulator (WIP)'
-                : `${totalRuns} ${scopeMeta.rowsLabel}`}
+            <span className="text-[#86868b]">{scopeMeta.eyebrow}</span>
+            <span className="hidden text-[#6e6e73] md:inline">{scopeMeta.description}</span>
+            <span className="ml-auto hidden font-mono text-[#86868b] sm:inline">
+              {totalRuns} {scopeMeta.rowsLabel}
             </span>
           </div>
         </div>
+        )}
       </nav>
 
       {/* Main content */}
@@ -180,7 +180,7 @@ function ScopeSwitcher({
   compact?: boolean;
 }) {
   return (
-    <div className={`inline-flex items-center rounded-md border border-[#30363d] bg-[#0d1117] p-0.5 ${className}`}>
+    <div className={`inline-flex items-center rounded-md border border-[#d2d2d7] bg-[#f5f5f7] p-0.5 ${className}`}>
       {DATA_SCOPE_OPTIONS.map((scope) => {
         const meta = DATA_SCOPE_META[scope];
         const selected = dataScope === scope;
@@ -190,20 +190,19 @@ function ScopeSwitcher({
             onClick={() => onDataScopeChange(scope)}
             aria-pressed={selected}
             title={meta.description}
-            className={`rounded px-2 py-1 text-left text-xs font-medium transition-colors ${
+            className={`rounded-full px-2.5 py-1 text-left text-xs font-medium transition-colors ${
               selected
                 ? 'text-white'
-                : 'text-[#8b949e] hover:bg-[#21262d] hover:text-[#e6edf3]'
+                : 'text-[#6e6e73] hover:bg-[#e8e8ed] hover:text-[#1d1d1f]'
             }`}
             style={{
-              backgroundColor: selected ? `${meta.accent}33` : undefined,
-              boxShadow: selected ? `inset 0 0 0 1px ${meta.accent}99` : undefined,
+              backgroundColor: selected ? meta.accent : undefined,
               color: selected ? '#ffffff' : undefined,
             }}
           >
             <span className="whitespace-nowrap">{compact ? meta.shortLabel : meta.shortLabel}</span>
             {!compact && (
-              <span className="ml-1 hidden text-[10px] font-normal text-[#8b949e] xl:inline">
+              <span className="ml-1 hidden text-[10px] font-normal text-[#6e6e73] xl:inline">
                 {meta.eyebrow}
               </span>
             )}

@@ -20,8 +20,8 @@ interface PerTurnChartProps {
 }
 
 const COLORS = [
-  '#00bcd4', '#ff9800', '#a855f7', '#3fb950', '#f97583',
-  '#79c0ff', '#d2a8ff', '#ffa657', '#7ee787', '#ff7b72',
+  '#0071e3', '#ff9f0a', '#a855f7', '#34c759', '#ff3b30',
+  '#0071e3', '#d2a8ff', '#ffa657', '#7ee787', '#ff7b72',
 ];
 
 const MAX_SCATTER_POINTS = 2500;
@@ -49,7 +49,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
   if (multiTurnResults.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#21262d] bg-[#161b22] text-[#8b949e]">
+      <div className="flex h-64 items-center justify-center rounded-lg border border-[#e8e8ed] bg-[#ffffff] text-[#6e6e73]">
         No multi-turn data available. Run a multi-turn benchmark to see per-turn metrics.
       </div>
     );
@@ -110,27 +110,27 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
   const seriesKeys = multiTurnResults.map((r) => perTurnKey(r));
 
   const chartStyle = {
-    grid: '#21262d',
-    tick: '#8b949e',
+    grid: '#e8e8ed',
+    tick: '#6e6e73',
   };
 
   const tooltipStyle = {
-    backgroundColor: '#161b22',
-    border: '1px solid #21262d',
+    backgroundColor: '#ffffff',
+    border: '1px solid #e8e8ed',
     borderRadius: '8px',
     fontSize: '12px',
-    color: '#e6edf3',
+    color: '#1d1d1f',
   };
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {/* TTFT per turn — the key chart */}
-      <div className="rounded-lg border border-[#21262d] bg-[#161b22] p-4 lg:col-span-2">
-        <h3 className="mb-1 text-sm font-medium text-[#e6edf3]">
+      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 lg:col-span-2">
+        <h3 className="mb-1 text-sm font-medium text-[#1d1d1f]">
           TTFT per Turn
-          <span className="ml-2 text-xs text-[#8b949e]">median, ms — prefix cache effect visible in slope</span>
+          <span className="ml-2 text-xs text-[#6e6e73]">median, ms — prefix cache effect visible in slope</span>
         </h3>
-        <p className="mb-3 text-xs text-[#8b949e]">
+        <p className="mb-3 text-xs text-[#6e6e73]">
           Sub-linear TTFT growth = prefix cache is reusing KV entries from earlier turns
         </p>
         <ResponsiveContainer width="100%" height={350}>
@@ -166,6 +166,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
             />
             {seriesKeys.map((key, i) => (
               <Line
+                isAnimationActive={false}
                 key={key}
                 type="monotone"
                 dataKey={`${key}_ttft`}
@@ -181,10 +182,10 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
       </div>
 
       {/* Avg ISL growth */}
-      <div className="rounded-lg border border-[#21262d] bg-[#161b22] p-4">
-        <h3 className="mb-3 text-sm font-medium text-[#e6edf3]">
+      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
+        <h3 className="mb-3 text-sm font-medium text-[#1d1d1f]">
           Context Length Growth
-          <span className="ml-2 text-xs text-[#8b949e]">avg input tokens per turn</span>
+          <span className="ml-2 text-xs text-[#6e6e73]">avg input tokens per turn</span>
         </h3>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={islData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
@@ -209,6 +210,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
             />
             {seriesKeys.map((key, i) => (
               <Bar
+                isAnimationActive={false}
                 key={key}
                 dataKey={key}
                 fill={COLORS[i % COLORS.length]}
@@ -220,10 +222,10 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
       </div>
 
       {/* TPOT stability */}
-      <div className="rounded-lg border border-[#21262d] bg-[#161b22] p-4">
-        <h3 className="mb-3 text-sm font-medium text-[#e6edf3]">
+      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
+        <h3 className="mb-3 text-sm font-medium text-[#1d1d1f]">
           TPOT per Turn
-          <span className="ml-2 text-xs text-[#8b949e]">median, ms — should stay flat</span>
+          <span className="ml-2 text-xs text-[#6e6e73]">median, ms — should stay flat</span>
         </h3>
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={tpotData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
@@ -249,6 +251,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
             />
             {seriesKeys.map((key, i) => (
               <Line
+                isAnimationActive={false}
                 key={key}
                 type="monotone"
                 dataKey={`${key}_tpot`}
@@ -280,7 +283,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
         // Color scale: gradient from teal to coral across turns
         const turnColors = Array.from({ length: maxTurnIdx + 1 }, (_, i) => {
           const t = maxTurnIdx > 0 ? i / maxTurnIdx : 0;
-          // Interpolate from teal (#00bcd4) to coral (#ef5350)
+          // Interpolate from teal (#0071e3) to coral (#ef5350)
           const r = Math.round(0x00 + t * (0xef - 0x00));
           const g = Math.round(0xbc + t * (0x53 - 0xbc));
           const b = Math.round(0xd4 + t * (0x50 - 0xd4));
@@ -288,12 +291,12 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
         });
 
         return (
-          <div className="rounded-lg border border-[#21262d] bg-[#161b22] p-4 lg:col-span-2">
-            <h3 className="mb-1 text-sm font-medium text-[#e6edf3]">
+          <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 lg:col-span-2">
+            <h3 className="mb-1 text-sm font-medium text-[#1d1d1f]">
               TTFT vs Input Length
-              <span className="ml-2 text-xs text-[#8b949e]">per-request, colored by turn number</span>
+              <span className="ml-2 text-xs text-[#6e6e73]">per-request, colored by turn number</span>
             </h3>
-            <p className="mb-3 text-xs text-[#8b949e]">
+            <p className="mb-3 text-xs text-[#6e6e73]">
               Each dot is one request. Later turns (warmer colors) have longer context but may benefit from prefix cache.
             </p>
             <ResponsiveContainer width="100%" height={350}>
@@ -332,6 +335,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
                 {turnGroups.map((points, i) =>
                   points.length > 0 ? (
                     <Scatter
+                      isAnimationActive={false}
                       key={`turn-${i}`}
                       name={`Turn ${i + 1}`}
                       data={points}
@@ -347,10 +351,10 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
       })()}
 
       {/* Requests per turn */}
-      <div className="rounded-lg border border-[#21262d] bg-[#161b22] p-4 lg:col-span-2">
-        <h3 className="mb-3 text-sm font-medium text-[#e6edf3]">
+      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 lg:col-span-2">
+        <h3 className="mb-3 text-sm font-medium text-[#1d1d1f]">
           Sessions per Turn
-          <span className="ml-2 text-xs text-[#8b949e]">sessions drop off as shorter conversations end</span>
+          <span className="ml-2 text-xs text-[#6e6e73]">sessions drop off as shorter conversations end</span>
         </h3>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={reqData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
@@ -375,6 +379,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
             />
             {seriesKeys.map((key, i) => (
               <Bar
+                isAnimationActive={false}
                 key={key}
                 dataKey={key}
                 fill={COLORS[i % COLORS.length]}

@@ -346,7 +346,7 @@ const SERVING_METRICS: ServingMetric[] = [
   {
     label: 'TTFT',
     description: 'first token',
-    color: '#f0883e',
+    color: '#ff9f0a',
     predKey: 'ttft_pred',
     measKey: 'ttft_meas',
     errKey: 'ttft_err',
@@ -356,7 +356,7 @@ const SERVING_METRICS: ServingMetric[] = [
   {
     label: 'TPOT',
     description: 'per output token',
-    color: '#58a6ff',
+    color: '#0071e3',
     predKey: 'tpot_pred',
     measKey: 'tpot_meas',
     errKey: 'tpot_err',
@@ -456,10 +456,10 @@ function applyPredictionSource(
 // Δ tone mirrors the Predictions matrix: green = forward >=3pt closer to measured, red = >=3pt
 // worse, neutral between.
 function servingDeltaTone(value: OptionalMetric): { className: string } {
-  if (value === undefined || value === null) return { className: 'border border-[#30363d] bg-[#21262d] text-[#6e7681]' };
-  if (value <= -3) return { className: 'border border-[#3fb950]/30 bg-[#3fb950]/10 text-[#3fb950]' };
+  if (value === undefined || value === null) return { className: 'border border-[#d2d2d7] bg-[#e8e8ed] text-[#86868b]' };
+  if (value <= -3) return { className: 'border border-[#34c759]/30 bg-[#34c759]/10 text-[#34c759]' };
   if (value >= 3) return { className: 'border border-[#f85149]/30 bg-[#f85149]/10 text-[#f85149]' };
-  return { className: 'border border-[#30363d] bg-[#21262d] text-[#8b949e]' };
+  return { className: 'border border-[#d2d2d7] bg-[#e8e8ed] text-[#6e6e73]' };
 }
 
 function formatSignedDeltaPct(value: OptionalMetric): string {
@@ -555,7 +555,9 @@ export function ServingPredictionsPage({
     }
     return Array.from(models).sort();
   }, [scopeIndex]);
-  const selectedModel = focus?.model ?? (modelOptions.includes(model) ? model : (modelOptions[0] ?? ''));
+  const selectedModel = focus?.model ?? (modelOptions.includes(model) ? model
+    : modelOptions.includes('Llama-3.1-8B') ? 'Llama-3.1-8B'  // calibrated config first
+    : (modelOptions[0] ?? ''));
 
   // GPU options — restricted to those that actually have rows for the selected model
   // (the "GPU given model" dropdown); otherwise every GPU config in the scope.
@@ -618,7 +620,7 @@ export function ServingPredictionsPage({
   const tableSummaryRows = fixedTpotRows ?? tableRows;
   const tableSummaryRowCount = fixedTpotRows ? fixedTpotFit?.fit_summary.rows : undefined;
 
-  if (loading) return <div className="p-8 text-[#8b949e]">Loading predictions...</div>;
+  if (loading) return <div className="p-8 text-[#6e6e73]">Loading predictions...</div>;
   if (failed || !scopeIndex) return <div className="p-8 text-[#f85149]">Failed to load predictions JSON</div>;
 
   return (
@@ -644,10 +646,10 @@ export function ServingPredictionsPage({
         />
       ) : (
         <>
-          <div className="border-b border-[#21262d] pb-4">
+          <div className="border-b border-[#e8e8ed] pb-4">
             <div>
-              <h2 className="text-lg font-semibold text-[#e6edf3]">{focus?.title ?? 'Predictions'}</h2>
-              <p className="mt-1 max-w-3xl text-xs text-[#8b949e]">
+              <h2 className="text-lg font-semibold text-[#1d1d1f]">{focus?.title ?? 'Predictions'}</h2>
+              <p className="mt-1 max-w-3xl text-xs text-[#6e6e73]">
                 {focus?.description ?? `High-concurrency predictions vs measured benchmark results from ${DATA_SCOPE_META[dataScope].label.toLowerCase()}.`}
                 Multi-turn TTFT reflects cache-aware serving behavior, not cumulative full-prefill latency.
               </p>
@@ -779,18 +781,18 @@ function ServingFocusSummary({
     : emulatorRows.reduce((total, row) => total + (row.backend_trace_summary?.replayed_cached_tokens ?? 0), 0);
 
   return (
-    <section className="rounded-md border border-[#21262d] bg-[#161b22] p-4">
+    <section className="rounded-md border border-[#e8e8ed] bg-[#ffffff] p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">Focused target</div>
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">Focused target</div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-            <span className="rounded border border-[#58a6ff]/30 bg-[#58a6ff]/10 px-2 py-0.5 font-mono text-[#79c0ff]">
+            <span className="rounded border border-[#0071e3]/30 bg-[#0071e3]/10 px-2 py-0.5 font-mono text-[#0071e3]">
               {focus.gpu}
             </span>
-            <span className="rounded border border-[#3fb950]/30 bg-[#3fb950]/10 px-2 py-0.5 font-mono text-[#3fb950]">
+            <span className="rounded border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 font-mono text-[#34c759]">
               {focus.model}
             </span>
-            <span className="text-[#6e7681]">{DATA_SCOPE_META[dataScope].label}</span>
+            <span className="text-[#86868b]">{DATA_SCOPE_META[dataScope].label}</span>
           </div>
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
@@ -800,7 +802,7 @@ function ServingFocusSummary({
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 border-t border-[#21262d] pt-3 text-xs text-[#8b949e] sm:grid-cols-7">
+      <div className="mt-3 grid gap-2 border-t border-[#e8e8ed] pt-3 text-xs text-[#6e6e73] sm:grid-cols-7">
         <FocusStat label="Rows" value={(fixedComparison?.rows ?? rows.length).toLocaleString()} />
         <FocusStat label="Profiles" value={profiles.toLocaleString()} />
         <FocusStat label="Backends" value={backends.length ? backends.join(', ') : '-'} />
@@ -816,8 +818,8 @@ function ServingFocusSummary({
 function FocusStat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">{label}</div>
-      <div className="mt-0.5 font-mono text-[#c9d1d9]">{value}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">{label}</div>
+      <div className="mt-0.5 font-mono text-[#424245]">{value}</div>
     </div>
   );
 }
@@ -835,12 +837,12 @@ function LabeledSelect({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">{label}</span>
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">{label}</span>
       <select
         value={value}
         onChange={event => onChange(event.target.value)}
         disabled={options.length <= 1}
-        className="min-w-[150px] rounded border border-[#30363d] bg-[#0d1117] px-2 py-1 font-mono text-sm text-[#e6edf3] outline-none focus:border-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-70"
+        className="min-w-[150px] rounded border border-[#d2d2d7] bg-[#f5f5f7] px-2 py-1 font-mono text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {options.length === 0 && <option value="">—</option>}
         {options.map(option => (
@@ -888,18 +890,18 @@ function SimulatorTargetBar({
 }) {
   const badgeSuffix = valueMode === 'delta' ? 'Δ' : 'MAPE';
   return (
-    <section className="rounded-md border border-[#21262d] bg-[#161b22] px-4 py-3">
+    <section className="rounded-md border border-[#e8e8ed] bg-[#ffffff] px-4 py-3">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-wrap items-end gap-3">
           <LabeledSelect label="Model" value={selectedModel} options={modelOptions} onChange={onModel} />
           <LabeledSelect label="GPU" value={selectedGpu} options={gpuOptions} onChange={onGpu} />
           {showBackend && (
             <label className="flex flex-col gap-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">Backend</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">Backend</span>
               <select
                 value={backend}
                 onChange={event => onBackend(event.target.value as 'all' | 'vllm' | 'sglang')}
-                className="min-w-[150px] rounded border border-[#30363d] bg-[#0d1117] px-2 py-1 font-mono text-sm text-[#e6edf3] outline-none focus:border-[#58a6ff]"
+                className="min-w-[150px] rounded border border-[#d2d2d7] bg-[#f5f5f7] px-2 py-1 font-mono text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3]"
               >
                 <option value="vllm">vLLM</option>
                 <option value="sglang">SGLang</option>
@@ -908,8 +910,8 @@ function SimulatorTargetBar({
             </label>
           )}
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">Source</span>
-            <div className="inline-flex overflow-hidden rounded-md border border-[#30363d] text-xs">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">Source</span>
+            <div className="inline-flex overflow-hidden rounded-md border border-[#d2d2d7] text-xs">
               {PREDICTION_SOURCES.map(({ key, label }) => {
                 const disabled = key !== 'backtester' && !hasForward;
                 const active = source === key;
@@ -921,9 +923,9 @@ function SimulatorTargetBar({
                     onClick={() => onSource(key)}
                     title={disabled ? 'forward-predictions.json not loaded yet' : undefined}
                     className={`px-3 py-[5px] font-medium transition-colors ${
-                      active ? 'bg-[#1f6feb] text-white'
-                        : disabled ? 'bg-[#161b22] text-[#484f58] cursor-not-allowed'
-                        : 'bg-[#161b22] text-[#8b949e] hover:bg-[#21262d]'
+                      active ? 'bg-[#0071e3] text-white'
+                        : disabled ? 'bg-[#ffffff] text-[#86868b] cursor-not-allowed'
+                        : 'bg-[#ffffff] text-[#6e6e73] hover:bg-[#e8e8ed]'
                     }`}
                   >
                     {label}
@@ -962,14 +964,14 @@ function GpuConfigSelector({
     <section className="space-y-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">GPU config</div>
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">GPU config</div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-            <span className="font-mono text-sm font-semibold text-[#e6edf3]">{selectedGpu}</span>
+            <span className="font-mono text-sm font-semibold text-[#1d1d1f]">{selectedGpu}</span>
             {selectedSummary && (
               <>
-                <span className="text-[#6e7681]">{selectedSummary.rows} rows</span>
-                <span className="text-[#6e7681]">{selectedSummary.models} models</span>
-                <span className="text-[#6e7681]">{selectedSummary.profiles} profiles</span>
+                <span className="text-[#86868b]">{selectedSummary.rows} rows</span>
+                <span className="text-[#86868b]">{selectedSummary.models} models</span>
+                <span className="text-[#86868b]">{selectedSummary.profiles} profiles</span>
                 <MetricBadge label="TTFT MAPE" value={selectedSummary.meanTtftMape} />
                 <MetricBadge label="TPOT MAPE" value={selectedSummary.meanTpotMape} />
                 <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(selectedSummary.meanE2elMape).className}`}>
@@ -979,15 +981,15 @@ function GpuConfigSelector({
             )}
           </div>
         </div>
-        <div className="text-xs text-[#6e7681]">
+        <div className="text-xs text-[#86868b]">
           {scopeIndex.summaries.length} configs in {Object.keys(groups).length} families
         </div>
       </div>
 
-      <div className="space-y-2 rounded-md border border-[#21262d] bg-[#161b22] p-2">
+      <div className="space-y-2 rounded-md border border-[#e8e8ed] bg-[#ffffff] p-2">
         {Object.entries(groups).map(([family, familySummaries]) => (
           <div key={family} className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
-            <div className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">
+            <div className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">
               {family}
             </div>
             <div className="flex flex-1 flex-wrap gap-1.5">
@@ -1023,19 +1025,19 @@ function GpuConfigButton({
       onClick={onClick}
       className={`min-h-[72px] min-w-[146px] rounded-md border px-2.5 py-1.5 text-left transition-colors ${
         selected
-          ? 'border-[#58a6ff] bg-[#1f6feb]/12 shadow-[inset_0_0_0_1px_rgba(88,166,255,0.35)]'
-          : 'border-[#21262d] bg-[#161b22] hover:border-[#30363d] hover:bg-[#1c2129]'
+          ? 'border-[#0071e3] bg-[#0071e3]/12 shadow-[inset_0_0_0_1px_rgba(0,113,227,0.35)]'
+          : 'border-[#e8e8ed] bg-[#ffffff] hover:border-[#d2d2d7] hover:bg-[#1c2129]'
       }`}
       title={`${summary.gpu}: TTFT MAPE ${formatPercent(summary.meanTtftMape)}, TPOT MAPE ${formatPercent(summary.meanTpotMape)}, E2EL MAPE ${formatPercent(summary.meanE2elMape)}`}
     >
       <div className="min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <div className="font-mono text-xs font-semibold text-[#e6edf3]">{summary.gpu}</div>
+          <div className="font-mono text-xs font-semibold text-[#1d1d1f]">{summary.gpu}</div>
           <span className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(summary.meanE2elMape).className}`}>
             E2EL {formatCompactPercent(summary.meanE2elMape)}
           </span>
         </div>
-        <div className="mt-0.5 text-[9px] uppercase tracking-wide text-[#6e7681]">
+        <div className="mt-0.5 text-[9px] uppercase tracking-wide text-[#86868b]">
           {acceleratorCount === 1 ? '1 GPU' : `${acceleratorCount} GPUs`} · {summary.models} models
         </div>
         <div className="mt-1.5 grid grid-cols-2 gap-1">
@@ -1204,12 +1206,12 @@ function ServingTable({
   if (rows.length === 0) {
     return (
       <div className="py-8 text-center">
-        <div className="mb-2 text-sm text-[#484f58]">No {dataScope} predictions available yet</div>
-        <div className="text-xs text-[#30363d]">
+        <div className="mb-2 text-sm text-[#86868b]">No {dataScope} predictions available yet</div>
+        <div className="text-xs text-[#d2d2d7]">
           {focus
             ? `Expected ${focus.gpu} / ${focus.model} rows in predictions JSON`
             : (
-              <>Run <code className="rounded bg-[#21262d] px-1">python3 -m llm_predict.validate</code> to generate predictions</>
+              <>Run <code className="rounded bg-[#e8e8ed] px-1">python3 -m llm_predict.validate</code> to generate predictions</>
             )}
         </div>
       </div>
@@ -1221,7 +1223,7 @@ function ServingTable({
 
   return (
     <div className="space-y-3">
-      <div className="grid overflow-hidden rounded-md border border-[#21262d] bg-[#161b22] md:grid-cols-3 md:divide-x md:divide-[#21262d]">
+      <div className="grid overflow-hidden rounded-md border border-[#e8e8ed] bg-[#ffffff] md:grid-cols-3 md:divide-x md:divide-[#e8e8ed]">
         {SERVING_METRICS.map(metric => (
           <ServingMetricSummary
             key={metric.label}
@@ -1234,16 +1236,16 @@ function ServingTable({
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-[#21262d] bg-[#161b22]">
+      <div className="overflow-x-auto rounded-md border border-[#e8e8ed] bg-[#ffffff]">
         <table
           className="w-full table-fixed border-collapse text-xs"
           style={{ minWidth: `${310 + concurrencies.length * 82 + SERVING_METRICS.length * 74}px` }}
         >
-          <thead className="sticky top-0 z-10 bg-[#161b22]">
-            <tr className="border-b border-[#21262d] text-[#8b949e]">
+          <thead className="sticky top-0 z-10 bg-[#ffffff]">
+            <tr className="border-b border-[#e8e8ed] text-[#6e6e73]">
               <th rowSpan={2} className="w-[210px] px-3 py-2 text-left font-medium">Profile</th>
               <th rowSpan={2} className="w-[72px] px-2 py-2 text-left font-medium">Backend</th>
-              <th colSpan={concurrencies.length} className="px-1.5 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-[#6e7681]">
+              <th colSpan={concurrencies.length} className="px-1.5 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">
                 {validationRows ? 'Validation Rows' : 'Concurrency'}
               </th>
               <th
@@ -1252,12 +1254,12 @@ function ServingTable({
                 style={{ right: 0, width: `${SERVING_MAPE_RAIL_WIDTH}px` }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-[#c9d1d9]">{isDelta ? 'Row Δ' : 'Row MAPE'}</span>
-                  <span className="text-[9px] font-normal text-[#6e7681]">{isDelta ? 'fwd − bt (pt)' : 'mean abs error'}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-[#424245]">{isDelta ? 'Row Δ' : 'Row MAPE'}</span>
+                  <span className="text-[9px] font-normal text-[#86868b]">{isDelta ? 'fwd − bt (pt)' : 'mean abs error'}</span>
                 </div>
               </th>
             </tr>
-            <tr className="border-b border-[#21262d] text-[#8b949e]">
+            <tr className="border-b border-[#e8e8ed] text-[#6e6e73]">
               {concurrencies.map(concurrency => (
                 <th key={concurrency} className="px-1.5 py-2 text-center font-mono font-normal">
                   {concurrency}
@@ -1280,20 +1282,20 @@ function ServingTable({
           <tbody>
             {Object.entries(groupedByModel).map(([model, profileGroups]) => (
               <Fragment key={model}>
-                <tr className="border-b-2 border-t-2 border-[#30363d] bg-[#0d1117]">
+                <tr className="border-b-2 border-t-2 border-[#d2d2d7] bg-[#f5f5f7]">
                   <td colSpan={2 + concurrencies.length + SERVING_METRICS.length} className="px-3 py-1.5">
-                    <span className="font-mono text-sm font-semibold text-[#c9d1d9]">{model}</span>
-                    <span className="ml-2 text-[10px] text-[#6e7681]">{profileGroups.length} profiles</span>
+                    <span className="font-mono text-sm font-semibold text-[#424245]">{model}</span>
+                    <span className="ml-2 text-[10px] text-[#86868b]">{profileGroups.length} profiles</span>
                   </td>
                 </tr>
                 {profileGroups.map(group => (
                   <Fragment key={group.key}>
                     {group.backendRows.map((row, backendIndex) => (
-                      <tr key={row.key} className="group border-b border-[#21262d]/50 transition-colors hover:bg-[#0d1117]">
+                      <tr key={row.key} className="group border-b border-[#e8e8ed]/50 transition-colors hover:bg-[#f5f5f7]">
                         {backendIndex === 0 && (
-                          <td rowSpan={group.backendRows.length} className="border-r border-[#21262d]/50 px-3 py-1.5 align-middle">
+                          <td rowSpan={group.backendRows.length} className="border-r border-[#e8e8ed]/50 px-3 py-1.5 align-middle">
                             <div className="flex min-w-[190px] items-center gap-1.5">
-                              <span className="truncate text-[11px] text-[#c9d1d9]" title={profileDisplayName(group.profile)}>
+                              <span className="truncate text-[11px] text-[#424245]" title={profileDisplayName(group.profile)}>
                                 {profileDisplayName(group.profile)}
                               </span>
                             </div>
@@ -1302,10 +1304,10 @@ function ServingTable({
                         <td className="px-2 py-1.5 align-middle">
                           {row.backend && (
                             <div className="flex flex-col gap-1">
-                              <span className="text-[9px] uppercase text-[#6e7681]">{row.backend}</span>
+                              <span className="text-[9px] uppercase text-[#86868b]">{row.backend}</span>
                               {matrixRowUsesBackendEmulator(row) && (
                                 <span
-                                  className="w-fit rounded border border-[#3fb950]/30 bg-[#3fb950]/10 px-1 py-0.5 font-mono text-[8px] uppercase leading-none text-[#3fb950]"
+                                  className="w-fit rounded border border-[#34c759]/30 bg-[#34c759]/10 px-1 py-0.5 font-mono text-[8px] uppercase leading-none text-[#34c759]"
                                   title={backendTooltipForMatrixRow(row)}
                                 >
                                   emu
@@ -1313,7 +1315,7 @@ function ServingTable({
                               )}
                               {matrixRowUsesSteadyState(row) && (
                                 <span
-                                  className="w-fit rounded border border-[#58a6ff]/30 bg-[#58a6ff]/10 px-1 py-0.5 font-mono text-[8px] uppercase leading-none text-[#79c0ff]"
+                                  className="w-fit rounded border border-[#0071e3]/30 bg-[#0071e3]/10 px-1 py-0.5 font-mono text-[8px] uppercase leading-none text-[#0071e3]"
                                   title={backendTooltipForMatrixRow(row)}
                                 >
                                   steady
@@ -1357,28 +1359,28 @@ function ServingTable({
       />
 
       {isDelta ? (
-        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#6e7681]">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#86868b]">
           <span>
-            Cells show <span className="text-[#c9d1d9]">Δ MAPE</span> (forward − backtest, pp) left-to-right:{' '}
-            <span className="text-[#f0883e]">TTFT</span> / <span className="text-[#58a6ff]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>. Negative = forward closer to measured.
+            Cells show <span className="text-[#424245]">Δ MAPE</span> (forward − backtest, pp) left-to-right:{' '}
+            <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#0071e3]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>. Negative = forward closer to measured.
           </span>
-          <span className="font-medium text-[#8b949e]">Δ bands:</span>
-          <span className="rounded border border-[#3fb950]/30 bg-[#3fb950]/10 px-2 py-0.5 text-[#3fb950]">fwd ≥3pt better</span>
-          <span className="rounded border border-[#30363d] bg-[#21262d] px-2 py-0.5 text-[#8b949e]">~equal</span>
+          <span className="font-medium text-[#6e6e73]">Δ bands:</span>
+          <span className="rounded border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">fwd ≥3pt better</span>
+          <span className="rounded border border-[#d2d2d7] bg-[#e8e8ed] px-2 py-0.5 text-[#6e6e73]">~equal</span>
           <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">fwd ≥3pt worse</span>
           <span>Rightmost columns are the mean Δ across concurrency cells.</span>
         </div>
       ) : (
-        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#6e7681]">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#86868b]">
           <span>
             {tpotOnly ? 'Cells show TPOT-only kernel-composed error; TTFT and E2EL are N/A.' : (
-              <>Cells show % error left-to-right: <span className="text-[#f0883e]">TTFT</span> / <span className="text-[#58a6ff]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>.</>
+              <>Cells show % error left-to-right: <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#0071e3]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>.</>
             )}
           </span>
-          <span className="font-medium text-[#8b949e]">Error bands:</span>
-          <span className="rounded border border-[#3fb950]/30 bg-[#3fb950]/10 px-2 py-0.5 text-[#3fb950]">&lt;10%</span>
-          <span className="rounded border border-[#58a6ff]/30 bg-[#58a6ff]/10 px-2 py-0.5 text-[#58a6ff]">10-25%</span>
-          <span className="rounded border border-[#f0883e]/30 bg-[#f0883e]/10 px-2 py-0.5 text-[#f0883e]">25-50%</span>
+          <span className="font-medium text-[#6e6e73]">Error bands:</span>
+          <span className="rounded border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">&lt;10%</span>
+          <span className="rounded border border-[#0071e3]/30 bg-[#0071e3]/10 px-2 py-0.5 text-[#0071e3]">10-25%</span>
+          <span className="rounded border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
           <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">&gt;=50%</span>
           <span>Rightmost MAPE columns are mean absolute row errors across concurrency cells.</span>
         </div>
@@ -1555,9 +1557,9 @@ function ServingPerTurnChart({
   const tableKey = metric.label === 'TPOT' ? (showKernel ? 'kernel' : 'pred') : 'pred';
   if (chartData.length === 0) return null;
   return (
-    <div className="border-b border-[#21262d] px-4 py-3">
+    <div className="border-b border-[#e8e8ed] px-4 py-3">
       <div className="mb-2 flex items-center gap-2">
-        <div className="text-[11px] uppercase tracking-wide text-[#8b949e]">Per-Turn</div>
+        <div className="text-[11px] uppercase tracking-wide text-[#6e6e73]">Per-Turn</div>
         <div className="flex gap-1">
           {SERVING_METRICS.map(m => {
             const selected = m.label === metric.label;
@@ -1568,8 +1570,8 @@ function ServingPerTurnChart({
                 onClick={() => onSelectMetric(m)}
                 className={`rounded border px-2 py-0.5 text-[10px] font-mono uppercase transition-colors ${
                   selected
-                    ? 'border-[#58a6ff] bg-[#1f6feb]/20 text-[#e6edf3]'
-                    : 'border-[#30363d] bg-[#0d1117] text-[#8b949e] hover:border-[#58a6ff]/60 hover:text-[#e6edf3]'
+                    ? 'border-[#0071e3] bg-[#0071e3]/20 text-[#1d1d1f]'
+                    : 'border-[#d2d2d7] bg-[#f5f5f7] text-[#6e6e73] hover:border-[#0071e3]/60 hover:text-[#1d1d1f]'
                 }`}
                 style={selected ? { borderColor: m.color, color: m.color } : undefined}
               >
@@ -1578,52 +1580,52 @@ function ServingPerTurnChart({
             );
           })}
         </div>
-        <span className="text-[10px] text-[#6e7681]">{metric.description} · actual vs predicted (ms)</span>
+        <span className="text-[10px] text-[#86868b]">{metric.description} · actual vs predicted (ms)</span>
       </div>
       <div className="h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 8, right: 24, bottom: 0, left: 0 }}>
-            <CartesianGrid stroke="#21262d" strokeDasharray="3 3" />
+            <CartesianGrid stroke="#e8e8ed" strokeDasharray="3 3" />
             <XAxis
               dataKey="turn"
-              tick={{ fill: '#8b949e', fontSize: 11 }}
-              stroke="#30363d"
-              label={{ value: 'turn', position: 'insideBottomRight', offset: -2, fill: '#6e7681', fontSize: 10 }}
+              tick={{ fill: '#6e6e73', fontSize: 11 }}
+              stroke="#d2d2d7"
+              label={{ value: 'turn', position: 'insideBottomRight', offset: -2, fill: '#86868b', fontSize: 10 }}
             />
             <YAxis
-              tick={{ fill: '#8b949e', fontSize: 11 }}
-              stroke="#30363d"
+              tick={{ fill: '#6e6e73', fontSize: 11 }}
+              stroke="#d2d2d7"
               width={48}
-              label={{ value: 'ms', angle: -90, position: 'insideLeft', offset: 12, fill: '#6e7681', fontSize: 10 }}
+              label={{ value: 'ms', angle: -90, position: 'insideLeft', offset: 12, fill: '#86868b', fontSize: 10 }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#0d1117',
-                border: '1px solid #30363d',
+                backgroundColor: '#f5f5f7',
+                border: '1px solid #d2d2d7',
                 fontSize: 11,
               }}
-              labelStyle={{ color: '#c9d1d9' }}
+              labelStyle={{ color: '#424245' }}
               formatter={(value) =>
                 typeof value === 'number' ? `${value.toFixed(2)} ms` : '—'
               }
               labelFormatter={(turn) => `Turn ${turn}`}
             />
             <Legend
-              wrapperStyle={{ fontSize: 11, color: '#c9d1d9' }}
+              wrapperStyle={{ fontSize: 11, color: '#424245' }}
               content={() => (
                 <div className="mt-1">
                   <div className="flex flex-wrap justify-center gap-4">
                   <span className="flex items-center gap-2">
                     <svg width="26" height="8" aria-hidden>
-                      <line x1="0" y1="4" x2="26" y2="4" stroke="#c9d1d9" strokeWidth="2" strokeDasharray="6 3" />
+                      <line x1="0" y1="4" x2="26" y2="4" stroke="#424245" strokeWidth="2" strokeDasharray="6 3" />
                     </svg>
-                    <span className="text-[11px] text-[#c9d1d9]">{metric.label} actual</span>
+                    <span className="text-[11px] text-[#424245]">{metric.label} actual</span>
                   </span>
                   <span className="flex items-center gap-2">
                     <svg width="26" height="8" aria-hidden>
                       <line x1="0" y1="4" x2="26" y2="4" stroke={metric.color} strokeWidth={tableKey === 'pred' ? 3.5 : 2} />
                     </svg>
-                    <span className="text-[11px] text-[#c9d1d9]">
+                    <span className="text-[11px] text-[#424245]">
                       {(metric.label === 'TPOT'
                         ? `${metric.label} predicted`
                         : `${metric.label} predicted (queue sim)`)
@@ -1635,7 +1637,7 @@ function ServingPerTurnChart({
                       <svg width="26" height="8" aria-hidden>
                         <line x1="0" y1="4" x2="26" y2="4" stroke="#facc15" strokeWidth={tableKey === 'kernel' ? 3.5 : 2} />
                       </svg>
-                      <span className="text-[11px] text-[#c9d1d9]">{`${metric.label} predicted (kernel)` + (tableKey === 'kernel' ? ' ★ table' : '')}</span>
+                      <span className="text-[11px] text-[#424245]">{`${metric.label} predicted (kernel)` + (tableKey === 'kernel' ? ' ★ table' : '')}</span>
                     </span>
                   )}
                   {showKernelHint && (
@@ -1643,7 +1645,7 @@ function ServingPerTurnChart({
                       <svg width="26" height="8" aria-hidden>
                         <line x1="0" y1="4" x2="26" y2="4" stroke="#fb7185" strokeWidth="2" />
                       </svg>
-                      <span className="text-[11px] text-[#c9d1d9]">{metric.label} predicted (kernel+hint)</span>
+                      <span className="text-[11px] text-[#424245]">{metric.label} predicted (kernel+hint)</span>
                     </span>
                   )}
                   {showRamp && (
@@ -1651,19 +1653,19 @@ function ServingPerTurnChart({
                       <svg width="26" height="8" aria-hidden>
                         <line x1="0" y1="4" x2="26" y2="4" stroke="#2dd4bf" strokeWidth="2" />
                       </svg>
-                      <span className="text-[11px] text-[#c9d1d9]">{metric.label} predicted (fwd-ramp)</span>
+                      <span className="text-[11px] text-[#424245]">{metric.label} predicted (fwd-ramp)</span>
                     </span>
                   )}
                   {showStatic && (
                     <span className="flex items-center gap-2">
                       <svg width="26" height="8" aria-hidden>
-                        <line x1="0" y1="4" x2="26" y2="4" stroke="#3fb950" strokeWidth="2" />
+                        <line x1="0" y1="4" x2="26" y2="4" stroke="#34c759" strokeWidth="2" />
                       </svg>
-                      <span className="text-[11px] text-[#c9d1d9]">{metric.label} predicted (static M0)</span>
+                      <span className="text-[11px] text-[#424245]">{metric.label} predicted (static M0)</span>
                     </span>
                   )}
                   </div>
-                  <div className="mt-1 text-center text-[10px] text-[#6e7681]">
+                  <div className="mt-1 text-center text-[10px] text-[#86868b]">
                     ★ = the line the prediction table &amp; MAPE badge use · other predicted lines are comparison-only
                   </div>
                 </div>
@@ -1673,7 +1675,7 @@ function ServingPerTurnChart({
               type="monotone"
               dataKey="meas"
               name={`${metric.label} actual`}
-              stroke="#c9d1d9"
+              stroke="#424245"
               strokeDasharray="6 3"
               strokeWidth={2}
               dot={{ r: 2 }}
@@ -1738,7 +1740,7 @@ function ServingPerTurnChart({
                 type="monotone"
                 dataKey="staticPred"
                 name={`${metric.label} predicted (static M0)`}
-                stroke="#3fb950"
+                stroke="#34c759"
                 strokeWidth={2}
                 dot={{ r: 2 }}
                 connectNulls={false}
@@ -1790,12 +1792,12 @@ function ServingPerTurnBreakdown({
   });
 
   return (
-    <div className="rounded-md border border-[#21262d] bg-[#161b22]">
-      <div className="flex flex-col gap-3 border-b border-[#21262d] px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
+    <div className="rounded-md border border-[#e8e8ed] bg-[#ffffff]">
+      <div className="flex flex-col gap-3 border-b border-[#e8e8ed] px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="text-sm font-semibold text-[#e6edf3]">Per-Turn Multi-Turn Prediction</div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[#6e7681]">
-            <span className="font-mono text-[#8b949e]">{row.model}</span>
+          <div className="text-sm font-semibold text-[#1d1d1f]">Per-Turn Multi-Turn Prediction</div>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[#86868b]">
+            <span className="font-mono text-[#6e6e73]">{row.model}</span>
             <span>{row.backend ?? 'backend'}</span>
             {row.backend_emulator_status === 'event_loop_enabled' && (
               <>
@@ -1819,7 +1821,7 @@ function ServingPerTurnBreakdown({
             ))}
           </div>
         </div>
-        <div className="rounded border border-[#30363d] bg-[#0d1117] px-2 py-1 font-mono text-[10px] text-[#79c0ff]">
+        <div className="rounded border border-[#d2d2d7] bg-[#f5f5f7] px-2 py-1 font-mono text-[10px] text-[#0071e3]">
           selected from predictions table
         </div>
       </div>
@@ -1830,13 +1832,13 @@ function ServingPerTurnBreakdown({
         onSelectMetric={onSelectMetric}
       />
 
-      <div className="overflow-x-auto border-b border-[#21262d]">
+      <div className="overflow-x-auto border-b border-[#e8e8ed]">
         <div className="flex min-w-max gap-2 p-3">
           {turns.map(turn => (
-            <div key={turn.turn_index} className="w-[122px] shrink-0 rounded border border-[#21262d] bg-[#0d1117] p-2">
+            <div key={turn.turn_index} className="w-[122px] shrink-0 rounded border border-[#e8e8ed] bg-[#f5f5f7] p-2">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-[11px] font-semibold text-[#c9d1d9]">Turn {displayTurn(turn)}</span>
-                <span className="text-[10px] text-[#6e7681]">{turn.successful} req</span>
+                <span className="font-mono text-[11px] font-semibold text-[#424245]">Turn {displayTurn(turn)}</span>
+                <span className="text-[10px] text-[#86868b]">{turn.successful} req</span>
               </div>
               <ServingTurnCacheBar turn={turn} compact />
               <div className="mt-2 space-y-1">
@@ -1852,7 +1854,7 @@ function ServingPerTurnBreakdown({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1240px] border-collapse text-xs">
           <thead>
-            <tr className="border-b border-[#21262d] text-[#8b949e]">
+            <tr className="border-b border-[#e8e8ed] text-[#6e6e73]">
               <th className="px-3 py-2 text-left font-medium">Turn</th>
               <th className="px-2 py-2 text-left font-medium">Regime</th>
               <th className="px-2 py-2 text-right font-medium">Req</th>
@@ -1872,20 +1874,20 @@ function ServingPerTurnBreakdown({
           </thead>
           <tbody>
             {turns.map(turn => (
-              <tr key={turn.turn_index} className="border-b border-[#21262d]/50 hover:bg-[#0d1117]">
-                <td className="px-3 py-2 font-mono text-[#c9d1d9]">{displayTurn(turn)}</td>
-                <td className="px-2 py-2 text-[10px] text-[#8b949e]" title={turn.scheduling_regime ?? turn.workload_regime ?? turn.turn_batching_regime}>
+              <tr key={turn.turn_index} className="border-b border-[#e8e8ed]/50 hover:bg-[#f5f5f7]">
+                <td className="px-3 py-2 font-mono text-[#424245]">{displayTurn(turn)}</td>
+                <td className="px-2 py-2 text-[10px] text-[#6e6e73]" title={turn.scheduling_regime ?? turn.workload_regime ?? turn.turn_batching_regime}>
                   <div>{compactRegime(turn.turn_position_bin)}</div>
-                  <div className="font-mono text-[#6e7681]">{compactRegime(turn.scheduling_regime ?? turn.decode_load_regime)}</div>
+                  <div className="font-mono text-[#86868b]">{compactRegime(turn.scheduling_regime ?? turn.decode_load_regime)}</div>
                 </td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.successful)}</td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.total_context_tokens)}</td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.new_prefill_tokens)}</td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.cached_context_tokens)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.successful)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.total_context_tokens)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.new_prefill_tokens)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.cached_context_tokens)}</td>
                 <td className="px-2 py-2"><ServingTurnCacheBar turn={turn} /></td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.output_tokens)}</td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.decode_waves ?? turn.backend_trace_summary?.total_steps)}</td>
-                <td className="px-2 py-2 text-right font-mono text-[#8b949e]">{formatTokenCount(turn.backend_cache_work?.replayed_cached_tokens)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.output_tokens)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.decode_waves ?? turn.backend_trace_summary?.total_steps)}</td>
+                <td className="px-2 py-2 text-right font-mono text-[#6e6e73]">{formatTokenCount(turn.backend_cache_work?.replayed_cached_tokens)}</td>
                 {SERVING_METRICS.map(metric => (
                   <ServingTurnMetricCell key={metric.label} turn={turn} metric={metric} />
                 ))}
@@ -1934,18 +1936,18 @@ function ServingMetricSummary({
   const fmt = (value: OptionalMetric) => (isDelta ? formatSignedDeltaValue(value) : formatPercent(value));
 
   return (
-    <div className="border-b border-[#21262d] px-3 py-2.5 last:border-b-0 md:border-b-0">
+    <div className="border-b border-[#e8e8ed] px-3 py-2.5 last:border-b-0 md:border-b-0">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: metric.color }}>{metric.label}</div>
-          <div className="mt-0.5 text-[11px] text-[#6e7681]">{metric.description}</div>
+          <div className="mt-0.5 text-[11px] text-[#86868b]">{metric.description}</div>
         </div>
         <div className="text-right">
-          <div className="text-lg font-semibold text-[#e6edf3]">{fmt(headline)}</div>
-          <div className="text-[10px] text-[#6e7681]">{isDelta ? 'mean Δ (pp)' : 'MAPE'}</div>
+          <div className="text-lg font-semibold text-[#1d1d1f]">{fmt(headline)}</div>
+          <div className="text-[10px] text-[#86868b]">{isDelta ? 'mean Δ (pp)' : 'MAPE'}</div>
         </div>
       </div>
-      <div className="mt-2 flex items-center justify-between border-t border-[#21262d] pt-2 text-[10px] text-[#6e7681]">
+      <div className="mt-2 flex items-center justify-between border-t border-[#e8e8ed] pt-2 text-[10px] text-[#86868b]">
         <span>{displayedRowCount} rows</span>
         <span>best {fmt(best)} / worst {fmt(worst)}</span>
       </div>
@@ -1957,10 +1959,10 @@ function ServingTurnCacheBar({ turn, compact = false }: { turn: ServingTurnPredi
   const pct = Math.max(0, Math.min(100, turn.cache_hit_rate * 100));
   return (
     <div className={compact ? 'space-y-1' : 'flex items-center gap-2'}>
-      <span className={compact ? 'block text-[9px] uppercase text-[#6e7681]' : 'w-8 text-[10px] uppercase text-[#6e7681]'}>Hit</span>
-      <div className="relative h-4 flex-1 overflow-hidden rounded bg-[#21262d]">
-        <div className="h-full rounded bg-[#58a6ff]/70" style={{ width: `${pct}%` }} />
-        <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-[#e6edf3]">
+      <span className={compact ? 'block text-[9px] uppercase text-[#86868b]' : 'w-8 text-[10px] uppercase text-[#86868b]'}>Hit</span>
+      <div className="relative h-4 flex-1 overflow-hidden rounded bg-[#e8e8ed]">
+        <div className="h-full rounded bg-[#0071e3]/70" style={{ width: `${pct}%` }} />
+        <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-[#1d1d1f]">
           {pct.toFixed(0)}%
         </span>
       </div>
@@ -1978,7 +1980,7 @@ function ServingTurnErrorBadge({ turn, metric }: { turn: ServingTurnPrediction; 
       <span className={`rounded px-1.5 py-0.5 text-right font-mono text-[10px] leading-none ${tone.className}`}>
         {formatCompactPercent(err)}
         {signedMs !== undefined && (
-          <span className="ml-1 text-[#8b949e]">{formatSignedLatency(signedMs)}</span>
+          <span className="ml-1 text-[#6e6e73]">{formatSignedLatency(signedMs)}</span>
         )}
       </span>
     </div>
@@ -1998,7 +2000,7 @@ function ServingTurnMetricCell({ turn, metric }: { turn: ServingTurnPrediction; 
         <MetricLine label="Actual" value={formatLatency(meas, metric.isTotal)} />
         <MetricLine label="Signed" value={formatSignedLatency(signedMs)} />
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] text-[#6e7681]">Err</span>
+          <span className="text-[10px] text-[#86868b]">Err</span>
           <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${tone.className}`}>
             {formatPercent(err)}
           </span>
@@ -2011,8 +2013,8 @@ function ServingTurnMetricCell({ turn, metric }: { turn: ServingTurnPrediction; 
 function MetricLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-[10px] text-[#6e7681]">{label}</span>
-      <span className="font-mono text-[10px] text-[#c9d1d9]">{value}</span>
+      <span className="text-[10px] text-[#86868b]">{label}</span>
+      <span className="font-mono text-[10px] text-[#424245]">{value}</span>
     </div>
   );
 }
@@ -2030,8 +2032,8 @@ function ServingMatrixCell({
 }) {
   if (!row) {
     return (
-      <td className="border-l border-[#21262d]/50 px-1.5 py-1 text-center">
-        <span className="text-[#30363d]">.</span>
+      <td className="border-l border-[#e8e8ed]/50 px-1.5 py-1 text-center">
+        <span className="text-[#d2d2d7]">.</span>
       </td>
     );
   }
@@ -2041,9 +2043,9 @@ function ServingMatrixCell({
   return (
     <td
       onClick={canSelect ? () => onSelectPerTurn(rowKey) : undefined}
-      className={`border-l border-[#21262d]/50 px-1 py-0.5 align-middle transition-colors ${
-        canSelect ? 'cursor-pointer hover:bg-[#1f6feb]/10' : ''
-      } ${selected ? 'bg-[#1f6feb]/10 shadow-[inset_0_0_0_1px_#58a6ff]' : ''}`}
+      className={`border-l border-[#e8e8ed]/50 px-1 py-0.5 align-middle transition-colors ${
+        canSelect ? 'cursor-pointer hover:bg-[#0071e3]/10' : ''
+      } ${selected ? 'bg-[#0071e3]/10 shadow-[inset_0_0_0_1px_#0071e3]' : ''}`}
       title={canSelect ? `Show ${row.multiturn_turn_predictions.length} per-turn predictions — pick the metric with the toggle above the chart` : undefined}
     >
       <div className="min-w-0 space-y-0.5" title={`ISL->OSL ${row.isl}->${row.osl}`}>
@@ -2245,11 +2247,11 @@ function turnSignedErrorMs(turn: ServingTurnPrediction, metric: ServingMetric): 
 }
 
 function servingErrorTone(err: OptionalMetric): { className: string } {
-  if (err === undefined || err === null) return { className: 'border border-[#30363d] bg-[#21262d] text-[#6e7681]' };
+  if (err === undefined || err === null) return { className: 'border border-[#d2d2d7] bg-[#e8e8ed] text-[#86868b]' };
   const value = Math.abs(err);
-  if (value < 10) return { className: 'border border-[#3fb950]/30 bg-[#3fb950]/10 text-[#3fb950]' };
-  if (value < 25) return { className: 'border border-[#58a6ff]/30 bg-[#58a6ff]/10 text-[#58a6ff]' };
-  if (value < 50) return { className: 'border border-[#f0883e]/30 bg-[#f0883e]/10 text-[#f0883e]' };
+  if (value < 10) return { className: 'border border-[#34c759]/30 bg-[#34c759]/10 text-[#34c759]' };
+  if (value < 25) return { className: 'border border-[#0071e3]/30 bg-[#0071e3]/10 text-[#0071e3]' };
+  if (value < 50) return { className: 'border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 text-[#ff9f0a]' };
   return { className: 'border border-[#f85149]/30 bg-[#f85149]/10 text-[#f85149]' };
 }
 

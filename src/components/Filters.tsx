@@ -21,12 +21,12 @@ interface FiltersProps {
 }
 
 const CATEGORY_COLORS: Record<keyof FilterState, string> = {
-  hardware: '#00bcd4',
-  model: '#ff9800',
+  hardware: '#0071e3',
+  model: '#ff9f0a',
   backend: '#a855f7',
-  agentType: '#3fb950',
+  agentType: '#34c759',
   turnStyle: '#e78bfa',
-  profile: '#79c0ff',
+  profile: '#0071e3',
 };
 
 const PROFILE_GROUP_ORDER = [
@@ -108,23 +108,23 @@ const GROUP_LABELS: Record<string, string> = {
 };
 
 const GROUP_ACCENTS: Record<string, string> = {
-  'Synthetic chat ST': '#3fb950',
-  'Synthetic chat MT': '#3fb950',
-  'Synthetic coding MT': '#00bcd4',
-  'Synthetic terminal MT': '#f97583',
+  'Synthetic chat ST': '#34c759',
+  'Synthetic chat MT': '#34c759',
+  'Synthetic coding MT': '#0071e3',
+  'Synthetic terminal MT': '#ff3b30',
   'Synthetic computer-use MT': '#ec4899',
-  'Natural chat ST': '#3fb950',
-  'Natural chat MT': '#3fb950',
-  'Agentic coding ST': '#00bcd4',
-  'Agentic coding MT': '#00bcd4',
-  'Agentic terminal MT': '#f97583',
+  'Natural chat ST': '#34c759',
+  'Natural chat MT': '#34c759',
+  'Agentic coding ST': '#0071e3',
+  'Agentic coding MT': '#0071e3',
+  'Agentic terminal MT': '#ff3b30',
   'Computer-use MT': '#ec4899',
-  'MSE validation': '#f0883e',
-  'Agentic coding': '#00bcd4',
-  'Agentic terminal': '#f97583',
+  'MSE validation': '#ff9f0a',
+  'Agentic coding': '#0071e3',
+  'Agentic terminal': '#ff3b30',
   'Computer-use': '#ec4899',
-  Stress: '#ff9800',
-  'Legacy chat ST': '#8b949e',
+  Stress: '#ff9f0a',
+  'Legacy chat ST': '#6e6e73',
 };
 
 interface MetaBadgeProps {
@@ -165,9 +165,9 @@ function PillRow({
             onClick={() => onToggle(category, value)}
             className="min-h-8 rounded-md border px-2.5 text-xs font-medium transition-colors"
             style={{
-              borderColor: isActive ? color : '#30363d',
+              borderColor: isActive ? color : '#d2d2d7',
               backgroundColor: isActive ? `${color}18` : 'rgba(255,255,255,0.02)',
-              color: isActive ? color : '#8b949e',
+              color: isActive ? color : '#6e6e73',
             }}
           >
             {value}
@@ -204,7 +204,7 @@ function FilterGroup({
 }) {
   return (
     <div>
-      <div className="mb-1.5 text-xs text-[#8b949e]">{label}</div>
+      <div className="mb-1.5 text-xs text-[#6e6e73]">{label}</div>
       <PillRow category={category} values={values} active={active} onToggle={onToggle} />
     </div>
   );
@@ -283,18 +283,18 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
   const selectedProfileCount = filters.profile.length;
 
   return (
-    <div className="mb-6 rounded-lg border border-[#21262d] bg-[#161b22] p-4">
+    <div className="mb-6 rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-[#e6edf3]">Filters</div>
-          <div className="mt-0.5 text-xs text-[#8b949e]">
+          <div className="text-sm font-semibold text-[#1d1d1f]">Filters</div>
+          <div className="mt-0.5 text-xs text-[#6e6e73]">
             {selectedProfileCount > 0 ? `${selectedProfileCount} profile${selectedProfileCount === 1 ? '' : 's'} selected` : `${visibleCount} profiles`}
           </div>
         </div>
         {hasActiveFilters && (
           <button
             onClick={onClear}
-            className="min-h-8 rounded-md border border-[#30363d] px-2.5 text-xs font-medium text-[#8b949e] transition-colors hover:border-[#6e7681] hover:text-[#e6edf3]"
+            className="min-h-8 rounded-md border border-[#d2d2d7] px-2.5 text-xs font-medium text-[#6e6e73] transition-colors hover:border-[#86868b] hover:text-[#1d1d1f]"
           >
             Clear all
           </button>
@@ -302,8 +302,8 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
-        <section className="border-t border-[#21262d] pt-3">
-          <SectionHeader label="Infrastructure" accent="#00bcd4" />
+        <section className="border-t border-[#e8e8ed] pt-3">
+          <SectionHeader label="Infrastructure" accent="#0071e3" />
           <div className="grid gap-3 md:grid-cols-3">
             <FilterGroup
               label="Hardware"
@@ -329,8 +329,8 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
           </div>
         </section>
 
-        <section className="border-t border-[#21262d] pt-3">
-          <SectionHeader label="Workload Tags" accent="#3fb950" />
+        <section className="border-t border-[#e8e8ed] pt-3">
+          <SectionHeader label="Workload Tags" accent="#34c759" />
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <FilterGroup
               label="Agent Type"
@@ -350,44 +350,44 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
         </section>
       </div>
 
-      <section className="mt-4 border-t border-[#21262d] pt-3">
+      <section className="mt-4 border-t border-[#e8e8ed] pt-3">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <SectionHeader label="Profiles" accent="#79c0ff" />
+          <SectionHeader label="Profiles" accent="#0071e3" />
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#8b949e]">
+            <span className="text-xs text-[#6e6e73]">
               {visibleCount} of {allProfiles.length}
             </span>
             <input
               value={profileQuery}
               onChange={(e) => setProfileQuery(e.target.value)}
-              className="h-8 w-44 rounded-md border border-[#30363d] bg-[#0d1117] px-2 text-xs text-[#e6edf3] outline-none transition-colors placeholder:text-[#6e7681] focus:border-[#79c0ff]"
+              className="h-8 w-44 rounded-md border border-[#d2d2d7] bg-[#f5f5f7] px-2 text-xs text-[#1d1d1f] outline-none transition-colors placeholder:text-[#86868b] focus:border-[#0071e3]"
               placeholder="Search profiles"
             />
           </div>
         </div>
 
-        <div className="relative rounded-md border border-[#30363d] bg-[#0d1117]">
-          <div className="pointer-events-none absolute left-0 right-3 top-0 z-10 h-5 rounded-t-md bg-gradient-to-b from-[#0d1117] to-transparent" />
+        <div className="relative rounded-md border border-[#d2d2d7] bg-[#f5f5f7]">
+          <div className="pointer-events-none absolute left-0 right-3 top-0 z-10 h-5 rounded-t-md bg-gradient-to-b from-[#f5f5f7] to-transparent" />
           <div
             className="profile-scrollbar max-h-[420px] overflow-y-scroll p-2 pr-3"
             style={{ paddingBottom: '3rem', scrollPaddingBottom: '3rem' }}
           >
             <div className="grid gap-3 xl:grid-cols-2">
               {profileGroups.map(({ group, profiles }) => {
-                const accent = GROUP_ACCENTS[group] ?? '#8b949e';
+                const accent = GROUP_ACCENTS[group] ?? '#6e6e73';
                 return (
-                  <div key={group} className="rounded-md border border-[#21262d] bg-[#0d1117]/70">
-                    <div className="flex items-center justify-between border-b border-[#21262d] px-3 py-2">
+                  <div key={group} className="rounded-md border border-[#e8e8ed] bg-[#f5f5f7]/70">
+                    <div className="flex items-center justify-between border-b border-[#e8e8ed] px-3 py-2">
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="h-2 w-2 shrink-0 rounded-sm" style={{ backgroundColor: accent }} />
-                        <span className="truncate text-xs font-semibold text-[#e6edf3]">
+                        <span className="truncate text-xs font-semibold text-[#1d1d1f]">
                           {GROUP_LABELS[group] ?? group}
                         </span>
                       </div>
-                      <span className="shrink-0 text-[10px] text-[#8b949e]">{profiles.length}</span>
+                      <span className="shrink-0 text-[10px] text-[#6e6e73]">{profiles.length}</span>
                     </div>
 
-                    <div className="divide-y divide-[#21262d]/70">
+                    <div className="divide-y divide-[#e8e8ed]/70">
                       {profiles.map((profileName) => {
                         const meta = PROFILE_META[profileName];
                         const displayName = profileDisplayName(profileName);
@@ -414,7 +414,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
                                   <div className="min-w-0">
                                     <div
                                       className="truncate text-xs font-medium"
-                                      style={{ color: isSelected ? '#79c0ff' : '#e6edf3' }}
+                                      style={{ color: isSelected ? '#0071e3' : '#1d1d1f' }}
                                       title={displayName}
                                     >
                                       {displayName}
@@ -428,7 +428,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
                                     )}
                                   </div>
                                   {meta && (
-                                    <div className="shrink-0 text-right text-[10px] leading-4 text-[#8b949e]">
+                                    <div className="shrink-0 text-right text-[10px] leading-4 text-[#6e6e73]">
                                       <div>{meta.isl}</div>
                                       <div>{meta.osl}</div>
                                     </div>
@@ -442,7 +442,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
                                     e.stopPropagation();
                                     setExpandedProfile(isExpanded ? null : profileName);
                                   }}
-                                  className="flex w-9 shrink-0 items-center justify-center border-l border-[#21262d] text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-[#e6edf3]"
+                                  className="flex w-9 shrink-0 items-center justify-center border-l border-[#e8e8ed] text-[#6e6e73] transition-colors hover:bg-[#e8e8ed] hover:text-[#1d1d1f]"
                                   title="Show workload description"
                                 >
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -455,7 +455,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
                             </div>
 
                             {isExpanded && meta?.description && (
-                              <div className="border-t border-[#21262d] bg-[#161b22] px-3 py-2 text-[11px] leading-relaxed text-[#8b949e]">
+                              <div className="border-t border-[#e8e8ed] bg-[#ffffff] px-3 py-2 text-[11px] leading-relaxed text-[#6e6e73]">
                                 {meta.description}
                               </div>
                             )}
@@ -469,13 +469,13 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
             </div>
 
             {profileGroups.length === 0 && (
-              <div className="rounded-md border border-[#21262d] bg-[#0d1117] px-3 py-6 text-center text-xs text-[#8b949e]">
+              <div className="rounded-md border border-[#e8e8ed] bg-[#f5f5f7] px-3 py-6 text-center text-xs text-[#6e6e73]">
                 No profiles match the current filters.
               </div>
             )}
           </div>
-          <div className="pointer-events-none absolute bottom-0 left-0 right-3 z-10 flex h-9 items-end justify-center rounded-b-md bg-gradient-to-t from-[#0d1117] via-[#0d1117]/85 to-transparent pb-1.5">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#79c0ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
+          <div className="pointer-events-none absolute bottom-0 left-0 right-3 z-10 flex h-9 items-end justify-center rounded-b-md bg-gradient-to-t from-[#f5f5f7] via-[#f5f5f7]/85 to-transparent pb-1.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
               <path d="M6 9l6 6 6-6" />
             </svg>
           </div>

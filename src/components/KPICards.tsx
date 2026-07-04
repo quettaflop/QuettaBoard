@@ -28,13 +28,13 @@ export function KPICards({ data, allData }: KPICardsProps) {
       label: 'Total Runs',
       value: totalRuns,
       suffix: isFiltered ? ` / ${allData.length}` : '',
-      accent: '#00bcd4',
+      accent: '#0071e3',
     },
     {
       label: 'Hardware Configs',
       value: hwConfigs,
       suffix: isFiltered ? ` / ${allHwConfigs}` : '',
-      accent: '#ff9800',
+      accent: '#ff9f0a',
     },
     {
       label: 'Models Tested',
@@ -58,27 +58,27 @@ export function KPICards({ data, allData }: KPICardsProps) {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-lg border border-[#21262d] bg-[#161b22] p-4"
+            className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4"
             style={{ borderTopColor: card.accent, borderTopWidth: '3px' }}
           >
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[#8b949e]">{card.label}</div>
-            <div className="font-mono text-3xl font-bold tracking-tight text-[#e6edf3]">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[#6e6e73]">{card.label}</div>
+            <div className="font-mono text-3xl font-bold tracking-tight text-[#1d1d1f]">
               {card.value}
               {card.suffix && (
-                <span className="ml-1.5 text-sm font-normal text-[#8b949e]">{card.suffix}</span>
+                <span className="ml-1.5 text-sm font-normal text-[#6e6e73]">{card.suffix}</span>
               )}
             </div>
           </div>
         ))}
       </div>
       {profilesInData.size > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[#21262d] bg-[#161b22] px-4 py-2.5" style={{ borderLeftColor: '#00bcd4', borderLeftWidth: '3px' }}>
-          <span className="text-xs font-medium text-[#8b949e]">Workload mix</span>
-          <span className="text-[#30363d]">·</span>
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[#e8e8ed] bg-[#ffffff] px-4 py-2.5" style={{ borderLeftColor: '#0071e3', borderLeftWidth: '3px' }}>
+          <span className="text-xs font-medium text-[#6e6e73]">Workload mix</span>
+          <span className="text-[#d2d2d7]">·</span>
           {typeLabels.map(({ key, short }) => {
             const count = typeCounts[key] ?? 0;
             if (count === 0) return null;
-            const colors = AGENT_TYPE_COLORS[key] ?? { bg: 'rgba(139,148,158,0.12)', text: '#8b949e', border: 'rgba(139,148,158,0.3)' };
+            const colors = AGENT_TYPE_COLORS[key] ?? { bg: 'rgba(139,148,158,0.12)', text: '#6e6e73', border: 'rgba(139,148,158,0.3)' };
             return (
               <span
                 key={key}
@@ -90,7 +90,7 @@ export function KPICards({ data, allData }: KPICardsProps) {
               </span>
             );
           })}
-          <span className="ml-auto text-xs text-[#8b949e]">
+          <span className="ml-auto text-xs text-[#6e6e73]">
             {profilesInData.size} profile{profilesInData.size !== 1 ? 's' : ''}
           </span>
         </div>

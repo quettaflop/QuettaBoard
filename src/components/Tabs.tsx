@@ -15,15 +15,15 @@ const TABS: Array<{ id: TabId; label: string }> = [
 
 export function Tabs({ active, onChange }: TabsProps) {
   return (
-    <div className="mb-6 flex gap-1 border-b border-[#21262d]">
+    <div className="mb-6 flex gap-1 border-b border-[#e8e8ed]">
       {TABS.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className={`px-4 py-2.5 text-sm font-medium transition-all ${
             active === tab.id
-              ? 'border-b-2 border-[#00bcd4] text-[#e6edf3]'
-              : 'border-b-2 border-transparent text-[#8b949e] hover:text-[#c9d1d9]'
+              ? 'border-b-2 border-[#0071e3] text-[#1d1d1f]'
+              : 'border-b-2 border-transparent text-[#6e6e73] hover:text-[#424245]'
           }`}
           style={{ marginBottom: '-1px' }}
         >

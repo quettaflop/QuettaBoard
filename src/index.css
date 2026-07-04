@@ -1,9 +1,22 @@
 @import "tailwindcss";
 
-/* Thin scrollbar for dark theme */
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+
+/* Thin scrollbar */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: #30363d transparent;
+  scrollbar-color: #d2d2d7 transparent;
 }
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
@@ -12,17 +25,17 @@
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #30363d;
+  background: #d2d2d7;
   border-radius: 4px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
+  background: #86868b;
 }
 
 .profile-scrollbar {
   scrollbar-gutter: stable;
   scrollbar-width: auto;
-  scrollbar-color: #58a6ff #161b22;
+  scrollbar-color: #0071e3 #ffffff;
 }
 
 .profile-scrollbar::-webkit-scrollbar {
@@ -30,34 +43,34 @@
 }
 
 .profile-scrollbar::-webkit-scrollbar-track {
-  background: #161b22;
-  border-left: 1px solid #30363d;
+  background: #ffffff;
+  border-left: 1px solid #d2d2d7;
   border-radius: 0 6px 6px 0;
 }
 
 .profile-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #79c0ff, #388bfd);
-  border: 3px solid #161b22;
+  background: linear-gradient(180deg, #0071e3, #0071e3);
+  border: 3px solid #ffffff;
   border-radius: 999px;
 }
 
 .profile-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a5d6ff;
+  background: #5ac8fa;
 }
 
 .serving-mape-rail {
-  background: linear-gradient(180deg, #111821 0%, #0d1117 100%);
+  background: linear-gradient(180deg, #e8e8ed 0%, #f5f5f7 100%);
 }
 
 tbody .serving-mape-rail {
-  background: #0d1117;
+  background: #f5f5f7;
 }
 
 tbody tr:hover .serving-mape-rail {
-  background: #111821;
+  background: #e8e8ed;
 }
 
 .serving-mape-rail-start {
-  border-left: 2px solid rgba(88, 166, 255, 0.45);
-  box-shadow: -18px 0 18px -22px #010409;
+  border-left: 2px solid rgba(0, 113, 227, 0.35);
+  box-shadow: -18px 0 18px -22px rgba(0,0,0,0.08);
 }

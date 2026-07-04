@@ -147,21 +147,21 @@ export function DataTable({ data }: DataTableProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#21262d] bg-[#161b22] text-[#8b949e]">
+      <div className="flex h-64 items-center justify-center rounded-lg border border-[#e8e8ed] bg-[#ffffff] text-[#6e6e73]">
         No data matches current filters
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-[#21262d]">
+    <div className="overflow-x-auto rounded-lg border border-[#e8e8ed]">
       <table className="w-full text-xs">
         <thead>
-          <tr className="border-b-2 border-[#30363d] bg-[#161b22]">
+          <tr className="border-b-2 border-[#d2d2d7] bg-[#ffffff]">
             {COLUMNS.map((col) => (
               <th
                 key={col.key}
-                className={`cursor-pointer whitespace-nowrap px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#8b949e] transition-colors hover:text-[#e6edf3] ${
+                className={`cursor-pointer whitespace-nowrap px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6e6e73] transition-colors hover:text-[#1d1d1f] ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
                 onClick={() => handleSort(col.key)}
@@ -180,8 +180,8 @@ export function DataTable({ data }: DataTableProps) {
             return (
               <tr
                 key={`${r.filename}-${r.config.concurrency}`}
-                className={`border-b border-[#21262d] transition-colors hover:bg-[#1c2128] ${
-                  i % 2 === 0 ? 'bg-[#0d1117]' : 'bg-[#161b22]'
+                className={`border-b border-[#e8e8ed] transition-colors hover:bg-[#1c2128] ${
+                  i % 2 === 0 ? 'bg-[#f5f5f7]' : 'bg-[#ffffff]'
                 }`}
               >
                 {COLUMNS.map((col) => {
@@ -212,15 +212,15 @@ export function DataTable({ data }: DataTableProps) {
                     );
                   }
                   if ((col.key === 'type' || col.key === 'source') && !meta) {
-                    return <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#8b949e]">—</td>;
+                    return <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#6e6e73]">—</td>;
                   }
                   if (col.key === 'profile') {
                     const displayName = profileDisplayName(r.config.profile);
                     return (
-                      <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#e6edf3]">
+                      <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#1d1d1f]">
                         <div className="max-w-[220px] truncate" title={displayName}>{displayName}</div>
                         {displayName !== r.config.profile && (
-                          <div className="max-w-[220px] truncate text-[10px] text-[#6e7681]" title={r.config.profile}>
+                          <div className="max-w-[220px] truncate text-[10px] text-[#86868b]" title={r.config.profile}>
                             {r.config.profile}
                           </div>
                         )}
@@ -234,8 +234,8 @@ export function DataTable({ data }: DataTableProps) {
                         col.align === 'right' ? 'text-right font-mono' : 'text-left'
                       } ${
                         col.key === 'failed_requests' && r.summary.failed_requests > 0
-                          ? 'text-[#f97583]'
-                          : 'text-[#e6edf3]'
+                          ? 'text-[#ff3b30]'
+                          : 'text-[#1d1d1f]'
                       }`}
                     >
                       {getDisplay(r, col)}

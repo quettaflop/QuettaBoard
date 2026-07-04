@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo, memo } from 'react';
 import {
   LineChart,
   Line,
@@ -22,9 +22,9 @@ interface LatencyChartProps {
 }
 
 const COLORS = [
-  '#00bcd4', '#ff9800', '#a855f7', '#3fb950', '#f97583',
-  '#79c0ff', '#d2a8ff', '#ffa657', '#7ee787', '#ff7b72',
-  '#56d4dd', '#e3b341', '#bc8cff', '#8b949e',
+  '#0071e3', '#ff9f0a', '#af52de', '#34c759', '#ff3b30',
+  '#5ac8fa', '#a2845e', '#ff6482', '#32ade6', '#66d4cf',
+  '#d4a017', '#7d7aff', '#c9184a', '#86868b',
 ];
 
 type LatencyMetric = {
@@ -195,7 +195,7 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: { hover: HoverState 
 
   if (!display) {
     return (
-      <div className="flex h-full items-center justify-center px-2 text-center text-[11px] text-[#484f58]">
+      <div className="flex h-full items-center justify-center px-2 text-center text-[11px] text-[#86868b]">
         Hover any chart to see values.
         <br />Click to pin.
       </div>
@@ -204,73 +204,162 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: { hover: HoverState 
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex-shrink-0 border-b border-[#21262d] pb-1.5 mb-1.5">
+      <div className="flex-shrink-0 border-b border-[#e8e8ed] pb-1.5 mb-1.5">
         <div className="flex items-center justify-between">
-          <div className="text-[11px] font-semibold text-[#e6edf3]">{display.metricLabel}</div>
+          <div className="text-[11px] font-semibold text-[#1d1d1f]">{display.metricLabel}</div>
           {pinned && (
             <button
               onClick={onUnpin}
-              className="rounded px-1.5 py-0.5 text-[9px] font-medium text-[#f0883e] border border-[#f0883e33] bg-[#f0883e11] hover:bg-[#f0883e22]"
+              className="rounded-full border border-[#ff9f0a]/40 bg-[#ff9f0a]/10 px-1.5 py-0.5 text-[9px] font-medium text-[#c93400] hover:bg-[#ff9f0a]/20"
             >
               pinned — click to unpin
             </button>
           )}
         </div>
-        <div className="text-[10px] text-[#8b949e]">Concurrency: {display.concurrency}</div>
+        <div className="text-[10px] text-[#6e6e73]">Concurrency: {display.concurrency}</div>
       </div>
-      <div className="flex-1 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#30363d #0d1117' }}>
+      <div className="flex-1 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d2d2d7 #ffffff' }}>
         {display.entries.map((entry) => (
           <div
             key={entry.name}
-            className="flex items-center gap-1.5 border-b border-[#161b22] py-[3px]"
+            className="flex items-center gap-1.5 border-b border-[#f5f5f7] py-[3px]"
           >
             <span
               className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="min-w-0 flex-1 truncate text-[10px] text-[#c9d1d9]" title={entry.name}>
+            <span className="min-w-0 flex-1 truncate text-[10px] text-[#424245]" title={entry.name}>
               {shortenSeriesKey(entry.name, seriesNames)}
             </span>
-            <span className="flex-shrink-0 text-[10px] font-mono text-[#e6edf3]">
+            <span className="flex-shrink-0 text-[10px] font-mono text-[#1d1d1f]">
               {entry.value.toFixed(2)}
             </span>
           </div>
         ))}
       </div>
-      <div className="flex-shrink-0 border-t border-[#21262d] pt-1 mt-1 text-[10px] text-[#484f58]">
+      <div className="flex-shrink-0 border-t border-[#e8e8ed] pt-1 mt-1 text-[10px] text-[#86868b]">
         {display.entries.length} series · ms
       </div>
     </div>
   );
 }
 
+// The chart grid is memoized and independent of hover state: mouse movement
+// only re-renders the side panel, never the four SVG charts.
+const ChartsGrid = memo(function ChartsGrid({
+  seriesData,
+  onHover,
+  onLeave,
+  onChartClick,
+  hasPin,
+}: {
+  seriesData: Map<string, BenchmarkResult[]>;
+  onHover: (state: HoverState | null) => void;
+  onLeave: () => void;
+  onChartClick: () => void;
+  hasPin: boolean;
+}) {
+  const seriesNames = useMemo(() => Array.from(seriesData.keys()), [seriesData]);
+  const chartDatas = useMemo(
+    () => METRICS.map((metric) => buildChartData(seriesData, metric.medianField)),
+    [seriesData],
+  );
+  const showDots = seriesNames.length <= 8;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      {METRICS.map((metric, mi) => (
+        <div
+          key={metric.key}
+          className="rounded-2xl border border-[#e8e8ed] bg-white p-4"
+          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+        >
+          <div className="mb-2">
+            <h3 className="text-sm font-semibold tracking-tight text-[#1d1d1f]">
+              {metric.label}
+            </h3>
+            <span className="text-[10px] text-[#6e6e73]">median · ms</span>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart
+              data={chartDatas[mi]}
+              margin={{ top: 5, right: 10, bottom: 5, left: 10 }}
+              onMouseLeave={onLeave}
+              onClick={onChartClick}
+              style={{ cursor: hasPin ? 'pointer' : 'crosshair' }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e8e8ed" />
+              <XAxis
+                dataKey="concurrency"
+                scale="log"
+                domain={['dataMin', 'dataMax']}
+                type="number"
+                tick={{ fill: '#6e6e73', fontSize: 11 }}
+                axisLine={{ stroke: '#d2d2d7' }}
+                tickLine={{ stroke: '#d2d2d7' }}
+                label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#6e6e73', fontSize: 11 }}
+              />
+              <YAxis
+                tick={{ fill: '#6e6e73', fontSize: 11 }}
+                axisLine={{ stroke: '#d2d2d7' }}
+                tickLine={{ stroke: '#d2d2d7' }}
+                label={{ value: 'ms', angle: -90, position: 'insideLeft', fill: '#6e6e73', fontSize: 11 }}
+              />
+              <Tooltip
+                content={<InvisibleTooltip onHover={onHover} metricKey={metric.key} metricLabel={metric.shortLabel} />}
+                cursor={{ stroke: '#d2d2d7', strokeWidth: 1 }}
+              />
+              {seriesNames.map((name, i) => (
+                <Line
+                  key={name}
+                  type="monotone"
+                  dataKey={name}
+                  stroke={COLORS[i % COLORS.length]}
+                  strokeWidth={2}
+                  dot={showDots ? { r: 3, fill: COLORS[i % COLORS.length] } : false}
+                  activeDot={{ r: 5 }}
+                  connectNulls
+                  isAnimationActive={false}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ))}
+    </div>
+  );
+});
+
 export function LatencyChart({ seriesData }: LatencyChartProps) {
   const [hover, setHover] = useState<HoverState | null>(null);
   const [pinned, setPinned] = useState<HoverState | null>(null);
+  const pinnedRef = useRef(pinned);
+  pinnedRef.current = pinned;
+  const hoverRef = useRef(hover);
+  hoverRef.current = hover;
 
+  // Stable callbacks (via refs) so ChartsGrid's memo holds across hover updates.
   const handleHover = useCallback((state: HoverState | null) => {
-    if (!pinned) setHover(state);
-  }, [pinned]);
+    if (!pinnedRef.current) setHover(state);
+  }, []);
 
   const handleMouseLeave = useCallback(() => {
-    if (!pinned) setHover(null);
-  }, [pinned]);
+    if (!pinnedRef.current) setHover(null);
+  }, []);
 
   const handleChartClick = useCallback(() => {
     setPinned((prev) => {
       if (prev) {
-        // Unpin — clear both states
         setHover(null);
         return null;
       }
-      // Pin current hover
-      return hover;
+      return hoverRef.current;
     });
-  }, [hover]);
+  }, []);
 
   if (seriesData.size === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#21262d] bg-[#161b22] text-[#8b949e]">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
         No data matches current filters
       </div>
     );
@@ -287,7 +376,7 @@ export function LatencyChart({ seriesData }: LatencyChartProps) {
       <div className="min-w-0 flex-1">
         {singleMeta && singleProfile && (
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span className="max-w-full truncate text-xs font-semibold text-[#e6edf3]" title={profileDisplayName(singleProfile)}>
+            <span className="max-w-full truncate text-xs font-semibold text-[#1d1d1f]" title={profileDisplayName(singleProfile)}>
               {profileDisplayName(singleProfile)}
             </span>
             <span
@@ -312,72 +401,18 @@ export function LatencyChart({ seriesData }: LatencyChartProps) {
             </span>
           </div>
         )}
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          {METRICS.map((metric) => {
-            const chartData = buildChartData(seriesData, metric.medianField);
-            return (
-              <div
-                key={metric.key}
-                className="rounded-lg border border-[#21262d] bg-[#161b22] p-4"
-              >
-                <div className="mb-2">
-                  <h3 className="text-sm font-semibold text-[#e6edf3]">
-                    {metric.label}
-                  </h3>
-                  <span className="text-[10px] text-[#8b949e]">median · ms</span>
-                </div>
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart
-                    data={chartData}
-                    margin={{ top: 5, right: 10, bottom: 5, left: 10 }}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={handleChartClick}
-                    style={{ cursor: pinned ? 'pointer' : 'crosshair' }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
-                    <XAxis
-                      dataKey="concurrency"
-                      scale="log"
-                      domain={['dataMin', 'dataMax']}
-                      type="number"
-                      tick={{ fill: '#8b949e', fontSize: 11 }}
-                      axisLine={{ stroke: '#21262d' }}
-                      tickLine={{ stroke: '#21262d' }}
-                      label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#8b949e', fontSize: 11 }}
-                    />
-                    <YAxis
-                      tick={{ fill: '#8b949e', fontSize: 11 }}
-                      axisLine={{ stroke: '#21262d' }}
-                      tickLine={{ stroke: '#21262d' }}
-                      label={{ value: 'ms', angle: -90, position: 'insideLeft', fill: '#8b949e', fontSize: 11 }}
-                    />
-                    <Tooltip
-                      content={<InvisibleTooltip onHover={handleHover} metricKey={metric.key} metricLabel={metric.shortLabel} />}
-                      cursor={{ stroke: '#30363d', strokeWidth: 1 }}
-                    />
-                    {seriesNames.map((name, i) => (
-                      <Line
-                        key={name}
-                        type="monotone"
-                        dataKey={name}
-                        stroke={COLORS[i % COLORS.length]}
-                        strokeWidth={2}
-                        dot={{ r: 3, fill: COLORS[i % COLORS.length] }}
-                        activeDot={{ r: 5 }}
-                        connectNulls
-                      />
-                    ))}
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            );
-          })}
-        </div>
+        <ChartsGrid
+          seriesData={seriesData}
+          onHover={handleHover}
+          onLeave={handleMouseLeave}
+          onChartClick={handleChartClick}
+          hasPin={pinned !== null}
+        />
       </div>
 
       {/* Shared side panel */}
       <div className="hidden w-60 flex-shrink-0 xl:block">
-        <div className="sticky top-4 rounded-lg border border-[#21262d] bg-[#0d1117] p-3" style={{ height: 'calc(100vh - 200px)', maxHeight: '700px' }}>
+        <div className="sticky top-4 rounded-2xl border border-[#e8e8ed] bg-white p-3" style={{ height: 'calc(100vh - 200px)', maxHeight: '700px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <SidePanel hover={hover} pinned={pinned} seriesNames={seriesNames} onUnpin={() => { setPinned(null); setHover(null); }} />
         </div>
       </div>
