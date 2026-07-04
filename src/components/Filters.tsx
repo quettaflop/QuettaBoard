@@ -163,7 +163,7 @@ function PillRow({
           <button
             key={value}
             onClick={() => onToggle(category, value)}
-            className="min-h-8 rounded-md border px-2.5 text-xs font-medium transition-colors"
+            className="min-h-[30px] rounded-full border px-3 text-[12px] font-medium transition-colors"
             style={{
               borderColor: isActive ? color : '#d2d2d7',
               backgroundColor: isActive ? `${color}18` : 'rgba(255,255,255,0.02)',
@@ -180,9 +180,9 @@ function PillRow({
 
 function SectionHeader({ label, accent }: { label: string; accent: string }) {
   return (
-    <div className="mb-2 flex items-center gap-2">
-      <span className="h-2 w-2 rounded-sm" style={{ backgroundColor: accent }} />
-      <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: accent }}>
+    <div className="mb-2.5 flex items-center gap-2">
+      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">
         {label}
       </span>
     </div>
@@ -204,7 +204,7 @@ function FilterGroup({
 }) {
   return (
     <div>
-      <div className="mb-1.5 text-xs text-[#6e6e73]">{label}</div>
+      <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-[#86868b]">{label}</div>
       <PillRow category={category} values={values} active={active} onToggle={onToggle} />
     </div>
   );
@@ -283,28 +283,28 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
   const selectedProfileCount = filters.profile.length;
 
   return (
-    <div className="mb-6 rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div className="mb-10 rounded-2xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:p-8">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-[#1d1d1f]">Filters</div>
-          <div className="mt-0.5 text-xs text-[#6e6e73]">
+          <div className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">Filters</div>
+          <div className="mt-0.5 text-[12px] text-[#6e6e73]">
             {selectedProfileCount > 0 ? `${selectedProfileCount} profile${selectedProfileCount === 1 ? '' : 's'} selected` : `${visibleCount} profiles`}
           </div>
         </div>
         {hasActiveFilters && (
           <button
             onClick={onClear}
-            className="min-h-8 rounded-md border border-[#d2d2d7] px-2.5 text-xs font-medium text-[#6e6e73] transition-colors hover:border-[#86868b] hover:text-[#1d1d1f]"
+            className="min-h-8 rounded-full border border-[#d2d2d7] px-3 text-[12px] font-medium text-[#6e6e73] transition-colors hover:border-[#86868b] hover:text-[#1d1d1f]"
           >
             Clear all
           </button>
         )}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
-        <section className="border-t border-[#e8e8ed] pt-3">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
+        <section className="border-t border-[#e8e8ed] pt-4">
           <SectionHeader label="Infrastructure" accent="#0071e3" />
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             <FilterGroup
               label="Hardware"
               category="hardware"
@@ -329,9 +329,9 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
           </div>
         </section>
 
-        <section className="border-t border-[#e8e8ed] pt-3">
+        <section className="border-t border-[#e8e8ed] pt-4">
           <SectionHeader label="Workload Tags" accent="#34c759" />
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <FilterGroup
               label="Agent Type"
               category="agentType"
@@ -350,24 +350,24 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
         </section>
       </div>
 
-      <section className="mt-4 border-t border-[#e8e8ed] pt-3">
+      <section className="mt-5 border-t border-[#e8e8ed] pt-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <SectionHeader label="Profiles" accent="#0071e3" />
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#6e6e73]">
+            <span className="text-[12px] text-[#6e6e73]">
               {visibleCount} of {allProfiles.length}
             </span>
             <input
               value={profileQuery}
               onChange={(e) => setProfileQuery(e.target.value)}
-              className="h-8 w-44 rounded-md border border-[#d2d2d7] bg-[#f5f5f7] px-2 text-xs text-[#1d1d1f] outline-none transition-colors placeholder:text-[#86868b] focus:border-[#0071e3]"
+              className="h-8 w-44 rounded-full border border-[#d2d2d7] bg-[#f5f5f7] px-3 text-[12px] text-[#1d1d1f] outline-none transition-colors placeholder:text-[#86868b] focus:border-[#0071e3]"
               placeholder="Search profiles"
             />
           </div>
         </div>
 
-        <div className="relative rounded-md border border-[#d2d2d7] bg-[#f5f5f7]">
-          <div className="pointer-events-none absolute left-0 right-3 top-0 z-10 h-5 rounded-t-md bg-gradient-to-b from-[#f5f5f7] to-transparent" />
+        <div className="relative rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7]">
+          <div className="pointer-events-none absolute left-0 right-3 top-0 z-10 h-5 rounded-t-2xl bg-gradient-to-b from-[#f5f5f7] to-transparent" />
           <div
             className="profile-scrollbar max-h-[420px] overflow-y-scroll p-2 pr-3"
             style={{ paddingBottom: '3rem', scrollPaddingBottom: '3rem' }}
@@ -376,10 +376,10 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
               {profileGroups.map(({ group, profiles }) => {
                 const accent = GROUP_ACCENTS[group] ?? '#6e6e73';
                 return (
-                  <div key={group} className="rounded-md border border-[#e8e8ed] bg-[#f5f5f7]/70">
+                  <div key={group} className="rounded-xl border border-[#e8e8ed] bg-white">
                     <div className="flex items-center justify-between border-b border-[#e8e8ed] px-3 py-2">
                       <div className="flex min-w-0 items-center gap-2">
-                        <span className="h-2 w-2 shrink-0 rounded-sm" style={{ backgroundColor: accent }} />
+                        <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
                         <span className="truncate text-xs font-semibold text-[#1d1d1f]">
                           {GROUP_LABELS[group] ?? group}
                         </span>
@@ -402,7 +402,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
                             <div
                               className="flex items-stretch transition-colors"
                               style={{
-                                backgroundColor: isSelected ? 'rgba(121,192,255,0.10)' : 'transparent',
+                                backgroundColor: isSelected ? 'rgba(0,113,227,0.08)' : 'transparent',
                                 opacity: matches ? 1 : 0.42,
                               }}
                             >
@@ -469,12 +469,12 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
             </div>
 
             {profileGroups.length === 0 && (
-              <div className="rounded-md border border-[#e8e8ed] bg-[#f5f5f7] px-3 py-6 text-center text-xs text-[#6e6e73]">
+              <div className="rounded-xl border border-[#e8e8ed] bg-white px-3 py-6 text-center text-xs text-[#6e6e73]">
                 No profiles match the current filters.
               </div>
             )}
           </div>
-          <div className="pointer-events-none absolute bottom-0 left-0 right-3 z-10 flex h-9 items-end justify-center rounded-b-md bg-gradient-to-t from-[#f5f5f7] via-[#f5f5f7]/85 to-transparent pb-1.5">
+          <div className="pointer-events-none absolute bottom-0 left-0 right-3 z-10 flex h-9 items-end justify-center rounded-b-2xl bg-gradient-to-t from-[#f5f5f7] via-[#f5f5f7]/85 to-transparent pb-1.5">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
               <path d="M6 9l6 6 6-6" />
             </svg>

@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { TabId } from '../types';
 
 interface TabsProps {
@@ -14,18 +15,40 @@ const TABS: Array<{ id: TabId; label: string }> = [
 ];
 
 export function Tabs({ active, onChange }: TabsProps) {
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [thumb, setThumb] = useState<{ left: number; width: number } | null>(null);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = buttonRefs.current[active];
+      if (el) setThumb({ left: el.offsetLeft, width: el.offsetWidth });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [active]);
+
   return (
-    <div className="mb-6 flex gap-1 border-b border-[#e8e8ed]">
+    <div role="tablist" aria-label="Chart view" className="seg-track relative mb-8 inline-flex">
+      {thumb && (
+        <div
+          aria-hidden
+          className="seg-item-active absolute top-[3px] bottom-[3px] transition-[left,width] duration-300 ease-out"
+          style={{ left: thumb.left, width: thumb.width }}
+        />
+      )}
       {TABS.map((tab) => (
         <button
           key={tab.id}
+          ref={(el) => {
+            buttonRefs.current[tab.id] = el;
+          }}
+          role="tab"
+          aria-selected={active === tab.id}
           onClick={() => onChange(tab.id)}
-          className={`px-4 py-2.5 text-sm font-medium transition-all ${
-            active === tab.id
-              ? 'border-b-2 border-[#0071e3] text-[#1d1d1f]'
-              : 'border-b-2 border-transparent text-[#6e6e73] hover:text-[#424245]'
+          className={`seg-item relative z-10 whitespace-nowrap px-4 py-1.5 text-[13px] font-medium ${
+            active === tab.id ? 'text-[#1d1d1f]' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
           }`}
-          style={{ marginBottom: '-1px' }}
         >
           {tab.label}
         </button>

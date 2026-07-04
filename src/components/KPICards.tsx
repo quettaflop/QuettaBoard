@@ -23,24 +23,21 @@ export function KPICards({ data, allData }: KPICardsProps) {
     if (meta) typeCounts[meta.agentType] = (typeCounts[meta.agentType] ?? 0) + 1;
   }
 
-  const cards = [
+  const stats = [
     {
       label: 'Total Runs',
       value: totalRuns,
       suffix: isFiltered ? ` / ${allData.length}` : '',
-      accent: '#0071e3',
     },
     {
       label: 'Hardware Configs',
       value: hwConfigs,
       suffix: isFiltered ? ` / ${allHwConfigs}` : '',
-      accent: '#ff9f0a',
     },
     {
       label: 'Models Tested',
       value: models,
       suffix: isFiltered ? ` / ${allModels}` : '',
-      accent: '#a855f7',
     },
   ];
 
@@ -53,28 +50,25 @@ export function KPICards({ data, allData }: KPICardsProps) {
   ];
 
   return (
-    <div className="mb-6 space-y-3">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4"
-            style={{ borderTopColor: card.accent, borderTopWidth: '3px' }}
-          >
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[#6e6e73]">{card.label}</div>
-            <div className="font-mono text-3xl font-bold tracking-tight text-[#1d1d1f]">
-              {card.value}
-              {card.suffix && (
-                <span className="ml-1.5 text-sm font-normal text-[#6e6e73]">{card.suffix}</span>
+    <div className="animate-fade-up mb-12 overflow-hidden rounded-3xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="grid grid-cols-1 divide-y divide-[#e8e8ed] sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
+        {stats.map((stat) => (
+          <div key={stat.label} className="px-8 py-7">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">
+              {stat.label}
+            </div>
+            <div className="text-[40px] font-semibold leading-none tracking-tight tabular-nums text-[#1d1d1f]">
+              {stat.value}
+              {stat.suffix && (
+                <span className="ml-1.5 text-[15px] font-normal tracking-normal text-[#6e6e73]">{stat.suffix}</span>
               )}
             </div>
           </div>
         ))}
       </div>
       {profilesInData.size > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[#e8e8ed] bg-[#ffffff] px-4 py-2.5" style={{ borderLeftColor: '#0071e3', borderLeftWidth: '3px' }}>
-          <span className="text-xs font-medium text-[#6e6e73]">Workload mix</span>
-          <span className="text-[#d2d2d7]">·</span>
+        <div className="flex flex-wrap items-center gap-2.5 border-t border-[#e8e8ed] bg-[#fafafa] px-8 py-4">
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">Workload mix</span>
           {typeLabels.map(({ key, short }) => {
             const count = typeCounts[key] ?? 0;
             if (count === 0) return null;
@@ -82,15 +76,15 @@ export function KPICards({ data, allData }: KPICardsProps) {
             return (
               <span
                 key={key}
-                className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium"
                 style={{ backgroundColor: colors.bg, color: colors.text, borderColor: colors.border }}
               >
-                <span className="font-mono font-bold">{count}</span>
+                <span className="font-mono font-semibold tabular-nums">{count}</span>
                 {short}
               </span>
             );
           })}
-          <span className="ml-auto text-xs text-[#6e6e73]">
+          <span className="ml-auto text-[12px] text-[#86868b]">
             {profilesInData.size} profile{profilesInData.size !== 1 ? 's' : ''}
           </span>
         </div>

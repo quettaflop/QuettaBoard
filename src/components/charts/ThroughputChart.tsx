@@ -173,7 +173,7 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: {
           {pinned && (
             <button
               onClick={onUnpin}
-              className="rounded px-1.5 py-0.5 text-[9px] font-medium text-[#ff9f0a] border border-[#ff9f0a33] bg-[#ff9f0a11] hover:bg-[#ff9f0a22]"
+              className="rounded-full border border-[#ff9f0a]/40 bg-[#ff9f0a]/10 px-1.5 py-0.5 text-[9px] font-medium text-[#c93400] hover:bg-[#ff9f0a]/20"
             >
               pinned — click to unpin
             </button>
@@ -185,7 +185,7 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: {
         {display.entries.map((entry) => (
           <div
             key={entry.name}
-            className="flex items-center gap-1.5 border-b border-[#ffffff] py-[3px]"
+            className="flex items-center gap-1.5 border-b border-[#f5f5f7] py-[3px]"
           >
             <span
               className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
@@ -229,18 +229,18 @@ const ChartsGrid = memo(function ChartsGrid({
   const showDots = seriesNames.length <= 8;
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
       {METRICS.map((metric, idx) => {
         const isOrphan = idx === 2;
         return (
           <div
             key={metric.key}
-            className={`rounded-2xl border border-[#e8e8ed] bg-white p-4 ${isOrphan ? 'xl:col-span-2' : ''}`}
-            style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+            className={`rounded-3xl border border-[#e8e8ed] bg-white p-6 ${isOrphan ? 'xl:col-span-2' : ''}`}
+            style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
           >
-            <div className="mb-2">
-              <h3 className="text-sm font-semibold tracking-tight text-[#1d1d1f]">{metric.label}</h3>
-              <span className="text-[10px] text-[#6e6e73]">{metric.unit}</span>
+            <div className="mb-4">
+              <h3 className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">{metric.label}</h3>
+              <span className="text-[11px] text-[#86868b]">{metric.unit}</span>
             </div>
             <ResponsiveContainer width="100%" height={isOrphan ? 280 : 260}>
               <AreaChart
@@ -324,7 +324,7 @@ export function ThroughputChart({ seriesData }: ThroughputChartProps) {
 
   if (seriesData.size === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#e8e8ed] bg-[#ffffff] text-[#6e6e73]">
+      <div className="flex h-64 items-center justify-center rounded-3xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
         No data matches current filters
       </div>
     );
@@ -336,11 +336,11 @@ export function ThroughputChart({ seriesData }: ThroughputChartProps) {
   const singleMeta = singleProfile ? PROFILE_META[singleProfile] : null;
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-6">
       <div className="min-w-0 flex-1">
         {singleMeta && singleProfile && (
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span className="max-w-full truncate text-xs font-semibold text-[#1d1d1f]" title={profileDisplayName(singleProfile)}>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="max-w-full truncate text-[13px] font-semibold text-[#1d1d1f]" title={profileDisplayName(singleProfile)}>
               {profileDisplayName(singleProfile)}
             </span>
             <span
@@ -376,7 +376,7 @@ export function ThroughputChart({ seriesData }: ThroughputChartProps) {
 
       {/* Shared side panel */}
       <div className="hidden w-60 flex-shrink-0 xl:block">
-        <div className="sticky top-4 rounded-lg border border-[#e8e8ed] bg-[#f5f5f7] p-3" style={{ height: 'calc(100vh - 200px)', maxHeight: '700px' }}>
+        <div className="sticky top-4 rounded-3xl border border-[#e8e8ed] bg-white p-4" style={{ height: 'calc(100vh - 200px)', maxHeight: '700px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
           <SidePanel hover={hover} pinned={pinned} seriesNames={seriesNames} onUnpin={() => { setPinned(null); setHover(null); }} />
         </div>
       </div>

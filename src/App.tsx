@@ -108,10 +108,10 @@ function App() {
         onDataScopeChange={setDataScope}
         scopePending={scopePending}
       >
-        <div className="flex h-64 items-center justify-center rounded-lg border border-[#ff3b30]/30 bg-[#ff3b30]/10 text-[#ff3b30]">
+        <div className="flex h-64 items-center justify-center rounded-2xl border border-[#ff3b30]/20 bg-[#ff3b30]/[0.06] text-[#ff3b30]">
           <div className="text-center">
-            <div className="mb-2 text-lg font-semibold">Failed to load data</div>
-            <div className="text-sm">{error}</div>
+            <div className="mb-2 text-[17px] font-semibold tracking-tight">Failed to load data</div>
+            <div className="text-[13px] text-[#c93400]">{error}</div>
           </div>
         </div>
       </Layout>
@@ -130,8 +130,10 @@ function App() {
     >
       {activePage === 'simulator' ? (
         <>
-          <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <span className="mt-0.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold tracking-wide text-amber-700">WIP</span>
+          <div className="mb-8 flex items-start gap-3 rounded-2xl border border-[#ff9f0a]/25 bg-[#ff9f0a]/[0.06] px-5 py-4 text-[13px] leading-relaxed text-[#7a4a00] shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <span className="mt-0.5 shrink-0 rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#9a5b00]">
+              WIP
+            </span>
             <span>
               The simulator is a work in progress. H100 and A100 Llama-3.1-8B deployments are
               calibrated against measured ground truth; other configurations are analytic
@@ -150,6 +152,14 @@ function App() {
         </div>
       ) : (
         <>
+          <div className="animate-fade-up mb-10">
+            <h1 className="text-[32px] font-semibold tracking-tight text-[#1d1d1f] sm:text-[36px]">
+              Inference Benchmarks
+            </h1>
+            <p className="mt-2 text-[15px] text-[#6e6e73]">
+              Latency, throughput, and multi-turn behavior across hardware, models, and workloads.
+            </p>
+          </div>
           <KPICards data={data} allData={allData} />
           <Filters
             filters={filters}

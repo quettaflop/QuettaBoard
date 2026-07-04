@@ -458,7 +458,7 @@ function applyPredictionSource(
 function servingDeltaTone(value: OptionalMetric): { className: string } {
   if (value === undefined || value === null) return { className: 'border border-[#d2d2d7] bg-[#e8e8ed] text-[#86868b]' };
   if (value <= -3) return { className: 'border border-[#34c759]/30 bg-[#34c759]/10 text-[#34c759]' };
-  if (value >= 3) return { className: 'border border-[#f85149]/30 bg-[#f85149]/10 text-[#f85149]' };
+  if (value >= 3) return { className: 'border border-[#ff3b30]/30 bg-[#ff3b30]/10 text-[#ff3b30]' };
   return { className: 'border border-[#d2d2d7] bg-[#e8e8ed] text-[#6e6e73]' };
 }
 
@@ -621,7 +621,7 @@ export function ServingPredictionsPage({
   const tableSummaryRowCount = fixedTpotRows ? fixedTpotFit?.fit_summary.rows : undefined;
 
   if (loading) return <div className="p-8 text-[#6e6e73]">Loading predictions...</div>;
-  if (failed || !scopeIndex) return <div className="p-8 text-[#f85149]">Failed to load predictions JSON</div>;
+  if (failed || !scopeIndex) return <div className="p-8 text-[#ff3b30]">Failed to load predictions JSON</div>;
 
   return (
     <div className="space-y-4">
@@ -646,10 +646,10 @@ export function ServingPredictionsPage({
         />
       ) : (
         <>
-          <div className="border-b border-[#e8e8ed] pb-4">
+          <div className="border-b border-[#e8e8ed] pb-5">
             <div>
-              <h2 className="text-lg font-semibold text-[#1d1d1f]">{focus?.title ?? 'Predictions'}</h2>
-              <p className="mt-1 max-w-3xl text-xs text-[#6e6e73]">
+              <h2 className="text-[22px] font-semibold tracking-tight text-[#1d1d1f]">{focus?.title ?? 'Predictions'}</h2>
+              <p className="mt-1.5 max-w-3xl text-[13px] text-[#6e6e73]">
                 {focus?.description ?? `High-concurrency predictions vs measured benchmark results from ${DATA_SCOPE_META[dataScope].label.toLowerCase()}.`}
                 Multi-turn TTFT reflects cache-aware serving behavior, not cumulative full-prefill latency.
               </p>
@@ -781,15 +781,15 @@ function ServingFocusSummary({
     : emulatorRows.reduce((total, row) => total + (row.backend_trace_summary?.replayed_cached_tokens ?? 0), 0);
 
   return (
-    <section className="rounded-md border border-[#e8e8ed] bg-[#ffffff] p-4">
+    <section className="rounded-2xl border border-[#e8e8ed] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">Focused target</div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-            <span className="rounded border border-[#0071e3]/30 bg-[#0071e3]/10 px-2 py-0.5 font-mono text-[#0071e3]">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">Focused target</div>
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs">
+            <span className="rounded-full border border-[#0071e3]/30 bg-[#0071e3]/10 px-2.5 py-0.5 font-mono text-[#0071e3]">
               {focus.gpu}
             </span>
-            <span className="rounded border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 font-mono text-[#34c759]">
+            <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2.5 py-0.5 font-mono text-[#34c759]">
               {focus.model}
             </span>
             <span className="text-[#86868b]">{DATA_SCOPE_META[dataScope].label}</span>
@@ -802,7 +802,7 @@ function ServingFocusSummary({
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 border-t border-[#e8e8ed] pt-3 text-xs text-[#6e6e73] sm:grid-cols-7">
+      <div className="mt-4 grid gap-2 border-t border-[#e8e8ed] pt-4 text-xs text-[#6e6e73] sm:grid-cols-7">
         <FocusStat label="Rows" value={(fixedComparison?.rows ?? rows.length).toLocaleString()} />
         <FocusStat label="Profiles" value={profiles.toLocaleString()} />
         <FocusStat label="Backends" value={backends.length ? backends.join(', ') : '-'} />
@@ -818,7 +818,7 @@ function ServingFocusSummary({
 function FocusStat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">{label}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">{label}</div>
       <div className="mt-0.5 font-mono text-[#424245]">{value}</div>
     </div>
   );
@@ -836,13 +836,13 @@ function LabeledSelect({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">{label}</span>
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">{label}</span>
       <select
         value={value}
         onChange={event => onChange(event.target.value)}
         disabled={options.length <= 1}
-        className="min-w-[150px] rounded border border-[#d2d2d7] bg-[#f5f5f7] px-2 py-1 font-mono text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] disabled:cursor-not-allowed disabled:opacity-70"
+        className="min-w-[150px] rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-2.5 py-1.5 font-mono text-[13px] text-[#1d1d1f] outline-none transition-colors focus:border-[#0071e3] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {options.length === 0 && <option value="">—</option>}
         {options.map(option => (
@@ -890,18 +890,18 @@ function SimulatorTargetBar({
 }) {
   const badgeSuffix = valueMode === 'delta' ? 'Δ' : 'MAPE';
   return (
-    <section className="rounded-md border border-[#e8e8ed] bg-[#ffffff] px-4 py-3">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+    <section className="rounded-2xl border border-[#e8e8ed] bg-white px-5 py-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-wrap items-end gap-3">
           <LabeledSelect label="Model" value={selectedModel} options={modelOptions} onChange={onModel} />
           <LabeledSelect label="GPU" value={selectedGpu} options={gpuOptions} onChange={onGpu} />
           {showBackend && (
-            <label className="flex flex-col gap-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">Backend</span>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">Backend</span>
               <select
                 value={backend}
                 onChange={event => onBackend(event.target.value as 'all' | 'vllm' | 'sglang')}
-                className="min-w-[150px] rounded border border-[#d2d2d7] bg-[#f5f5f7] px-2 py-1 font-mono text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+                className="min-w-[150px] rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-2.5 py-1.5 font-mono text-[13px] text-[#1d1d1f] outline-none transition-colors focus:border-[#0071e3]"
               >
                 <option value="vllm">vLLM</option>
                 <option value="sglang">SGLang</option>
@@ -909,9 +909,9 @@ function SimulatorTargetBar({
               </select>
             </label>
           )}
-          <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">Source</span>
-            <div className="inline-flex overflow-hidden rounded-md border border-[#d2d2d7] text-xs">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">Source</span>
+            <div className="seg-track">
               {PREDICTION_SOURCES.map(({ key, label }) => {
                 const disabled = key !== 'backtester' && !hasForward;
                 const active = source === key;
@@ -922,10 +922,10 @@ function SimulatorTargetBar({
                     disabled={disabled}
                     onClick={() => onSource(key)}
                     title={disabled ? 'forward-predictions.json not loaded yet' : undefined}
-                    className={`px-3 py-[5px] font-medium transition-colors ${
-                      active ? 'bg-[#0071e3] text-white'
-                        : disabled ? 'bg-[#ffffff] text-[#86868b] cursor-not-allowed'
-                        : 'bg-[#ffffff] text-[#6e6e73] hover:bg-[#e8e8ed]'
+                    className={`seg-item px-3 py-1 text-[12px] font-medium ${
+                      active ? 'seg-item-active'
+                        : disabled ? 'text-[#c7c7cc] cursor-not-allowed'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                     }`}
                   >
                     {label}
@@ -974,7 +974,7 @@ function GpuConfigSelector({
                 <span className="text-[#86868b]">{selectedSummary.profiles} profiles</span>
                 <MetricBadge label="TTFT MAPE" value={selectedSummary.meanTtftMape} />
                 <MetricBadge label="TPOT MAPE" value={selectedSummary.meanTpotMape} />
-                <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(selectedSummary.meanE2elMape).className}`}>
+                <span className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(selectedSummary.meanE2elMape).className}`}>
                   E2EL MAPE {formatCompactPercent(selectedSummary.meanE2elMape)}
                 </span>
               </>
@@ -986,10 +986,10 @@ function GpuConfigSelector({
         </div>
       </div>
 
-      <div className="space-y-2 rounded-md border border-[#e8e8ed] bg-[#ffffff] p-2">
+      <div className="space-y-2 rounded-2xl border border-[#e8e8ed] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
         {Object.entries(groups).map(([family, familySummaries]) => (
           <div key={family} className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
-            <div className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">
+            <div className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">
               {family}
             </div>
             <div className="flex flex-1 flex-wrap gap-1.5">
@@ -1023,17 +1023,17 @@ function GpuConfigButton({
   return (
     <button
       onClick={onClick}
-      className={`min-h-[72px] min-w-[146px] rounded-md border px-2.5 py-1.5 text-left transition-colors ${
+      className={`min-h-[72px] min-w-[146px] rounded-xl border px-3 py-2 text-left transition-colors ${
         selected
-          ? 'border-[#0071e3] bg-[#0071e3]/12 shadow-[inset_0_0_0_1px_rgba(0,113,227,0.35)]'
-          : 'border-[#e8e8ed] bg-[#ffffff] hover:border-[#d2d2d7] hover:bg-[#1c2129]'
+          ? 'border-[#0071e3] bg-[#0071e3]/[0.06] shadow-[inset_0_0_0_1px_rgba(0,113,227,0.35)]'
+          : 'border-[#e8e8ed] bg-white hover:border-[#d2d2d7] hover:bg-[#f5f5f7]'
       }`}
       title={`${summary.gpu}: TTFT MAPE ${formatPercent(summary.meanTtftMape)}, TPOT MAPE ${formatPercent(summary.meanTpotMape)}, E2EL MAPE ${formatPercent(summary.meanE2elMape)}`}
     >
       <div className="min-w-0">
         <div className="flex items-center justify-between gap-2">
           <div className="font-mono text-xs font-semibold text-[#1d1d1f]">{summary.gpu}</div>
-          <span className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(summary.meanE2elMape).className}`}>
+          <span className={`shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(summary.meanE2elMape).className}`}>
             E2EL {formatCompactPercent(summary.meanE2elMape)}
           </span>
         </div>
@@ -1075,7 +1075,7 @@ function MetricBadge({
   mode?: ValueMode;
 }) {
   return (
-    <span className={`inline-flex items-center justify-between gap-1 rounded px-1.5 py-0.5 font-mono ${compact ? 'text-[9px]' : 'text-[10px]'} ${toneFor(value, mode).className}`}>
+    <span className={`inline-flex items-center justify-between gap-1 rounded-full px-1.5 py-0.5 font-mono ${compact ? 'text-[9px]' : 'text-[10px]'} ${toneFor(value, mode).className}`}>
       <span className="font-sans font-semibold uppercase tracking-wide">{label}</span>
       <span>{compactValueFor(value, mode)}</span>
     </span>
@@ -1222,8 +1222,8 @@ function ServingTable({
   const metricSummaryRows = summaryRows ?? rows;
 
   return (
-    <div className="space-y-3">
-      <div className="grid overflow-hidden rounded-md border border-[#e8e8ed] bg-[#ffffff] md:grid-cols-3 md:divide-x md:divide-[#e8e8ed]">
+    <div className="space-y-5">
+      <div className="grid overflow-hidden rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] md:grid-cols-3 md:divide-x md:divide-[#e8e8ed]">
         {SERVING_METRICS.map(metric => (
           <ServingMetricSummary
             key={metric.label}
@@ -1236,16 +1236,16 @@ function ServingTable({
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-[#e8e8ed] bg-[#ffffff]">
+      <div className="overflow-x-auto rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
         <table
           className="w-full table-fixed border-collapse text-xs"
           style={{ minWidth: `${310 + concurrencies.length * 82 + SERVING_METRICS.length * 74}px` }}
         >
-          <thead className="sticky top-0 z-10 bg-[#ffffff]">
-            <tr className="border-b border-[#e8e8ed] text-[#6e6e73]">
-              <th rowSpan={2} className="w-[210px] px-3 py-2 text-left font-medium">Profile</th>
-              <th rowSpan={2} className="w-[72px] px-2 py-2 text-left font-medium">Backend</th>
-              <th colSpan={concurrencies.length} className="px-1.5 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-[#86868b]">
+          <thead className="sticky top-0 z-10 bg-white">
+            <tr className="border-b border-[#d2d2d7] text-[#6e6e73]">
+              <th rowSpan={2} className="w-[210px] px-3 py-2.5 text-left font-medium">Profile</th>
+              <th rowSpan={2} className="w-[72px] px-2 py-2.5 text-left font-medium">Backend</th>
+              <th colSpan={concurrencies.length} className="px-1.5 py-1.5 text-left text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">
                 {validationRows ? 'Validation Rows' : 'Concurrency'}
               </th>
               <th
@@ -1254,7 +1254,7 @@ function ServingTable({
                 style={{ right: 0, width: `${SERVING_MAPE_RAIL_WIDTH}px` }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-[#424245]">{isDelta ? 'Row Δ' : 'Row MAPE'}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#424245]">{isDelta ? 'Row Δ' : 'Row MAPE'}</span>
                   <span className="text-[9px] font-normal text-[#86868b]">{isDelta ? 'fwd − bt (pt)' : 'mean abs error'}</span>
                 </div>
               </th>
@@ -1269,7 +1269,7 @@ function ServingTable({
                 <th
                   key={`mean-${metric.label}`}
                   className={`serving-mape-rail sticky z-20 w-[74px] px-1.5 py-2 text-center font-mono text-[10px] font-semibold ${
-                    metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#1f2937]'
+                    metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#d2d2d7]'
                   }`}
                   style={{ right: `${(SERVING_METRICS.length - metricIndex - 1) * SERVING_MAPE_COLUMN_WIDTH}px` }}
                   title={`Mean absolute ${metric.label} error across displayed concurrencies`}
@@ -1365,9 +1365,9 @@ function ServingTable({
             <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#0071e3]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>. Negative = forward closer to measured.
           </span>
           <span className="font-medium text-[#6e6e73]">Δ bands:</span>
-          <span className="rounded border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">fwd ≥3pt better</span>
-          <span className="rounded border border-[#d2d2d7] bg-[#e8e8ed] px-2 py-0.5 text-[#6e6e73]">~equal</span>
-          <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">fwd ≥3pt worse</span>
+          <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">fwd ≥3pt better</span>
+          <span className="rounded-full border border-[#d2d2d7] bg-[#e8e8ed] px-2 py-0.5 text-[#6e6e73]">~equal</span>
+          <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">fwd ≥3pt worse</span>
           <span>Rightmost columns are the mean Δ across concurrency cells.</span>
         </div>
       ) : (
@@ -1378,10 +1378,10 @@ function ServingTable({
             )}
           </span>
           <span className="font-medium text-[#6e6e73]">Error bands:</span>
-          <span className="rounded border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">&lt;10%</span>
-          <span className="rounded border border-[#0071e3]/30 bg-[#0071e3]/10 px-2 py-0.5 text-[#0071e3]">10-25%</span>
-          <span className="rounded border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
-          <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">&gt;=50%</span>
+          <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">&lt;10%</span>
+          <span className="rounded-full border border-[#0071e3]/30 bg-[#0071e3]/10 px-2 py-0.5 text-[#0071e3]">10-25%</span>
+          <span className="rounded-full border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
+          <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">&gt;=50%</span>
           <span>Rightmost MAPE columns are mean absolute row errors across concurrency cells.</span>
         </div>
       )}
@@ -1557,10 +1557,10 @@ function ServingPerTurnChart({
   const tableKey = metric.label === 'TPOT' ? (showKernel ? 'kernel' : 'pred') : 'pred';
   if (chartData.length === 0) return null;
   return (
-    <div className="border-b border-[#e8e8ed] px-4 py-3">
-      <div className="mb-2 flex items-center gap-2">
-        <div className="text-[11px] uppercase tracking-wide text-[#6e6e73]">Per-Turn</div>
-        <div className="flex gap-1">
+    <div className="border-b border-[#e8e8ed] px-5 py-4">
+      <div className="mb-3 flex items-center gap-2">
+        <div className="text-[11px] font-medium uppercase tracking-widest text-[#86868b]">Per-Turn</div>
+        <div className="seg-track">
           {SERVING_METRICS.map(m => {
             const selected = m.label === metric.label;
             return (
@@ -1568,12 +1568,10 @@ function ServingPerTurnChart({
                 key={m.label}
                 type="button"
                 onClick={() => onSelectMetric(m)}
-                className={`rounded border px-2 py-0.5 text-[10px] font-mono uppercase transition-colors ${
-                  selected
-                    ? 'border-[#0071e3] bg-[#0071e3]/20 text-[#1d1d1f]'
-                    : 'border-[#d2d2d7] bg-[#f5f5f7] text-[#6e6e73] hover:border-[#0071e3]/60 hover:text-[#1d1d1f]'
+                className={`seg-item px-2.5 py-1 text-[10px] font-mono uppercase ${
+                  selected ? 'seg-item-active' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
-                style={selected ? { borderColor: m.color, color: m.color } : undefined}
+                style={selected ? { color: m.color } : undefined}
               >
                 {m.label}
               </button>
@@ -1792,10 +1790,10 @@ function ServingPerTurnBreakdown({
   });
 
   return (
-    <div className="rounded-md border border-[#e8e8ed] bg-[#ffffff]">
-      <div className="flex flex-col gap-3 border-b border-[#e8e8ed] px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
+    <div className="rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="flex flex-col gap-3 border-b border-[#e8e8ed] px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="text-sm font-semibold text-[#1d1d1f]">Per-Turn Multi-Turn Prediction</div>
+          <div className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">Per-Turn Multi-Turn Prediction</div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[#86868b]">
             <span className="font-mono text-[#6e6e73]">{row.model}</span>
             <span>{row.backend ?? 'backend'}</span>
@@ -1821,7 +1819,7 @@ function ServingPerTurnBreakdown({
             ))}
           </div>
         </div>
-        <div className="rounded border border-[#d2d2d7] bg-[#f5f5f7] px-2 py-1 font-mono text-[10px] text-[#0071e3]">
+        <div className="rounded-full border border-[#d2d2d7] bg-[#f5f5f7] px-2.5 py-1 font-mono text-[10px] text-[#0071e3]">
           selected from predictions table
         </div>
       </div>
@@ -1835,7 +1833,7 @@ function ServingPerTurnBreakdown({
       <div className="overflow-x-auto border-b border-[#e8e8ed]">
         <div className="flex min-w-max gap-2 p-3">
           {turns.map(turn => (
-            <div key={turn.turn_index} className="w-[122px] shrink-0 rounded border border-[#e8e8ed] bg-[#f5f5f7] p-2">
+            <div key={turn.turn_index} className="w-[122px] shrink-0 rounded-xl border border-[#e8e8ed] bg-[#f5f5f7] p-2.5">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-mono text-[11px] font-semibold text-[#424245]">Turn {displayTurn(turn)}</span>
                 <span className="text-[10px] text-[#86868b]">{turn.successful} req</span>
@@ -1936,18 +1934,18 @@ function ServingMetricSummary({
   const fmt = (value: OptionalMetric) => (isDelta ? formatSignedDeltaValue(value) : formatPercent(value));
 
   return (
-    <div className="border-b border-[#e8e8ed] px-3 py-2.5 last:border-b-0 md:border-b-0">
+    <div className="border-b border-[#e8e8ed] px-5 py-4 last:border-b-0 md:border-b-0">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: metric.color }}>{metric.label}</div>
+          <div className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: metric.color }}>{metric.label}</div>
           <div className="mt-0.5 text-[11px] text-[#86868b]">{metric.description}</div>
         </div>
         <div className="text-right">
-          <div className="text-lg font-semibold text-[#1d1d1f]">{fmt(headline)}</div>
-          <div className="text-[10px] text-[#86868b]">{isDelta ? 'mean Δ (pp)' : 'MAPE'}</div>
+          <div className="text-[28px] font-semibold leading-none tracking-tight tabular-nums text-[#1d1d1f]">{fmt(headline)}</div>
+          <div className="mt-1 text-[10px] text-[#86868b]">{isDelta ? 'mean Δ (pp)' : 'MAPE'}</div>
         </div>
       </div>
-      <div className="mt-2 flex items-center justify-between border-t border-[#e8e8ed] pt-2 text-[10px] text-[#86868b]">
+      <div className="mt-3 flex items-center justify-between border-t border-[#e8e8ed] pt-2.5 text-[10px] text-[#86868b]">
         <span>{displayedRowCount} rows</span>
         <span>best {fmt(best)} / worst {fmt(worst)}</span>
       </div>
@@ -2079,7 +2077,7 @@ function ServingRowMeanCell({
   return (
     <td
       className={`serving-mape-rail sticky z-10 px-1 py-0.5 align-middle ${
-        metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#1f2937]'
+        metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#d2d2d7]'
       }`}
       style={{ right: `${(SERVING_METRICS.length - metricIndex - 1) * SERVING_MAPE_COLUMN_WIDTH}px` }}
       title={valueMode === 'delta'
@@ -2252,7 +2250,7 @@ function servingErrorTone(err: OptionalMetric): { className: string } {
   if (value < 10) return { className: 'border border-[#34c759]/30 bg-[#34c759]/10 text-[#34c759]' };
   if (value < 25) return { className: 'border border-[#0071e3]/30 bg-[#0071e3]/10 text-[#0071e3]' };
   if (value < 50) return { className: 'border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 text-[#ff9f0a]' };
-  return { className: 'border border-[#f85149]/30 bg-[#f85149]/10 text-[#f85149]' };
+  return { className: 'border border-[#ff3b30]/30 bg-[#ff3b30]/10 text-[#ff3b30]' };
 }
 
 function formatLatency(value: number | undefined, isTotal?: boolean): string {

@@ -147,42 +147,40 @@ export function DataTable({ data }: DataTableProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#e8e8ed] bg-[#ffffff] text-[#6e6e73]">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
         No data matches current filters
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-[#e8e8ed]">
+    <div className="overflow-x-auto rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <table className="w-full text-xs">
         <thead>
-          <tr className="border-b-2 border-[#d2d2d7] bg-[#ffffff]">
+          <tr className="border-b border-[#d2d2d7] bg-white">
             {COLUMNS.map((col) => (
               <th
                 key={col.key}
-                className={`cursor-pointer whitespace-nowrap px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6e6e73] transition-colors hover:text-[#1d1d1f] ${
+                className={`cursor-pointer whitespace-nowrap px-3 py-3.5 text-[11px] font-semibold uppercase tracking-widest text-[#86868b] transition-colors hover:text-[#1d1d1f] ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
                 onClick={() => handleSort(col.key)}
               >
                 {col.label}
                 {sortField === col.key && (
-                  <span className="ml-1">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
+                  <span className="ml-1 text-[#0071e3]">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
                 )}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {sorted.map((r, i) => {
+          {sorted.map((r) => {
             const meta = PROFILE_META[r.config.profile];
             return (
               <tr
                 key={`${r.filename}-${r.config.concurrency}`}
-                className={`border-b border-[#e8e8ed] transition-colors hover:bg-[#1c2128] ${
-                  i % 2 === 0 ? 'bg-[#f5f5f7]' : 'bg-[#ffffff]'
-                }`}
+                className="border-b border-[#e8e8ed] bg-white transition-colors hover:bg-[#f5f5f7]"
               >
                 {COLUMNS.map((col) => {
                   if (col.key === 'type' && meta) {

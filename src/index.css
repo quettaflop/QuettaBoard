@@ -13,6 +13,40 @@ body {
   color: #1d1d1f;
 }
 
+/* Apple-style segmented control: white pill on a light track, soft shadow */
+.seg-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: #f5f5f7;
+  padding: 3px;
+  border-radius: 9999px;
+}
+.seg-item {
+  border-radius: 9999px;
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.seg-item-active {
+  background: #ffffff;
+  color: #1d1d1f;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+/* High-impact entrance: page headline + KPI rail fade up on first paint */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* Thin scrollbar */
 .scrollbar-thin {
   scrollbar-width: thin;

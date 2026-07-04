@@ -20,8 +20,8 @@ interface PerTurnChartProps {
 }
 
 const COLORS = [
-  '#0071e3', '#ff9f0a', '#a855f7', '#34c759', '#ff3b30',
-  '#0071e3', '#d2a8ff', '#ffa657', '#7ee787', '#ff7b72',
+  '#0071e3', '#ff9f0a', '#af52de', '#34c759', '#ff3b30',
+  '#5ac8fa', '#a2845e', '#ff375f', '#00c7be', '#5e5ce6',
 ];
 
 const MAX_SCATTER_POINTS = 2500;
@@ -49,7 +49,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
   if (multiTurnResults.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-[#e8e8ed] bg-[#ffffff] text-[#6e6e73]">
+      <div className="flex h-64 items-center justify-center rounded-3xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
         No multi-turn data available. Run a multi-turn benchmark to see per-turn metrics.
       </div>
     );
@@ -116,17 +116,18 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
   const tooltipStyle = {
     backgroundColor: '#ffffff',
-    border: '1px solid #e8e8ed',
-    borderRadius: '8px',
+    border: '1px solid #d2d2d7',
+    borderRadius: '12px',
     fontSize: '12px',
     color: '#1d1d1f',
+    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {/* TTFT per turn — the key chart */}
-      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 lg:col-span-2">
-        <h3 className="mb-1 text-sm font-medium text-[#1d1d1f]">
+      <div className="rounded-3xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] lg:col-span-2">
+        <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
           TTFT per Turn
           <span className="ml-2 text-xs text-[#6e6e73]">median, ms — prefix cache effect visible in slope</span>
         </h3>
@@ -182,8 +183,8 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
       </div>
 
       {/* Avg ISL growth */}
-      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
-        <h3 className="mb-3 text-sm font-medium text-[#1d1d1f]">
+      <div className="rounded-3xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
           Context Length Growth
           <span className="ml-2 text-xs text-[#6e6e73]">avg input tokens per turn</span>
         </h3>
@@ -222,8 +223,8 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
       </div>
 
       {/* TPOT stability */}
-      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4">
-        <h3 className="mb-3 text-sm font-medium text-[#1d1d1f]">
+      <div className="rounded-3xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
           TPOT per Turn
           <span className="ml-2 text-xs text-[#6e6e73]">median, ms — should stay flat</span>
         </h3>
@@ -280,19 +281,19 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
           allScatter.filter((p) => p.turn_index === i)
         );
 
-        // Color scale: gradient from teal to coral across turns
+        // Color scale: gradient from teal to red across turns
         const turnColors = Array.from({ length: maxTurnIdx + 1 }, (_, i) => {
           const t = maxTurnIdx > 0 ? i / maxTurnIdx : 0;
-          // Interpolate from teal (#0071e3) to coral (#ef5350)
-          const r = Math.round(0x00 + t * (0xef - 0x00));
-          const g = Math.round(0xbc + t * (0x53 - 0xbc));
-          const b = Math.round(0xd4 + t * (0x50 - 0xd4));
+          // Interpolate from teal (#5ac8fa) to red (#ff3b30)
+          const r = Math.round(0x5a + t * (0xff - 0x5a));
+          const g = Math.round(0xc8 + t * (0x3b - 0xc8));
+          const b = Math.round(0xfa + t * (0x30 - 0xfa));
           return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
         });
 
         return (
-          <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 lg:col-span-2">
-            <h3 className="mb-1 text-sm font-medium text-[#1d1d1f]">
+          <div className="rounded-3xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] lg:col-span-2">
+            <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
               TTFT vs Input Length
               <span className="ml-2 text-xs text-[#6e6e73]">per-request, colored by turn number</span>
             </h3>
@@ -351,8 +352,8 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
       })()}
 
       {/* Requests per turn */}
-      <div className="rounded-lg border border-[#e8e8ed] bg-[#ffffff] p-4 lg:col-span-2">
-        <h3 className="mb-3 text-sm font-medium text-[#1d1d1f]">
+      <div className="rounded-3xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] lg:col-span-2">
+        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
           Sessions per Turn
           <span className="ml-2 text-xs text-[#6e6e73]">sessions drop off as shorter conversations end</span>
         </h3>
