@@ -1,0 +1,42 @@
+{
+  "name": "dashboard",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:data": "tsx scripts/build-data.ts",
+    "validate:data": "tsx scripts/validate-data.ts",
+    "test:data-pipeline": "tsx scripts/test-data-pipeline.ts",
+    "refresh:data": "bash ../scripts/refresh-dashboard-data.sh",
+    "build:local-data": "npm run build:data && npm run validate:data",
+    "refresh:local-data": "npm run refresh:data && npm run validate:data",
+    "build:local": "npm run validate:data && VITE_R2_JSON_BASE=/agentic-serve npm run build && bash ../scripts/refresh-gpu-state.sh",
+    "preview:local": "npm run preview -- --host 0.0.0.0",
+    "serve:control": "node scripts/serve-control.mjs",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^3.8.0",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
+}
