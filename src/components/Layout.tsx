@@ -78,9 +78,9 @@ export function Layout({
   );
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]" aria-busy={loading || scopePending}>
-      {/* Sticky frosted nav */}
-      <nav className="sticky top-0 z-50 border-b border-[#d2d2d7]/60 bg-white/70 backdrop-blur-xl">
+    <div className="min-h-screen text-[#1d1d1f]" aria-busy={loading || scopePending}>
+      {/* Sticky frosted nav — strongest glass in the app */}
+      <nav className="glass-strong sticky top-0 z-50">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
           {/* Left: logo + page switcher */}
           <div className="flex min-w-0 flex-1 items-center gap-4">
@@ -135,7 +135,7 @@ export function Layout({
         </div>
 
         {activePage === 'benchmark' && (
-        <div className="border-t border-[#d2d2d7]/60 bg-white">
+        <div className="border-t border-white/50">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:px-6">
             <ScopeSwitcher
               dataScope={dataScope}

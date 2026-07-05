@@ -283,7 +283,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
   const selectedProfileCount = filters.profile.length;
 
   return (
-    <div className="mb-10 rounded-2xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:p-8">
+    <div className="glass mb-10 rounded-[24px] p-6 sm:p-8">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">Filters</div>
@@ -302,7 +302,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
-        <section className="border-t border-[#e8e8ed] pt-4">
+        <section className="border-t border-white/60 pt-4">
           <SectionHeader label="Infrastructure" accent="#0071e3" />
           <div className="grid gap-4 md:grid-cols-3">
             <FilterGroup
@@ -329,7 +329,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
           </div>
         </section>
 
-        <section className="border-t border-[#e8e8ed] pt-4">
+        <section className="border-t border-white/60 pt-4">
           <SectionHeader label="Workload Tags" accent="#34c759" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <FilterGroup
@@ -350,7 +350,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
         </section>
       </div>
 
-      <section className="mt-5 border-t border-[#e8e8ed] pt-4">
+      <section className="mt-5 border-t border-white/60 pt-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <SectionHeader label="Profiles" accent="#0071e3" />
           <div className="flex items-center gap-2">
@@ -366,8 +366,8 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
           </div>
         </div>
 
-        <div className="relative rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7]">
-          <div className="pointer-events-none absolute left-0 right-3 top-0 z-10 h-5 rounded-t-2xl bg-gradient-to-b from-[#f5f5f7] to-transparent" />
+        <div className="relative rounded-[20px] border border-[#d2d2d7] bg-[#f5f5f7]">
+          <div className="pointer-events-none absolute left-0 right-3 top-0 z-10 h-5 rounded-t-[20px] bg-gradient-to-b from-[#f5f5f7] to-transparent" />
           <div
             className="profile-scrollbar max-h-[420px] overflow-y-scroll p-2 pr-3"
             style={{ paddingBottom: '3rem', scrollPaddingBottom: '3rem' }}
@@ -474,7 +474,7 @@ export function Filters({ filters, options, dataScope, onToggle, onClear }: Filt
               </div>
             )}
           </div>
-          <div className="pointer-events-none absolute bottom-0 left-0 right-3 z-10 flex h-9 items-end justify-center rounded-b-2xl bg-gradient-to-t from-[#f5f5f7] via-[#f5f5f7]/85 to-transparent pb-1.5">
+          <div className="pointer-events-none absolute bottom-0 left-0 right-3 z-10 flex h-9 items-end justify-center rounded-b-[20px] bg-gradient-to-t from-[#f5f5f7] via-[#f5f5f7]/85 to-transparent pb-1.5">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
               <path d="M6 9l6 6 6-6" />
             </svg>

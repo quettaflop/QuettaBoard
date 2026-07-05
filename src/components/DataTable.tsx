@@ -147,14 +147,15 @@ export function DataTable({ data }: DataTableProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
         No data matches current filters
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <div className="glass-shell rounded-[24px] p-1.5">
+      <div className="overflow-x-auto rounded-[18px] bg-white">
       <table className="w-full text-xs">
         <thead>
           <tr className="border-b border-[#d2d2d7] bg-white">
@@ -245,6 +246,7 @@ export function DataTable({ data }: DataTableProps) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

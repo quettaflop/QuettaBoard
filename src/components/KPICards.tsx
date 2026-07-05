@@ -50,8 +50,8 @@ export function KPICards({ data, allData }: KPICardsProps) {
   ];
 
   return (
-    <div className="animate-fade-up mb-12 overflow-hidden rounded-3xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-      <div className="grid grid-cols-1 divide-y divide-[#e8e8ed] sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
+    <div className="glass animate-fade-up mb-12 overflow-hidden rounded-[26px]">
+      <div className="grid grid-cols-1 divide-y divide-white/50 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
         {stats.map((stat) => (
           <div key={stat.label} className="px-8 py-7">
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">
@@ -67,7 +67,7 @@ export function KPICards({ data, allData }: KPICardsProps) {
         ))}
       </div>
       {profilesInData.size > 0 && (
-        <div className="flex flex-wrap items-center gap-2.5 border-t border-[#e8e8ed] bg-[#fafafa] px-8 py-4">
+        <div className="flex flex-wrap items-center gap-2.5 border-t border-white/50 bg-white/30 px-8 py-4">
           <span className="text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">Workload mix</span>
           {typeLabels.map(({ key, short }) => {
             const count = typeCounts[key] ?? 0;

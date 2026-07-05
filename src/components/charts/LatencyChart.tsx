@@ -269,17 +269,15 @@ const ChartsGrid = memo(function ChartsGrid({
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
       {METRICS.map((metric, mi) => (
-        <div
-          key={metric.key}
-          className="rounded-3xl border border-[#e8e8ed] bg-white p-6"
-          style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
-        >
+        <div key={metric.key} className="glass rounded-[22px] p-6">
           <div className="mb-4">
             <h3 className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
               {metric.label}
             </h3>
             <span className="text-[11px] text-[#86868b]">median · ms</span>
           </div>
+          {/* Solid backing for the plot — glass is for the frame, not the data */}
+          <div className="rounded-2xl bg-white p-2">
           <ResponsiveContainer width="100%" height={260}>
             <LineChart
               data={chartDatas[mi]}
@@ -324,6 +322,7 @@ const ChartsGrid = memo(function ChartsGrid({
               ))}
             </LineChart>
           </ResponsiveContainer>
+          </div>
         </div>
       ))}
     </div>
@@ -359,7 +358,7 @@ export function LatencyChart({ seriesData }: LatencyChartProps) {
 
   if (seriesData.size === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-3xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
         No data matches current filters
       </div>
     );
@@ -412,7 +411,7 @@ export function LatencyChart({ seriesData }: LatencyChartProps) {
 
       {/* Shared side panel */}
       <div className="hidden w-60 flex-shrink-0 xl:block">
-        <div className="sticky top-4 rounded-3xl border border-[#e8e8ed] bg-white p-4" style={{ height: 'calc(100vh - 200px)', maxHeight: '700px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+        <div className="glass sticky top-4 rounded-[22px] p-4" style={{ height: 'calc(100vh - 200px)', maxHeight: '700px' }}>
           <SidePanel hover={hover} pinned={pinned} seriesNames={seriesNames} onUnpin={() => { setPinned(null); setHover(null); }} />
         </div>
       </div>

@@ -42,7 +42,7 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
 
   if (seriesData.size < 1) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-3xl border border-[#e8e8ed] bg-white text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
         Need at least one series to compare. Adjust filters.
       </div>
     );
@@ -78,13 +78,13 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
   return (
     <div className="space-y-6">
       {/* Selectors */}
-      <div className="grid grid-cols-1 gap-4 rounded-3xl border border-[#e8e8ed] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:grid-cols-3">
+      <div className="glass grid grid-cols-1 gap-4 rounded-[22px] p-6 sm:grid-cols-3">
         <div>
           <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#86868b]">Series A</label>
           <select
             value={seriesA}
             onChange={(e) => setSeriesA(e.target.value)}
-            className="w-full rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+            className="glass-hover w-full rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
           >
             {seriesNames.map((name) => (
               <option key={name} value={name}>
@@ -98,7 +98,7 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
           <select
             value={seriesB}
             onChange={(e) => setSeriesB(e.target.value)}
-            className="w-full rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+            className="glass-hover w-full rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
           >
             {seriesNames.map((name) => (
               <option key={name} value={name}>
@@ -112,7 +112,7 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
           <select
             value={metric}
             onChange={(e) => setMetric(e.target.value)}
-            className="w-full rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+            className="glass-hover w-full rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
           >
             {METRIC_OPTIONS.map((m) => (
               <option key={m.value} value={m.value}>
@@ -124,11 +124,12 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
       </div>
 
       {/* Chart */}
-      <div className="rounded-3xl border border-[#e8e8ed] bg-white p-6" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+      <div className="glass rounded-[22px] p-6">
         <div className="mb-4 flex items-center gap-2">
           <h3 className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">{metricLabel} Comparison</h3>
-          <span className="rounded-full bg-[#f5f5f7] px-2 py-0.5 text-[10px] font-medium text-[#6e6e73]">vs concurrency</span>
+          <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium text-[#6e6e73]">vs concurrency</span>
         </div>
+        <div className="rounded-2xl bg-white p-2">
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e8e8ed" />
@@ -185,6 +186,7 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
             />
           </LineChart>
         </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

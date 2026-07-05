@@ -108,7 +108,7 @@ function App() {
         onDataScopeChange={setDataScope}
         scopePending={scopePending}
       >
-        <div className="flex h-64 items-center justify-center rounded-2xl border border-[#ff3b30]/20 bg-[#ff3b30]/[0.06] text-[#ff3b30]">
+        <div className="flex h-64 items-center justify-center rounded-[22px] border border-[#ff3b30]/20 bg-[#ff3b30]/[0.06] text-[#ff3b30]">
           <div className="text-center">
             <div className="mb-2 text-[17px] font-semibold tracking-tight">Failed to load data</div>
             <div className="text-[13px] text-[#c93400]">{error}</div>
@@ -130,7 +130,7 @@ function App() {
     >
       {activePage === 'simulator' ? (
         <>
-          <div className="mb-8 flex items-start gap-3 rounded-2xl border border-[#ff9f0a]/25 bg-[#ff9f0a]/[0.06] px-5 py-4 text-[13px] leading-relaxed text-[#7a4a00] shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+          <div className="glass-amber mb-8 flex items-start gap-3 rounded-[22px] px-5 py-4 text-[13px] leading-relaxed text-[#7a4a00]">
             <span className="mt-0.5 shrink-0 rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#9a5b00]">
               WIP
             </span>

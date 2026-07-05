@@ -781,7 +781,7 @@ function ServingFocusSummary({
     : emulatorRows.reduce((total, row) => total + (row.backend_trace_summary?.replayed_cached_tokens ?? 0), 0);
 
   return (
-    <section className="rounded-2xl border border-[#e8e8ed] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <section className="glass rounded-[22px] p-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">Focused target</div>
@@ -802,7 +802,7 @@ function ServingFocusSummary({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-2 border-t border-[#e8e8ed] pt-4 text-xs text-[#6e6e73] sm:grid-cols-7">
+      <div className="mt-4 grid gap-2 border-t border-white/60 pt-4 text-xs text-[#6e6e73] sm:grid-cols-7">
         <FocusStat label="Rows" value={(fixedComparison?.rows ?? rows.length).toLocaleString()} />
         <FocusStat label="Profiles" value={profiles.toLocaleString()} />
         <FocusStat label="Backends" value={backends.length ? backends.join(', ') : '-'} />
@@ -842,7 +842,7 @@ function LabeledSelect({
         value={value}
         onChange={event => onChange(event.target.value)}
         disabled={options.length <= 1}
-        className="min-w-[150px] rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-2.5 py-1.5 font-mono text-[13px] text-[#1d1d1f] outline-none transition-colors focus:border-[#0071e3] disabled:cursor-not-allowed disabled:opacity-70"
+        className="glass-hover min-w-[150px] rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 font-mono text-[13px] text-[#1d1d1f] outline-none transition-colors focus:border-[#0071e3] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {options.length === 0 && <option value="">—</option>}
         {options.map(option => (
@@ -890,7 +890,7 @@ function SimulatorTargetBar({
 }) {
   const badgeSuffix = valueMode === 'delta' ? 'Δ' : 'MAPE';
   return (
-    <section className="rounded-2xl border border-[#e8e8ed] bg-white px-5 py-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <section className="glass rounded-[22px] px-5 py-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-wrap items-end gap-3">
           <LabeledSelect label="Model" value={selectedModel} options={modelOptions} onChange={onModel} />
@@ -901,7 +901,7 @@ function SimulatorTargetBar({
               <select
                 value={backend}
                 onChange={event => onBackend(event.target.value as 'all' | 'vllm' | 'sglang')}
-                className="min-w-[150px] rounded-lg border border-[#d2d2d7] bg-[#f5f5f7] px-2.5 py-1.5 font-mono text-[13px] text-[#1d1d1f] outline-none transition-colors focus:border-[#0071e3]"
+                className="glass-hover min-w-[150px] rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 font-mono text-[13px] text-[#1d1d1f] outline-none transition-colors focus:border-[#0071e3]"
               >
                 <option value="vllm">vLLM</option>
                 <option value="sglang">SGLang</option>
@@ -986,7 +986,7 @@ function GpuConfigSelector({
         </div>
       </div>
 
-      <div className="space-y-2 rounded-2xl border border-[#e8e8ed] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="glass space-y-2 rounded-[22px] p-3">
         {Object.entries(groups).map(([family, familySummaries]) => (
           <div key={family} className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
             <div className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">
@@ -1023,10 +1023,10 @@ function GpuConfigButton({
   return (
     <button
       onClick={onClick}
-      className={`min-h-[72px] min-w-[146px] rounded-xl border px-3 py-2 text-left transition-colors ${
+      className={`min-h-[72px] min-w-[146px] rounded-2xl border px-3 py-2 text-left transition-colors duration-150 ${
         selected
           ? 'border-[#0071e3] bg-[#0071e3]/[0.06] shadow-[inset_0_0_0_1px_rgba(0,113,227,0.35)]'
-          : 'border-[#e8e8ed] bg-white hover:border-[#d2d2d7] hover:bg-[#f5f5f7]'
+          : 'border-[#e8e8ed] bg-white hover:border-[#d2d2d7] hover:bg-[#fbfbfc]'
       }`}
       title={`${summary.gpu}: TTFT MAPE ${formatPercent(summary.meanTtftMape)}, TPOT MAPE ${formatPercent(summary.meanTpotMape)}, E2EL MAPE ${formatPercent(summary.meanE2elMape)}`}
     >
@@ -1223,7 +1223,7 @@ function ServingTable({
 
   return (
     <div className="space-y-5">
-      <div className="grid overflow-hidden rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] md:grid-cols-3 md:divide-x md:divide-[#e8e8ed]">
+      <div className="glass grid overflow-hidden rounded-[22px] md:grid-cols-3 md:divide-x md:divide-white/50">
         {SERVING_METRICS.map(metric => (
           <ServingMetricSummary
             key={metric.label}
@@ -1236,7 +1236,8 @@ function ServingTable({
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="glass-shell rounded-[24px] p-1.5">
+        <div className="overflow-x-auto rounded-[18px] bg-white">
         <table
           className="w-full table-fixed border-collapse text-xs"
           style={{ minWidth: `${310 + concurrencies.length * 82 + SERVING_METRICS.length * 74}px` }}
@@ -1350,6 +1351,7 @@ function ServingTable({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <ServingPerTurnBreakdown
@@ -1557,7 +1559,7 @@ function ServingPerTurnChart({
   const tableKey = metric.label === 'TPOT' ? (showKernel ? 'kernel' : 'pred') : 'pred';
   if (chartData.length === 0) return null;
   return (
-    <div className="border-b border-[#e8e8ed] px-5 py-4">
+    <div className="border-b border-white/50 px-5 py-4">
       <div className="mb-3 flex items-center gap-2">
         <div className="text-[11px] font-medium uppercase tracking-widest text-[#86868b]">Per-Turn</div>
         <div className="seg-track">
@@ -1580,7 +1582,7 @@ function ServingPerTurnChart({
         </div>
         <span className="text-[10px] text-[#86868b]">{metric.description} · actual vs predicted (ms)</span>
       </div>
-      <div className="h-56 w-full">
+      <div className="h-56 w-full rounded-2xl bg-white p-2">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 8, right: 24, bottom: 0, left: 0 }}>
             <CartesianGrid stroke="#e8e8ed" strokeDasharray="3 3" />
@@ -1790,8 +1792,8 @@ function ServingPerTurnBreakdown({
   });
 
   return (
-    <div className="rounded-2xl border border-[#e8e8ed] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-      <div className="flex flex-col gap-3 border-b border-[#e8e8ed] px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="glass rounded-[22px]">
+      <div className="flex flex-col gap-3 border-b border-white/50 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">Per-Turn Multi-Turn Prediction</div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[#86868b]">
@@ -1830,7 +1832,7 @@ function ServingPerTurnBreakdown({
         onSelectMetric={onSelectMetric}
       />
 
-      <div className="overflow-x-auto border-b border-[#e8e8ed]">
+      <div className="overflow-x-auto border-b border-white/50 bg-white/70">
         <div className="flex min-w-max gap-2 p-3">
           {turns.map(turn => (
             <div key={turn.turn_index} className="w-[122px] shrink-0 rounded-xl border border-[#e8e8ed] bg-[#f5f5f7] p-2.5">
@@ -1849,7 +1851,7 @@ function ServingPerTurnBreakdown({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-b-[22px] bg-white">
         <table className="w-full min-w-[1240px] border-collapse text-xs">
           <thead>
             <tr className="border-b border-[#e8e8ed] text-[#6e6e73]">
@@ -1934,7 +1936,7 @@ function ServingMetricSummary({
   const fmt = (value: OptionalMetric) => (isDelta ? formatSignedDeltaValue(value) : formatPercent(value));
 
   return (
-    <div className="border-b border-[#e8e8ed] px-5 py-4 last:border-b-0 md:border-b-0">
+    <div className="border-b border-white/50 px-5 py-4 last:border-b-0 md:border-b-0">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: metric.color }}>{metric.label}</div>
@@ -1945,7 +1947,7 @@ function ServingMetricSummary({
           <div className="mt-1 text-[10px] text-[#86868b]">{isDelta ? 'mean Δ (pp)' : 'MAPE'}</div>
         </div>
       </div>
-      <div className="mt-3 flex items-center justify-between border-t border-[#e8e8ed] pt-2.5 text-[10px] text-[#86868b]">
+      <div className="mt-3 flex items-center justify-between border-t border-white/50 pt-2.5 text-[10px] text-[#86868b]">
         <span>{displayedRowCount} rows</span>
         <span>best {fmt(best)} / worst {fmt(worst)}</span>
       </div>

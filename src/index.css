@@ -4,32 +4,118 @@
   color-scheme: light;
 }
 
+/* Ambient wash — ultra-restrained fixed blobs behind the whole page. This is
+   what the glass surfaces refract; without it, backdrop-blur has nothing to
+   do and just reads as a slightly dim white box. Kept low-opacity so it reads
+   as light, not decoration. background-attachment: fixed keeps it calm while
+   the page scrolls, rather than smearing behind content. */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f5f5f7;
   color: #1d1d1f;
+  background-color: #f5f5f7;
+  background-image:
+    radial-gradient(760px circle at 8% 4%, rgba(0, 113, 227, 0.11), transparent 65%),
+    radial-gradient(820px circle at 92% 10%, rgba(175, 82, 222, 0.095), transparent 62%),
+    radial-gradient(880px circle at 16% 98%, rgba(255, 159, 10, 0.08), transparent 62%),
+    radial-gradient(760px circle at 98% 92%, rgba(52, 199, 89, 0.07), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
-/* Apple-style segmented control: white pill on a light track, soft shadow */
+/* ----------------------------------------------------------------------
+   Liquid Glass surfaces (iOS 26 / macOS Tahoe language). A handful of large
+   chrome surfaces get these — never per-row / per-chip, backdrop-filter is
+   expensive. Data-dense content (tables, chart plots) stays on plain solid
+   fills nested *inside* a glass shell, see .glass-shell.
+   ---------------------------------------------------------------------- */
+.glass {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.5) 55%, rgba(255, 255, 255, 0.58) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.09);
+}
+
+.glass-strong {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.62) 55%, rgba(255, 255, 255, 0.68) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.07);
+}
+
+/* Same recipe, used where a solid data surface (table / matrix) nests
+   directly inside — glass on the frame, not on the numbers. */
+.glass-shell {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.42) 55%, rgba(255, 255, 255, 0.48) 100%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.09);
+}
+
+/* Amber-tinted glass for the simulator WIP banner */
+.glass-amber {
+  background: linear-gradient(165deg, rgba(255, 247, 235, 0.78) 0%, rgba(255, 241, 219, 0.52) 55%, rgba(255, 244, 226, 0.6) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(154, 91, 0, 0.1);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: #ffffff; }
+  .glass-strong { background: #ffffff; }
+  .glass-shell { background: #ffffff; }
+  .glass-amber { background: #fff4e5; }
+  .seg-track { background: #f5f5f7; }
+}
+
+/* Apple-style segmented control: glass track, near-solid active pill */
 .seg-track {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  background: #f5f5f7;
+  background: rgba(245, 245, 247, 0.65);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   padding: 3px;
   border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 .seg-item {
   border-radius: 9999px;
-  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 .seg-item-active {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.94);
   color: #1d1d1f;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.02),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+/* Gentle specular hover for glass chrome — brighter fill, quick transition,
+   no shine sweep animation. */
+.glass-hover {
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.glass-hover:hover {
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 /* High-impact entrance: page headline + KPI rail fade up on first paint */
