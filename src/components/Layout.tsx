@@ -63,14 +63,14 @@ export function Layout({
       onClick={() => onPageChange(page.id)}
       className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors ${
         activePage === page.id
-          ? 'text-[#1d1d1f]'
-          : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+          ? 'text-[#f3f4f6]'
+          : 'text-[#a9afba] hover:text-[#f3f4f6]'
       }`}
     >
       {page.icon}
       {page.label}
       {page.badge && (
-        <span className="rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#9a5b00]">
+        <span className="rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#f7b955]">
           {page.badge}
         </span>
       )}
@@ -78,7 +78,7 @@ export function Layout({
   );
 
   return (
-    <div className="min-h-screen text-[#1d1d1f]" aria-busy={loading || scopePending}>
+    <div className="min-h-screen text-[#f3f4f6]" aria-busy={loading || scopePending}>
       {/* Sticky frosted nav — strongest glass in the app */}
       <nav className="glass-strong sticky top-0 z-50">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
@@ -88,19 +88,25 @@ export function Layout({
               type="button"
               onClick={() => onPageChange('benchmark')}
               aria-label="Home"
-              className="flex shrink-0 items-center gap-2.5 rounded-full text-left transition-opacity hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/50"
+              className="flex shrink-0 items-center gap-2.5 rounded-full text-left transition-opacity hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2dd4bf]/50"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#0071e3]/10 text-[#0071e3]">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-[10px] text-[#04211c]"
+                style={{
+                  background: 'linear-gradient(150deg, #2dd4bf, rgba(45,212,191,0.4))',
+                  boxShadow: '0 0 0 1px rgba(45,212,191,0.3), 0 6px 22px rgba(45,212,191,0.25)',
+                }}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
               </div>
-              <h1 className="hidden text-[15px] font-semibold tracking-tight text-[#1d1d1f] md:block">
+              <h1 className="hidden text-[15px] font-semibold tracking-tight text-[#f3f4f6] md:block">
                 QuettaBoard
               </h1>
             </button>
 
-            <div className="h-5 w-px shrink-0 bg-[#d2d2d7]" />
+            <div className="h-5 w-px shrink-0 bg-[#ffffff1f]" />
 
             {/* Page nav */}
             <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
@@ -109,7 +115,7 @@ export function Layout({
           </div>
 
           {/* Right: status */}
-          <div className="hidden shrink-0 items-center gap-3 text-[12px] text-[#6e6e73] lg:flex">
+          <div className="hidden shrink-0 items-center gap-3 text-[12px] text-[#a9afba] lg:flex">
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff9f0a]" />
@@ -117,12 +123,12 @@ export function Layout({
               </span>
             ) : scopePending ? (
               <span className="flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#0071e3]" />
+                <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#2dd4bf]" />
                 Updating view…
               </span>
             ) : activePage === 'simulator' ? (
               <span className="flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#0071e3]" />
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#2dd4bf]" />
                 Simulator target loaded
               </span>
             ) : (
@@ -135,7 +141,7 @@ export function Layout({
         </div>
 
         {activePage === 'benchmark' && (
-        <div className="border-t border-white/50">
+        <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:px-6">
             <ScopeSwitcher
               dataScope={dataScope}
@@ -149,8 +155,8 @@ export function Layout({
             >
               {scopeMeta.eyebrow}
             </span>
-            <span className="hidden text-[12px] text-[#6e6e73] md:inline">{scopeMeta.description}</span>
-            <span className="ml-auto hidden font-mono text-[11px] tabular-nums text-[#86868b] sm:inline">
+            <span className="hidden text-[12px] text-[#a9afba] md:inline">{scopeMeta.description}</span>
+            <span className="ml-auto hidden font-mono text-[11px] tabular-nums text-[#676c76] sm:inline">
               {totalRuns} {scopeMeta.rowsLabel}
             </span>
           </div>
@@ -189,12 +195,12 @@ function ScopeSwitcher({
             aria-pressed={selected}
             title={meta.description}
             className={`seg-item whitespace-nowrap px-3 py-1 text-left text-[12px] font-medium ${
-              selected ? 'seg-item-active' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+              selected ? 'seg-item-active' : 'text-[#a9afba] hover:text-[#f3f4f6]'
             }`}
           >
             <span className="whitespace-nowrap">{compact ? meta.shortLabel : meta.shortLabel}</span>
             {!compact && (
-              <span className="ml-1 hidden text-[10px] font-normal text-[#6e6e73] xl:inline">
+              <span className="ml-1 hidden text-[10px] font-normal text-[#a9afba] xl:inline">
                 {meta.eyebrow}
               </span>
             )}

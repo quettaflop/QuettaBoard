@@ -22,9 +22,9 @@ interface LatencyChartProps {
 }
 
 const COLORS = [
-  '#0071e3', '#ff9f0a', '#af52de', '#34c759', '#ff3b30',
+  '#2dd4bf', '#ff9f0a', '#af52de', '#34c759', '#ff3b30',
   '#5ac8fa', '#a2845e', '#ff6482', '#32ade6', '#66d4cf',
-  '#d4a017', '#7d7aff', '#c9184a', '#86868b',
+  '#d4a017', '#7d7aff', '#c9184a', '#676c76',
 ];
 
 type LatencyMetric = {
@@ -195,7 +195,7 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: { hover: HoverState 
 
   if (!display) {
     return (
-      <div className="flex h-full items-center justify-center px-2 text-center text-[11px] text-[#86868b]">
+      <div className="flex h-full items-center justify-center px-2 text-center text-[11px] text-[#676c76]">
         Hover any chart to see values.
         <br />Click to pin.
       </div>
@@ -204,9 +204,9 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: { hover: HoverState 
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex-shrink-0 border-b border-[#e8e8ed] pb-1.5 mb-1.5">
+      <div className="flex-shrink-0 border-b border-[#ffffff14] pb-1.5 mb-1.5">
         <div className="flex items-center justify-between">
-          <div className="text-[11px] font-semibold text-[#1d1d1f]">{display.metricLabel}</div>
+          <div className="text-[11px] font-semibold text-[#f3f4f6]">{display.metricLabel}</div>
           {pinned && (
             <button
               onClick={onUnpin}
@@ -216,28 +216,28 @@ function SidePanel({ hover, pinned, seriesNames, onUnpin }: { hover: HoverState 
             </button>
           )}
         </div>
-        <div className="text-[10px] text-[#6e6e73]">Concurrency: {display.concurrency}</div>
+        <div className="text-[10px] text-[#a9afba]">Concurrency: {display.concurrency}</div>
       </div>
-      <div className="flex-1 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d2d2d7 #ffffff' }}>
+      <div className="flex-1 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#ffffff1f #0b0d10' }}>
         {display.entries.map((entry) => (
           <div
             key={entry.name}
-            className="flex items-center gap-1.5 border-b border-[#f5f5f7] py-[3px]"
+            className="flex items-center gap-1.5 border-b border-[#0b0d10] py-[3px]"
           >
             <span
               className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="min-w-0 flex-1 truncate text-[10px] text-[#424245]" title={entry.name}>
+            <span className="min-w-0 flex-1 truncate text-[10px] text-[#a9afba]" title={entry.name}>
               {shortenSeriesKey(entry.name, seriesNames)}
             </span>
-            <span className="flex-shrink-0 text-[10px] font-mono text-[#1d1d1f]">
+            <span className="flex-shrink-0 text-[10px] font-mono text-[#f3f4f6]">
               {entry.value.toFixed(2)}
             </span>
           </div>
         ))}
       </div>
-      <div className="flex-shrink-0 border-t border-[#e8e8ed] pt-1 mt-1 text-[10px] text-[#86868b]">
+      <div className="flex-shrink-0 border-t border-[#ffffff14] pt-1 mt-1 text-[10px] text-[#676c76]">
         {display.entries.length} series · ms
       </div>
     </div>
@@ -271,13 +271,13 @@ const ChartsGrid = memo(function ChartsGrid({
       {METRICS.map((metric, mi) => (
         <div key={metric.key} className="glass rounded-[22px] p-6">
           <div className="mb-4">
-            <h3 className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
+            <h3 className="text-[15px] font-semibold tracking-tight text-[#f3f4f6]">
               {metric.label}
             </h3>
-            <span className="text-[11px] text-[#86868b]">median · ms</span>
+            <span className="text-[11px] text-[#676c76]">median · ms</span>
           </div>
           {/* Solid backing for the plot — glass is for the frame, not the data */}
-          <div className="rounded-2xl bg-white p-2">
+          <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
           <ResponsiveContainer width="100%" height={260}>
             <LineChart
               data={chartDatas[mi]}
@@ -286,26 +286,26 @@ const ChartsGrid = memo(function ChartsGrid({
               onClick={onChartClick}
               style={{ cursor: hasPin ? 'pointer' : 'crosshair' }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8e8ed" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff14" />
               <XAxis
                 dataKey="concurrency"
                 scale="log"
                 domain={['dataMin', 'dataMax']}
                 type="number"
-                tick={{ fill: '#6e6e73', fontSize: 11 }}
-                axisLine={{ stroke: '#d2d2d7' }}
-                tickLine={{ stroke: '#d2d2d7' }}
-                label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#6e6e73', fontSize: 11 }}
+                tick={{ fill: '#a9afba', fontSize: 11 }}
+                axisLine={{ stroke: '#ffffff1f' }}
+                tickLine={{ stroke: '#ffffff1f' }}
+                label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#a9afba', fontSize: 11 }}
               />
               <YAxis
-                tick={{ fill: '#6e6e73', fontSize: 11 }}
-                axisLine={{ stroke: '#d2d2d7' }}
-                tickLine={{ stroke: '#d2d2d7' }}
-                label={{ value: 'ms', angle: -90, position: 'insideLeft', fill: '#6e6e73', fontSize: 11 }}
+                tick={{ fill: '#a9afba', fontSize: 11 }}
+                axisLine={{ stroke: '#ffffff1f' }}
+                tickLine={{ stroke: '#ffffff1f' }}
+                label={{ value: 'ms', angle: -90, position: 'insideLeft', fill: '#a9afba', fontSize: 11 }}
               />
               <Tooltip
                 content={<InvisibleTooltip onHover={onHover} metricKey={metric.key} metricLabel={metric.shortLabel} />}
-                cursor={{ stroke: '#d2d2d7', strokeWidth: 1 }}
+                cursor={{ stroke: '#ffffff1f', strokeWidth: 1 }}
               />
               {seriesNames.map((name, i) => (
                 <Line
@@ -358,7 +358,7 @@ export function LatencyChart({ seriesData }: LatencyChartProps) {
 
   if (seriesData.size === 0) {
     return (
-      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#a9afba]">
         No data matches current filters
       </div>
     );
@@ -375,7 +375,7 @@ export function LatencyChart({ seriesData }: LatencyChartProps) {
       <div className="min-w-0 flex-1">
         {singleMeta && singleProfile && (
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <span className="max-w-full truncate text-[13px] font-semibold text-[#1d1d1f]" title={profileDisplayName(singleProfile)}>
+            <span className="max-w-full truncate text-[13px] font-semibold text-[#f3f4f6]" title={profileDisplayName(singleProfile)}>
               {profileDisplayName(singleProfile)}
             </span>
             <span

@@ -20,7 +20,7 @@ interface PerTurnChartProps {
 }
 
 const COLORS = [
-  '#0071e3', '#ff9f0a', '#af52de', '#34c759', '#ff3b30',
+  '#2dd4bf', '#ff9f0a', '#af52de', '#34c759', '#ff3b30',
   '#5ac8fa', '#a2845e', '#ff375f', '#00c7be', '#5e5ce6',
 ];
 
@@ -49,7 +49,7 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
   if (multiTurnResults.length === 0) {
     return (
-      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#a9afba]">
         No multi-turn data available. Run a multi-turn benchmark to see per-turn metrics.
       </div>
     );
@@ -110,16 +110,16 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
   const seriesKeys = multiTurnResults.map((r) => perTurnKey(r));
 
   const chartStyle = {
-    grid: '#e8e8ed',
-    tick: '#6e6e73',
+    grid: '#ffffff14',
+    tick: '#a9afba',
   };
 
   const tooltipStyle = {
-    backgroundColor: '#ffffff',
-    border: '1px solid #d2d2d7',
+    backgroundColor: '#0d0f13',
+    border: '1px solid #ffffff1f',
     borderRadius: '12px',
     fontSize: '12px',
-    color: '#1d1d1f',
+    color: '#f3f4f6',
     boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
   };
 
@@ -127,14 +127,14 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {/* TTFT per turn — the key chart */}
       <div className="glass rounded-[22px] p-6 lg:col-span-2">
-        <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
+        <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-[#f3f4f6]">
           TTFT per Turn
-          <span className="ml-2 text-xs text-[#6e6e73]">median, ms — prefix cache effect visible in slope</span>
+          <span className="ml-2 text-xs text-[#a9afba]">median, ms — prefix cache effect visible in slope</span>
         </h3>
-        <p className="mb-3 text-xs text-[#6e6e73]">
+        <p className="mb-3 text-xs text-[#a9afba]">
           Sub-linear TTFT growth = prefix cache is reusing KV entries from earlier turns
         </p>
-        <div className="rounded-2xl bg-white p-2">
+        <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={ttftData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={chartStyle.grid} />
@@ -186,11 +186,11 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
       {/* Avg ISL growth */}
       <div className="glass rounded-[22px] p-6">
-        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
+        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#f3f4f6]">
           Context Length Growth
-          <span className="ml-2 text-xs text-[#6e6e73]">avg input tokens per turn</span>
+          <span className="ml-2 text-xs text-[#a9afba]">avg input tokens per turn</span>
         </h3>
-        <div className="rounded-2xl bg-white p-2">
+        <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={islData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={chartStyle.grid} />
@@ -228,11 +228,11 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
       {/* TPOT stability */}
       <div className="glass rounded-[22px] p-6">
-        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
+        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#f3f4f6]">
           TPOT per Turn
-          <span className="ml-2 text-xs text-[#6e6e73]">median, ms — should stay flat</span>
+          <span className="ml-2 text-xs text-[#a9afba]">median, ms — should stay flat</span>
         </h3>
-        <div className="rounded-2xl bg-white p-2">
+        <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={tpotData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={chartStyle.grid} />
@@ -299,14 +299,14 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
         return (
           <div className="glass rounded-[22px] p-6 lg:col-span-2">
-            <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
+            <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-[#f3f4f6]">
               TTFT vs Input Length
-              <span className="ml-2 text-xs text-[#6e6e73]">per-request, colored by turn number</span>
+              <span className="ml-2 text-xs text-[#a9afba]">per-request, colored by turn number</span>
             </h3>
-            <p className="mb-3 text-xs text-[#6e6e73]">
+            <p className="mb-3 text-xs text-[#a9afba]">
               Each dot is one request. Later turns (warmer colors) have longer context but may benefit from prefix cache.
             </p>
-            <div className="rounded-2xl bg-white p-2">
+            <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
             <ResponsiveContainer width="100%" height={350}>
               <RechartsScatterChart margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chartStyle.grid} />
@@ -361,11 +361,11 @@ export function PerTurnChart({ data }: PerTurnChartProps) {
 
       {/* Requests per turn */}
       <div className="glass rounded-[22px] p-6 lg:col-span-2">
-        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#1d1d1f]">
+        <h3 className="mb-4 text-[15px] font-semibold tracking-tight text-[#f3f4f6]">
           Sessions per Turn
-          <span className="ml-2 text-xs text-[#6e6e73]">sessions drop off as shorter conversations end</span>
+          <span className="ml-2 text-xs text-[#a9afba]">sessions drop off as shorter conversations end</span>
         </h3>
-        <div className="rounded-2xl bg-white p-2">
+        <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={reqData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={chartStyle.grid} />

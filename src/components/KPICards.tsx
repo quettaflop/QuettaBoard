@@ -51,28 +51,28 @@ export function KPICards({ data, allData }: KPICardsProps) {
 
   return (
     <div className="glass animate-fade-up mb-12 overflow-hidden rounded-[26px]">
-      <div className="grid grid-cols-1 divide-y divide-white/50 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
+      <div className="grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
         {stats.map((stat) => (
           <div key={stat.label} className="px-8 py-7">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">
+            <div className="mb-3 font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-[#676c76]">
               {stat.label}
             </div>
-            <div className="text-[40px] font-semibold leading-none tracking-tight tabular-nums text-[#1d1d1f]">
+            <div className="mono-nums text-[34px] font-medium leading-none tracking-[-0.02em] text-[#f3f4f6]">
               {stat.value}
               {stat.suffix && (
-                <span className="ml-1.5 text-[15px] font-normal tracking-normal text-[#6e6e73]">{stat.suffix}</span>
+                <span className="ml-1 text-[15px] font-normal tracking-normal text-[#676c76]">{stat.suffix}</span>
               )}
             </div>
           </div>
         ))}
       </div>
       {profilesInData.size > 0 && (
-        <div className="flex flex-wrap items-center gap-2.5 border-t border-white/50 bg-white/30 px-8 py-4">
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-[#86868b]">Workload mix</span>
+        <div className="flex flex-wrap items-center gap-2.5 border-t border-white/10 bg-white/[0.04] px-8 py-4">
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-[#676c76]">Workload mix</span>
           {typeLabels.map(({ key, short }) => {
             const count = typeCounts[key] ?? 0;
             if (count === 0) return null;
-            const colors = AGENT_TYPE_COLORS[key] ?? { bg: 'rgba(139,148,158,0.12)', text: '#6e6e73', border: 'rgba(139,148,158,0.3)' };
+            const colors = AGENT_TYPE_COLORS[key] ?? { bg: 'rgba(139,148,158,0.12)', text: '#a9afba', border: 'rgba(139,148,158,0.3)' };
             return (
               <span
                 key={key}
@@ -84,7 +84,7 @@ export function KPICards({ data, allData }: KPICardsProps) {
               </span>
             );
           })}
-          <span className="ml-auto text-[12px] text-[#86868b]">
+          <span className="ml-auto text-[12px] text-[#676c76]">
             {profilesInData.size} profile{profilesInData.size !== 1 ? 's' : ''}
           </span>
         </div>

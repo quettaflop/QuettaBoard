@@ -147,7 +147,7 @@ export function DataTable({ data }: DataTableProps) {
 
   if (data.length === 0) {
     return (
-      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#a9afba]">
         No data matches current filters
       </div>
     );
@@ -158,11 +158,11 @@ export function DataTable({ data }: DataTableProps) {
       <div className="overflow-x-auto rounded-[18px] bg-white">
       <table className="w-full text-xs">
         <thead>
-          <tr className="border-b border-[#d2d2d7] bg-white">
+          <tr className="border-b border-[#ffffff1f] bg-white">
             {COLUMNS.map((col) => (
               <th
                 key={col.key}
-                className={`cursor-pointer whitespace-nowrap px-3 py-3.5 text-[11px] font-semibold uppercase tracking-widest text-[#86868b] transition-colors hover:text-[#1d1d1f] ${
+                className={`cursor-pointer whitespace-nowrap px-3 py-3.5 text-[11px] font-semibold uppercase tracking-widest text-[#676c76] transition-colors hover:text-[#f3f4f6] ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
                 onClick={() => handleSort(col.key)}
@@ -211,15 +211,15 @@ export function DataTable({ data }: DataTableProps) {
                     );
                   }
                   if ((col.key === 'type' || col.key === 'source') && !meta) {
-                    return <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#6e6e73]">—</td>;
+                    return <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#a9afba]">—</td>;
                   }
                   if (col.key === 'profile') {
                     const displayName = profileDisplayName(r.config.profile);
                     return (
-                      <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#1d1d1f]">
+                      <td key={col.key} className="whitespace-nowrap px-3 py-2 text-left text-[#f3f4f6]">
                         <div className="max-w-[220px] truncate" title={displayName}>{displayName}</div>
                         {displayName !== r.config.profile && (
-                          <div className="max-w-[220px] truncate text-[10px] text-[#86868b]" title={r.config.profile}>
+                          <div className="max-w-[220px] truncate text-[10px] text-[#676c76]" title={r.config.profile}>
                             {r.config.profile}
                           </div>
                         )}
@@ -234,7 +234,7 @@ export function DataTable({ data }: DataTableProps) {
                       } ${
                         col.key === 'failed_requests' && r.summary.failed_requests > 0
                           ? 'text-[#ff3b30]'
-                          : 'text-[#1d1d1f]'
+                          : 'text-[#f3f4f6]'
                       }`}
                     >
                       {getDisplay(r, col)}

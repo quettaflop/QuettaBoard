@@ -20,12 +20,11 @@ const PAGE_IDS: PageId[] = ['benchmark', 'simulator'];
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
 function initialDataScope(): DataScope {
-  const params = new URLSearchParams(window.location.search);
-  const urlScope = params.get('scope');
-  const normalizedUrlScope = normalizeDataScope(urlScope);
-  if (normalizedUrlScope) return normalizedUrlScope;
-  const storedScope = window.localStorage.getItem(DATA_SCOPE_STORAGE_KEY);
-  return normalizeDataScope(storedScope) ?? 'trace_replay';
+  // Trace replay is the default landing scope. An explicit ?scope= URL param
+  // still overrides it; localStorage no longer shadows the default (so a prior
+  // selection doesn't stick as the default on the next load).
+  const urlScope = normalizeDataScope(new URLSearchParams(window.location.search).get('scope'));
+  return urlScope ?? 'trace_replay';
 }
 
 function hashPage(): PageId | null {
@@ -130,8 +129,8 @@ function App() {
     >
       {activePage === 'simulator' ? (
         <>
-          <div className="glass-amber mb-8 flex items-start gap-3 rounded-[22px] px-5 py-4 text-[13px] leading-relaxed text-[#7a4a00]">
-            <span className="mt-0.5 shrink-0 rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#9a5b00]">
+          <div className="glass-amber mb-8 flex items-start gap-3 rounded-[22px] px-5 py-4 text-[13px] leading-relaxed text-[#f7b955]">
+            <span className="mt-0.5 shrink-0 rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#f7b955]">
               WIP
             </span>
             <span>
@@ -148,16 +147,21 @@ function App() {
         </>
       ) : loading ? (
         <div className="flex h-64 items-center justify-center">
-          <div className="text-[#6e6e73]">Loading benchmark data...</div>
+          <div className="text-[#a9afba]">Loading benchmark data...</div>
         </div>
       ) : (
         <>
           <div className="animate-fade-up mb-10">
-            <h1 className="text-[32px] font-semibold tracking-tight text-[#1d1d1f] sm:text-[36px]">
-              Inference Benchmarks
+            <div className="eyebrow mb-4">
+              <span className="text-[#2dd4bf]">◆</span> INFERENCE BENCHMARKS · REPRODUCIBLE · GROUND-TRUTH
+            </div>
+            <h1 className="text-[40px] font-semibold leading-[1.02] tracking-[-0.03em] text-[#f3f4f6] sm:text-[54px]">
+              GPU inference,<br />
+              <span className="text-grad">measured to the millisecond.</span>
             </h1>
-            <p className="mt-2 text-[15px] text-[#6e6e73]">
-              Latency, throughput, and multi-turn behavior across hardware, models, and workloads.
+            <p className="mt-5 max-w-[56ch] text-[16px] leading-relaxed text-[#a9afba]">
+              Latency, throughput, and multi-turn behavior across real GPUs, models, and workloads —
+              raw kernels up through the whole serving stack. No hand-waving, just ground truth.
             </p>
           </div>
           <KPICards data={data} allData={allData} />

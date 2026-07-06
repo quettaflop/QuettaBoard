@@ -29,7 +29,7 @@ export const DATA_SCOPE_META: Record<DataScope, DataScopeMeta> = {
     shortLabel: 'Trace replay',
     eyebrow: 'HF subset',
     description: 'Filtered real trace replay data aligned with the Hugging Face dataset naming.',
-    accent: '#6e6e73',
+    accent: '#a9afba',
     rowsLabel: 'trace replay rows',
   },
   synthetic_distributional: {
@@ -45,7 +45,7 @@ export const DATA_SCOPE_META: Record<DataScope, DataScopeMeta> = {
     shortLabel: 'Archived',
     eyebrow: 'retired scopes',
     description: 'Retired canonical, fixed-grid, and MSE result scopes kept for reference but not used as the active Hugging Face dataset surface.',
-    accent: '#0071e3',
+    accent: '#2dd4bf',
     rowsLabel: 'archived rows',
   },
 };
@@ -186,7 +186,7 @@ export const PROFILE_META: Record<string, ProfileMeta> = {
 // Color for agent type badges
 export const AGENT_TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   'chat':         { bg: 'rgba(63,185,80,0.12)',   text: '#34c759', border: 'rgba(63,185,80,0.3)' },
-  'coding':       { bg: 'rgba(0,0,0,0.03)',   text: '#0071e3', border: 'rgba(0,188,212,0.3)' },
+  'coding':       { bg: 'rgba(45,212,191,0.10)',   text: '#2dd4bf', border: 'rgba(0,188,212,0.3)' },
   'terminal':     { bg: 'rgba(249,117,131,0.12)', text: '#ff3b30', border: 'rgba(249,117,131,0.3)' },
   'computer-use': { bg: 'rgba(236,72,153,0.12)',  text: '#ec4899', border: 'rgba(236,72,153,0.3)' },
   'stress':       { bg: 'rgba(255,152,0,0.12)',   text: '#ff9f0a', border: 'rgba(255,152,0,0.3)' },
@@ -203,7 +203,7 @@ export const DATA_SOURCE_COLORS: Record<string, { bg: string; text: string; bord
 
 export const FALLBACK_META_COLORS = {
   bg: 'rgba(139,148,158,0.12)',
-  text: '#6e6e73',
+  text: '#a9afba',
   border: 'rgba(139,148,158,0.3)',
 };
 

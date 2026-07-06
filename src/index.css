@@ -1,196 +1,142 @@
 @import "tailwindcss";
 
+/* ============================================================
+   QuettaBoard — dark / technical design system
+   Ported from concept/home.html. Shared surface classes
+   (.glass*, .seg-*) are redefined dark here so every component
+   that already uses them flips at once; per-component text
+   colors are updated inline.
+   ============================================================ */
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+  --bg:        #07080a;
+  --panel:     rgba(255,255,255,0.024);
+  --panel-2:   rgba(255,255,255,0.045);
+  --line:      rgba(255,255,255,0.08);
+  --line-2:    rgba(255,255,255,0.15);
+  --ink:       #f3f4f6;
+  --ink-2:     #a9afba;
+  --ink-3:     #676c76;
+  --accent:    #2dd4bf;
+  --accent-2:  #a78bfa;
+  --amber:     #f7b955;
+  --good:      #34d399;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, monospace;
 }
 
-/* Ambient wash — ultra-restrained fixed blobs behind the whole page. This is
-   what the glass surfaces refract; without it, backdrop-blur has nothing to
-   do and just reads as a slightly dim white box. Kept low-opacity so it reads
-   as light, not decoration. background-attachment: fixed keeps it calm while
-   the page scrolls, rather than smearing behind content. */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #1d1d1f;
-  background-color: #f5f5f7;
+  color: var(--ink);
+  background-color: var(--bg);
+  position: relative;
+}
+
+/* Layered canvas: restrained accent glow + fine technical dot grid */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
   background-image:
-    radial-gradient(760px circle at 8% 4%, rgba(0, 113, 227, 0.11), transparent 65%),
-    radial-gradient(820px circle at 92% 10%, rgba(175, 82, 222, 0.095), transparent 62%),
-    radial-gradient(880px circle at 16% 98%, rgba(255, 159, 10, 0.08), transparent 62%),
-    radial-gradient(760px circle at 98% 92%, rgba(52, 199, 89, 0.07), transparent 60%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+    radial-gradient(1000px circle at 82% -12%, rgba(45,212,191,0.13), transparent 55%),
+    radial-gradient(760px circle at 0% 0%, rgba(167,139,250,0.075), transparent 52%),
+    radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1.4px);
+  background-size: auto, auto, 24px 24px;
+  background-repeat: no-repeat, no-repeat, repeat;
+}
+/* Grain — kills the flat-CSS look */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  opacity: 0.035; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ----------------------------------------------------------------------
-   Liquid Glass surfaces (iOS 26 / macOS Tahoe language). A handful of large
-   chrome surfaces get these — never per-row / per-chip, backdrop-filter is
-   expensive. Data-dense content (tables, chart plots) stays on plain solid
-   fills nested *inside* a glass shell, see .glass-shell.
+   Panels. The old "Liquid Glass" names are kept but redefined as dark
+   hairline-bordered surfaces with a gradient top edge for depth.
    ---------------------------------------------------------------------- */
-.glass {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.5) 55%, rgba(255, 255, 255, 0.58) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.8),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
-    0 1px 1px rgba(0, 0, 0, 0.04),
-    0 8px 32px rgba(0, 0, 0, 0.09);
+.glass, .glass-strong, .glass-shell {
+  position: relative;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -42px rgba(0,0,0,0.9);
 }
-
-.glass-strong {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.62) 55%, rgba(255, 255, 255, 0.68) 100%);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-    0 1px 1px rgba(0, 0, 0, 0.04),
-    0 8px 32px rgba(0, 0, 0, 0.07);
+.glass-strong { background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); }
+/* gradient top-edge highlight */
+.glass::before, .glass-strong::before, .glass-shell::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), transparent 42%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
 }
-
-/* Same recipe, used where a solid data surface (table / matrix) nests
-   directly inside — glass on the frame, not on the numbers. */
-.glass-shell {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.42) 55%, rgba(255, 255, 255, 0.48) 100%);
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.8),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
-    0 1px 1px rgba(0, 0, 0, 0.04),
-    0 8px 32px rgba(0, 0, 0, 0.09);
-}
-
-/* Amber-tinted glass for the simulator WIP banner */
 .glass-amber {
-  background: linear-gradient(165deg, rgba(255, 247, 235, 0.78) 0%, rgba(255, 241, 219, 0.52) 55%, rgba(255, 244, 226, 0.6) 100%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.75),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
-    0 1px 1px rgba(0, 0, 0, 0.04),
-    0 8px 24px rgba(154, 91, 0, 0.1);
+  position: relative;
+  background: linear-gradient(180deg, rgba(247,185,85,0.10), rgba(247,185,85,0.045));
+  border: 1px solid rgba(247,185,85,0.22);
+  box-shadow: 0 20px 44px -34px rgba(0,0,0,0.9);
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass { background: #ffffff; }
-  .glass-strong { background: #ffffff; }
-  .glass-shell { background: #ffffff; }
-  .glass-amber { background: #fff4e5; }
-  .seg-track { background: #f5f5f7; }
+/* Sticky nav gets the strongest surface + a teal underglow line */
+nav.glass-strong { backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(7,8,10,0.72); }
+nav.glass-strong::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(45,212,191,0.4), transparent);
 }
 
-/* Apple-style segmented control: glass track, near-solid active pill */
+/* Segmented control — dark track, near-solid active pill */
 .seg-track {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  background: rgba(245, 245, 247, 0.65);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  padding: 3px;
-  border-radius: 9999px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  display: inline-flex; align-items: center; gap: 2px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  padding: 3px; border-radius: 9999px;
 }
-.seg-item {
-  border-radius: 9999px;
-  transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
+.seg-item { border-radius: 9999px; transition: color .15s ease, background-color .15s ease, box-shadow .15s ease; }
 .seg-item-active {
-  background: rgba(255, 255, 255, 0.94);
-  color: #1d1d1f;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.02),
-    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  background: rgba(255,255,255,0.09);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 1px 6px rgba(0,0,0,0.4);
 }
 
-/* Gentle specular hover for glass chrome — brighter fill, quick transition,
-   no shine sweep animation. */
-.glass-hover {
-  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-}
-.glass-hover:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-}
+.glass-hover { transition: background-color .12s ease, border-color .12s ease, color .12s ease; }
+.glass-hover:hover { background-color: rgba(255,255,255,0.06); }
 
-/* High-impact entrance: page headline + KPI rail fade up on first paint */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ---------- helpers ---------- */
+.eyebrow {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ink-3);
 }
-.animate-fade-up {
-  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+.mono-nums { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.text-grad {
+  background: linear-gradient(96deg, var(--accent), #7ff0e0 55%, var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
+.live-dot { position: relative; }
+.live-dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  background: currentColor; opacity: .35; animation: livepulse 2s ease-out infinite; }
+@keyframes livepulse { 0%{transform:scale(.6);opacity:.5} 100%{transform:scale(1.9);opacity:0} }
 
-/* Thin scrollbar */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #d2d2d7 transparent;
-}
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-}
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #d2d2d7;
-  border-radius: 4px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #86868b;
-}
+/* ---------- motion ---------- */
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.animate-fade-up { animation: fade-up .6s cubic-bezier(.16,1,.3,1) both; }
 
-.profile-scrollbar {
-  scrollbar-gutter: stable;
-  scrollbar-width: auto;
-  scrollbar-color: #0071e3 #ffffff;
-}
+/* ---------- scrollbars ---------- */
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: #3a3d44 transparent; }
+.scrollbar-thin::-webkit-scrollbar { width: 5px; height: 5px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #3a3d44; border-radius: 4px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #565a63; }
 
-.profile-scrollbar::-webkit-scrollbar {
-  width: 12px;
-}
+.profile-scrollbar { scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: var(--accent) rgba(255,255,255,0.03); }
+.profile-scrollbar::-webkit-scrollbar { width: 12px; }
+.profile-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-left: 1px solid var(--line); border-radius: 0 6px 6px 0; }
+.profile-scrollbar::-webkit-scrollbar-thumb { background: rgba(45,212,191,0.6); border: 3px solid var(--bg); border-radius: 999px; }
+.profile-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-.profile-scrollbar::-webkit-scrollbar-track {
-  background: #ffffff;
-  border-left: 1px solid #d2d2d7;
-  border-radius: 0 6px 6px 0;
-}
-
-.profile-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #0071e3, #0071e3);
-  border: 3px solid #ffffff;
-  border-radius: 999px;
-}
-
-.profile-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #5ac8fa;
-}
-
-.serving-mape-rail {
-  background: linear-gradient(180deg, #e8e8ed 0%, #f5f5f7 100%);
-}
-
-tbody .serving-mape-rail {
-  background: #f5f5f7;
-}
-
-tbody tr:hover .serving-mape-rail {
-  background: #e8e8ed;
-}
-
-.serving-mape-rail-start {
-  border-left: 2px solid rgba(0, 113, 227, 0.35);
-  box-shadow: -18px 0 18px -22px rgba(0,0,0,0.08);
-}
+/* Serving MAPE rail (data table) — dark */
+.serving-mape-rail { background: rgba(255,255,255,0.02); }
+tbody .serving-mape-rail { background: rgba(255,255,255,0.02); }
+tbody tr:hover .serving-mape-rail { background: rgba(255,255,255,0.05); }
+.serving-mape-rail-start { border-left: 2px solid rgba(45,212,191,0.35);
+  box-shadow: -18px 0 18px -22px rgba(0,0,0,0.5); }

@@ -47,7 +47,7 @@ export function Tabs({ active, onChange }: TabsProps) {
           aria-selected={active === tab.id}
           onClick={() => onChange(tab.id)}
           className={`seg-item relative z-10 whitespace-nowrap px-4 py-1.5 text-[13px] font-medium ${
-            active === tab.id ? 'text-[#1d1d1f]' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+            active === tab.id ? 'text-[#f3f4f6]' : 'text-[#a9afba] hover:text-[#f3f4f6]'
           }`}
         >
           {tab.label}

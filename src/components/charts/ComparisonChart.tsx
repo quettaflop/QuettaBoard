@@ -42,7 +42,7 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
 
   if (seriesData.size < 1) {
     return (
-      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#6e6e73]">
+      <div className="glass flex h-64 items-center justify-center rounded-[22px] text-[#a9afba]">
         Need at least one series to compare. Adjust filters.
       </div>
     );
@@ -80,11 +80,11 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
       {/* Selectors */}
       <div className="glass grid grid-cols-1 gap-4 rounded-[22px] p-6 sm:grid-cols-3">
         <div>
-          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#86868b]">Series A</label>
+          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#676c76]">Series A</label>
           <select
             value={seriesA}
             onChange={(e) => setSeriesA(e.target.value)}
-            className="glass-hover w-full rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+            className="glass-hover w-full rounded-full border border-[#ffffff1f] bg-white/[0.04] px-3 py-1.5 text-[12px] text-[#f3f4f6] outline-none focus:border-[#2dd4bf]"
           >
             {seriesNames.map((name) => (
               <option key={name} value={name}>
@@ -94,11 +94,11 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#86868b]">Series B</label>
+          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#676c76]">Series B</label>
           <select
             value={seriesB}
             onChange={(e) => setSeriesB(e.target.value)}
-            className="glass-hover w-full rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+            className="glass-hover w-full rounded-full border border-[#ffffff1f] bg-white/[0.04] px-3 py-1.5 text-[12px] text-[#f3f4f6] outline-none focus:border-[#2dd4bf]"
           >
             {seriesNames.map((name) => (
               <option key={name} value={name}>
@@ -108,11 +108,11 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#86868b]">Metric</label>
+          <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-[#676c76]">Metric</label>
           <select
             value={metric}
             onChange={(e) => setMetric(e.target.value)}
-            className="glass-hover w-full rounded-full border border-[#d2d2d7] bg-white/70 px-3 py-1.5 text-[12px] text-[#1d1d1f] outline-none focus:border-[#0071e3]"
+            className="glass-hover w-full rounded-full border border-[#ffffff1f] bg-white/[0.04] px-3 py-1.5 text-[12px] text-[#f3f4f6] outline-none focus:border-[#2dd4bf]"
           >
             {METRIC_OPTIONS.map((m) => (
               <option key={m.value} value={m.value}>
@@ -126,36 +126,36 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
       {/* Chart */}
       <div className="glass rounded-[22px] p-6">
         <div className="mb-4 flex items-center gap-2">
-          <h3 className="text-[15px] font-semibold tracking-tight text-[#1d1d1f]">{metricLabel} Comparison</h3>
-          <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium text-[#6e6e73]">vs concurrency</span>
+          <h3 className="text-[15px] font-semibold tracking-tight text-[#f3f4f6]">{metricLabel} Comparison</h3>
+          <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-[#a9afba]">vs concurrency</span>
         </div>
-        <div className="rounded-2xl bg-white p-2">
+        <div className="rounded-2xl border border-[#ffffff0f] bg-[#0b0d10] p-2">
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e8e8ed" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff14" />
             <XAxis
               dataKey="concurrency"
               scale="log"
               domain={['dataMin', 'dataMax']}
               type="number"
-              tick={{ fill: '#6e6e73', fontSize: 11 }}
-              axisLine={{ stroke: '#e8e8ed' }}
-              tickLine={{ stroke: '#e8e8ed' }}
-              label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#6e6e73', fontSize: 11 }}
+              tick={{ fill: '#a9afba', fontSize: 11 }}
+              axisLine={{ stroke: '#ffffff14' }}
+              tickLine={{ stroke: '#ffffff14' }}
+              label={{ value: 'Concurrency', position: 'insideBottom', offset: -2, fill: '#a9afba', fontSize: 11 }}
             />
             <YAxis
-              tick={{ fill: '#6e6e73', fontSize: 11 }}
-              axisLine={{ stroke: '#e8e8ed' }}
-              tickLine={{ stroke: '#e8e8ed' }}
-              label={{ value: metricLabel, angle: -90, position: 'insideLeft', fill: '#6e6e73', fontSize: 11 }}
+              tick={{ fill: '#a9afba', fontSize: 11 }}
+              axisLine={{ stroke: '#ffffff14' }}
+              tickLine={{ stroke: '#ffffff14' }}
+              label={{ value: metricLabel, angle: -90, position: 'insideLeft', fill: '#a9afba', fontSize: 11 }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #d2d2d7',
+                backgroundColor: '#0d0f13',
+                border: '1px solid #ffffff1f',
                 borderRadius: '12px',
                 fontSize: '12px',
-                color: '#1d1d1f',
+                color: '#f3f4f6',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
               }}
               labelFormatter={(v) => `Concurrency: ${v}`}
@@ -167,9 +167,9 @@ export function ComparisonChart({ seriesData }: ComparisonChartProps) {
               type="monotone"
               dataKey="Series A"
               name={shortenSeriesKey(seriesA)}
-              stroke="#0071e3"
+              stroke="#2dd4bf"
               strokeWidth={2}
-              dot={{ r: 4, fill: '#0071e3' }}
+              dot={{ r: 4, fill: '#2dd4bf' }}
               activeDot={{ r: 6 }}
               connectNulls
             />
