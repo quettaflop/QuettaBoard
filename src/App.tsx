@@ -32,11 +32,11 @@ const PAGE_IDS: PageId[] = INTERNAL ? ['benchmark', 'simulator'] : ['benchmark']
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
 function initialDataScope(): DataScope {
-  // Trace replay is the default landing scope. An explicit ?scope= URL param
-  // still overrides it; localStorage no longer shadows the default (so a prior
-  // selection doesn't stick as the default on the next load).
+  // Synthetic (distributional) is the default landing scope. An explicit ?scope=
+  // URL param still overrides it; localStorage no longer shadows the default (so
+  // a prior selection doesn't stick as the default on the next load).
   const urlScope = normalizeDataScope(new URLSearchParams(window.location.search).get('scope'));
-  return urlScope ?? 'trace_replay';
+  return urlScope ?? 'synthetic_distributional';
 }
 
 function hashPage(): PageId | null {
@@ -96,7 +96,7 @@ function App() {
   const setDataScope = useCallback((scope: DataScope) => {
     window.localStorage.setItem(DATA_SCOPE_STORAGE_KEY, scope);
     const url = new URL(window.location.href);
-    if (scope !== 'trace_replay') {
+    if (scope !== 'synthetic_distributional') {
       url.searchParams.set('scope', scope);
     } else {
       url.searchParams.delete('scope');
