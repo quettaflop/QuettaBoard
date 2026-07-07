@@ -135,9 +135,11 @@ nav.glass-strong::after {
 .profile-scrollbar::-webkit-scrollbar-thumb { background: rgba(45,212,191,0.6); border: 3px solid var(--bg); border-radius: 999px; }
 .profile-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* Serving MAPE rail (data table) — dark */
-.serving-mape-rail { background: rgba(255,255,255,0.02); }
-tbody .serving-mape-rail { background: rgba(255,255,255,0.02); }
-tbody tr:hover .serving-mape-rail { background: rgba(255,255,255,0.05); }
+/* Serving MAPE rail (data table) — dark. The rail is position:sticky, so its
+   background MUST be opaque (matching the table surface) or horizontally
+   scrolled concurrency cells bleed through and read as overlapping text. */
+.serving-mape-rail { background: #0b0d10; }
+tbody .serving-mape-rail { background: #0b0d10; }
+tbody tr:hover .serving-mape-rail { background: #14171c; }
 .serving-mape-rail-start { border-left: 2px solid rgba(45,212,191,0.35);
   box-shadow: -18px 0 18px -22px rgba(0,0,0,0.5); }

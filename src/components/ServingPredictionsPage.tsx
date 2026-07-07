@@ -380,13 +380,11 @@ const SERVING_MAPE_COLUMN_WIDTH = 74;
 const SERVING_MAPE_RAIL_WIDTH = SERVING_METRICS.length * SERVING_MAPE_COLUMN_WIDTH;
 
 // Prediction source the Simulator page renders, mirroring the Predictions matrix' source toggle.
-type ValueMode = 'mape' | 'delta';
-type PredictionSource = 'backtester' | 'forward' | 'delta';
+type PredictionSource = 'backtester' | 'forward';
 
 const PREDICTION_SOURCES: { key: PredictionSource; label: string }[] = [
-  { key: 'backtester', label: 'Backtest' },
-  { key: 'forward', label: 'Forward' },
-  { key: 'delta', label: 'Δ' },
+  { key: 'backtester', label: 'Kernel-composed' },
+  { key: 'forward', label: 'Roofline' },
 ];
 
 function finiteOrUndef(value: unknown): number | undefined {
@@ -398,8 +396,6 @@ function finiteOrUndef(value: unknown): number | undefined {
 //  - 'backtester' is identity (build_simulator_rows, scored vs measured GT).
 //  - 'forward' swaps pred/err to the no-GT forward values; measured GT is unchanged. Forward has no
 //    per-turn / emulator detail, so those are cleared (the per-turn panel + emu/steady tags hide).
-//  - 'delta' replaces each *_err with the signed MAPE gap |fwd| - |bt| (negative = forward closer to
-//    measured); pred/meas are cleared because the cell now shows a gap, not a latency.
 function applyPredictionSource(
   rows: ServingRow[],
   gpuKey: string,
@@ -423,72 +419,25 @@ function applyPredictionSource(
       tpot_abs_err_ms: undefined,
       e2el_abs_err_ms: undefined,
     };
-    if (source === 'forward') {
-      return {
-        ...base,
-        ttft_pred: finiteOrUndef(match?.fwd_ttft_pred),
-        tpot_pred: finiteOrUndef(match?.fwd_tpot_pred),
-        e2el_pred: finiteOrUndef(match?.fwd_e2el_pred),
-        ttft_err: finiteOrUndef(match?.fwd_ttft_err),
-        tpot_err: finiteOrUndef(match?.fwd_tpot_err),
-        e2el_err: finiteOrUndef(match?.fwd_e2el_err),
-      };
-    }
-    const gap = (fwdErr: number | null | undefined, btErr: number | undefined): number | undefined => {
-      const fe = finiteOrUndef(fwdErr);
-      return fe !== undefined && btErr !== undefined ? Math.abs(fe) - Math.abs(btErr) : undefined;
-    };
     return {
       ...base,
-      ttft_pred: undefined,
-      tpot_pred: undefined,
-      e2el_pred: undefined,
-      ttft_meas: undefined,
-      tpot_meas: undefined,
-      e2el_meas: undefined,
-      ttft_err: gap(match?.fwd_ttft_err, finiteOrUndef(row.ttft_err)),
-      tpot_err: gap(match?.fwd_tpot_err, finiteOrUndef(row.tpot_err)),
-      e2el_err: gap(match?.fwd_e2el_err, finiteOrUndef(row.e2el_err)),
+      ttft_pred: finiteOrUndef(match?.fwd_ttft_pred),
+      tpot_pred: finiteOrUndef(match?.fwd_tpot_pred),
+      e2el_pred: finiteOrUndef(match?.fwd_e2el_pred),
+      ttft_err: finiteOrUndef(match?.fwd_ttft_err),
+      tpot_err: finiteOrUndef(match?.fwd_tpot_err),
+      e2el_err: finiteOrUndef(match?.fwd_e2el_err),
     };
   });
 }
 
-// Δ tone mirrors the Predictions matrix: green = forward >=3pt closer to measured, red = >=3pt
-// worse, neutral between.
-function servingDeltaTone(value: OptionalMetric): { className: string } {
-  if (value === undefined || value === null) return { className: 'border border-[#ffffff1f] bg-white/[0.06] text-[#676c76]' };
-  if (value <= -3) return { className: 'border border-[#34c759]/30 bg-[#34c759]/10 text-[#34c759]' };
-  if (value >= 3) return { className: 'border border-[#ff3b30]/30 bg-[#ff3b30]/10 text-[#ff3b30]' };
-  return { className: 'border border-[#ffffff1f] bg-white/[0.06] text-[#a9afba]' };
+// Tone + compact formatting shared by the cells, the row-MAPE rail and the badges.
+function toneFor(value: OptionalMetric): { className: string } {
+  return servingErrorTone(value);
 }
 
-function formatSignedDeltaPct(value: OptionalMetric): string {
-  if (value === undefined || value === null) return 'N/A';
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(0)}`;
-}
-
-// Signed Δ with one decimal — for the headline / best / worst summary figures.
-function formatSignedDeltaValue(value: OptionalMetric): string {
-  if (value === undefined || value === null) return 'N/A';
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(1)}`;
-}
-
-// Source-aware tone + compact formatting shared by the cells, the row-MAPE rail and the badges.
-function toneFor(value: OptionalMetric, valueMode: ValueMode): { className: string } {
-  return valueMode === 'delta' ? servingDeltaTone(value) : servingErrorTone(value);
-}
-
-function compactValueFor(value: OptionalMetric, valueMode: ValueMode): string {
-  return valueMode === 'delta' ? formatSignedDeltaPct(value) : formatCompactPercent(value);
-}
-
-function meanSignedMetric(rows: ServingRow[], errKey: ServingMetricKey): number | undefined {
-  const values = rows
-    .map(row => numericMetric(row, errKey))
-    .filter((value): value is number => value !== undefined);
-  return values.length ? mean(values) : undefined;
+function compactValueFor(value: OptionalMetric): string {
+  return formatCompactPercent(value);
 }
 
 export function ServingPredictionsPage({
@@ -588,10 +537,9 @@ export function ServingPredictionsPage({
     if (selectorMode) return base.filter(row => row.model === selectedModel);
     return base;
   }, [scopeIndex, selectedGpu, focus, selectorMode, selectedModel]);
-  // Source toggle (Backtest / Forward / Δ). Forward/Δ collapse to Backtest until forward rows load.
+  // Source toggle (Backtest / Forward). Forward collapses to Backtest until forward rows load.
   const hasForward = fwd.size > 0;
   const effectiveSource: PredictionSource = source !== 'backtester' && !hasForward ? 'backtester' : source;
-  const valueMode: ValueMode = effectiveSource === 'delta' ? 'delta' : 'mape';
   const sourcedRows = useMemo(
     () => applyPredictionSource(rows, selectedGpu, effectiveSource, fwd),
     [rows, selectedGpu, effectiveSource, fwd],
@@ -606,7 +554,7 @@ export function ServingPredictionsPage({
     && (focus
       ? focus.model === fixedTpotFit.experiment.model
       : (!selectorMode || selectedModel === fixedTpotFit.experiment.model));
-  // The fixed-TPOT validation overlay is a backtester-only artifact; Forward/Δ show the live rows.
+  // The fixed-TPOT validation overlay is a backtester-only artifact; Forward shows the live rows.
   const fixedTpotOnly = Boolean(showFixedTpotFit && pageKind === 'simulator' && effectiveSource === 'backtester');
   const tableSourceRows = useMemo(
     () => fixedTpotOnly ? sourcedRows.filter(row => !isSingleTurnServingRow(row)) : sourcedRows,
@@ -639,10 +587,9 @@ export function ServingPredictionsPage({
           source={effectiveSource}
           onSource={setSource}
           hasForward={hasForward}
-          valueMode={valueMode}
-          ttftMape={valueMode === 'delta' ? meanSignedMetric(sourcedRows, 'ttft_err') : meanMetricError(sourcedRows, 'ttft_err')}
-          tpotMape={valueMode === 'delta' ? meanSignedMetric(sourcedRows, 'tpot_err') : meanMetricError(sourcedRows, 'tpot_err')}
-          e2elMape={valueMode === 'delta' ? meanSignedMetric(sourcedRows, 'e2el_err') : meanMetricError(sourcedRows, 'e2el_err')}
+          ttftMape={meanMetricError(sourcedRows, 'ttft_err')}
+          tpotMape={meanMetricError(sourcedRows, 'tpot_err')}
+          e2elMape={meanMetricError(sourcedRows, 'e2el_err')}
         />
       ) : (
         <>
@@ -682,7 +629,6 @@ export function ServingPredictionsPage({
         focus={tableFocus}
         tpotOnly={fixedTpotOnly}
         validationRows={useFixedTpotRows}
-        valueMode={valueMode}
       />
     </div>
   );
@@ -866,7 +812,6 @@ function SimulatorTargetBar({
   source,
   onSource,
   hasForward,
-  valueMode,
   ttftMape,
   tpotMape,
   e2elMape,
@@ -883,12 +828,10 @@ function SimulatorTargetBar({
   source: PredictionSource;
   onSource: (source: PredictionSource) => void;
   hasForward: boolean;
-  valueMode: ValueMode;
   ttftMape: OptionalMetric;
   tpotMape: OptionalMetric;
   e2elMape: OptionalMetric;
 }) {
-  const badgeSuffix = valueMode === 'delta' ? 'Δ' : 'MAPE';
   return (
     <section className="glass rounded-[22px] px-5 py-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -921,7 +864,7 @@ function SimulatorTargetBar({
                     type="button"
                     disabled={disabled}
                     onClick={() => onSource(key)}
-                    title={disabled ? 'forward-predictions.json not loaded yet' : undefined}
+                    title={disabled ? 'Roofline predictions not loaded yet' : undefined}
                     className={`seg-item px-3 py-1 text-[12px] font-medium ${
                       active ? 'seg-item-active'
                         : disabled ? 'text-[#c7c7cc] cursor-not-allowed'
@@ -936,9 +879,9 @@ function SimulatorTargetBar({
           </label>
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <MetricBadge label={`TTFT ${badgeSuffix}`} value={ttftMape} mode={valueMode} />
-          <MetricBadge label={`TPOT ${badgeSuffix}`} value={tpotMape} mode={valueMode} />
-          <MetricBadge label={`E2EL ${badgeSuffix}`} value={e2elMape} mode={valueMode} />
+          <MetricBadge label="TTFT MAPE" value={ttftMape} />
+          <MetricBadge label="TPOT MAPE" value={tpotMape} />
+          <MetricBadge label="E2EL MAPE" value={e2elMape} />
         </div>
       </div>
     </section>
@@ -1067,17 +1010,15 @@ function MetricBadge({
   label,
   value,
   compact = false,
-  mode = 'mape',
 }: {
   label: string;
   value: OptionalMetric;
   compact?: boolean;
-  mode?: ValueMode;
 }) {
   return (
-    <span className={`inline-flex items-center justify-between gap-1 rounded-full px-1.5 py-0.5 font-mono ${compact ? 'text-[9px]' : 'text-[10px]'} ${toneFor(value, mode).className}`}>
+    <span className={`inline-flex items-center justify-between gap-1 rounded-full px-1.5 py-0.5 font-mono ${compact ? 'text-[9px]' : 'text-[10px]'} ${toneFor(value).className}`}>
       <span className="font-sans font-semibold uppercase tracking-wide">{label}</span>
-      <span>{compactValueFor(value, mode)}</span>
+      <span>{compactValueFor(value)}</span>
     </span>
   );
 }
@@ -1176,7 +1117,6 @@ function ServingTable({
   focus,
   tpotOnly = false,
   validationRows = false,
-  valueMode = 'mape',
 }: {
   rows: ServingRow[];
   summaryRows?: ServingRow[];
@@ -1185,9 +1125,7 @@ function ServingTable({
   focus?: ServingFocus;
   tpotOnly?: boolean;
   validationRows?: boolean;
-  valueMode?: ValueMode;
 }) {
-  const isDelta = valueMode === 'delta';
   const [selectedPerTurnKey, setSelectedPerTurnKey] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<ServingMetric>(SERVING_TPOT_METRIC);
   const tableData = useMemo(() => {
@@ -1231,7 +1169,6 @@ function ServingTable({
             rows={metricSummaryRows}
             rowCount={summaryRowCount}
             fallbackRows={rows}
-            valueMode={valueMode}
           />
         ))}
       </div>
@@ -1255,8 +1192,8 @@ function ServingTable({
                 style={{ right: 0, width: `${SERVING_MAPE_RAIL_WIDTH}px` }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a9afba]">{isDelta ? 'Row Δ' : 'Row MAPE'}</span>
-                  <span className="text-[9px] font-normal text-[#676c76]">{isDelta ? 'fwd − bt (pt)' : 'mean abs error'}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a9afba]">Row MAPE</span>
+                  <span className="text-[9px] font-normal text-[#676c76]">mean abs error</span>
                 </div>
               </th>
             </tr>
@@ -1331,7 +1268,6 @@ function ServingTable({
                             row={row.cells[concurrency]}
                             selectedKey={selectedPerTurnRowKey}
                             onSelectPerTurn={setSelectedPerTurnKey}
-                            valueMode={valueMode}
                           />
                         ))}
                         {SERVING_METRICS.map((metric, metricIndex) => (
@@ -1340,7 +1276,6 @@ function ServingTable({
                             matrixRow={row}
                             metric={metric}
                             metricIndex={metricIndex}
-                            valueMode={valueMode}
                           />
                         ))}
                       </tr>
@@ -1360,33 +1295,19 @@ function ServingTable({
         onSelectMetric={setSelectedMetric}
       />
 
-      {isDelta ? (
-        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#676c76]">
-          <span>
-            Cells show <span className="text-[#a9afba]">Δ MAPE</span> (forward − backtest, pp) left-to-right:{' '}
-            <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#2dd4bf]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>. Negative = forward closer to measured.
-          </span>
-          <span className="font-medium text-[#a9afba]">Δ bands:</span>
-          <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">fwd ≥3pt better</span>
-          <span className="rounded-full border border-[#ffffff1f] bg-white/[0.06] px-2 py-0.5 text-[#a9afba]">~equal</span>
-          <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">fwd ≥3pt worse</span>
-          <span>Rightmost columns are the mean Δ across concurrency cells.</span>
-        </div>
-      ) : (
-        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#676c76]">
-          <span>
-            {tpotOnly ? 'Cells show TPOT-only kernel-composed error; TTFT and E2EL are N/A.' : (
-              <>Cells show % error left-to-right: <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#2dd4bf]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>.</>
-            )}
-          </span>
-          <span className="font-medium text-[#a9afba]">Error bands:</span>
-          <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">&lt;10%</span>
-          <span className="rounded-full border border-[#2dd4bf]/30 bg-[#2dd4bf]/10 px-2 py-0.5 text-[#2dd4bf]">10-25%</span>
-          <span className="rounded-full border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
-          <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">&gt;=50%</span>
-          <span>Rightmost MAPE columns are mean absolute row errors across concurrency cells.</span>
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#676c76]">
+        <span>
+          {tpotOnly ? 'Cells show TPOT-only kernel-composed error; TTFT and E2EL are N/A.' : (
+            <>Cells show % error left-to-right: <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#2dd4bf]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>.</>
+          )}
+        </span>
+        <span className="font-medium text-[#a9afba]">Error bands:</span>
+        <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">&lt;10%</span>
+        <span className="rounded-full border border-[#2dd4bf]/30 bg-[#2dd4bf]/10 px-2 py-0.5 text-[#2dd4bf]">10-25%</span>
+        <span className="rounded-full border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
+        <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">&gt;=50%</span>
+        <span>Rightmost MAPE columns are mean absolute row errors across concurrency cells.</span>
+      </div>
     </div>
   );
 }
@@ -1653,7 +1574,7 @@ function ServingPerTurnChart({
                       <svg width="26" height="8" aria-hidden>
                         <line x1="0" y1="4" x2="26" y2="4" stroke="#2dd4bf" strokeWidth="2" />
                       </svg>
-                      <span className="text-[11px] text-[#a9afba]">{metric.label} predicted (fwd-ramp)</span>
+                      <span className="text-[11px] text-[#a9afba]">{metric.label} predicted (roofline-ramp)</span>
                     </span>
                   )}
                   {showStatic && (
@@ -1727,7 +1648,7 @@ function ServingPerTurnChart({
               <Line
                 type="monotone"
                 dataKey="rampPred"
-                name={`${metric.label} predicted (fwd-ramp)`}
+                name={`${metric.label} predicted (roofline-ramp)`}
                 stroke="#2dd4bf"
                 strokeWidth={2}
                 dot={{ r: 2 }}
@@ -1905,20 +1826,17 @@ function ServingMetricSummary({
   rows,
   rowCount,
   fallbackRows,
-  valueMode = 'mape',
 }: {
   metric: ServingMetric;
   rows: ServingRow[];
   rowCount?: number;
   fallbackRows?: ServingRow[];
-  valueMode?: ValueMode;
 }) {
-  const isDelta = valueMode === 'delta';
-  // MAPE view aggregates absolute errors; Δ view keeps the sign so a net-better metric reads negative.
+  // Aggregate absolute errors for the MAPE view.
   const valuesFrom = (rs: ServingRow[]) => rs
     .map(row => numericMetric(row, metric.errKey))
     .filter((value): value is number => value !== undefined)
-    .map(value => (isDelta ? value : Math.abs(value)));
+    .map(value => Math.abs(value));
   // Primary rows (e.g. the fixed TPOT fit set) only carry tpot_err; for TTFT/E2EL
   // fall back to the real per-cell rows, which carry ttft_err / e2el_err.
   let values = valuesFrom(rows);
@@ -1933,7 +1851,7 @@ function ServingMetricSummary({
   const displayedRowCount = headline !== undefined && rowCount !== undefined && !usedFallback
     ? rowCount
     : values.length;
-  const fmt = (value: OptionalMetric) => (isDelta ? formatSignedDeltaValue(value) : formatPercent(value));
+  const fmt = (value: OptionalMetric) => formatPercent(value);
 
   return (
     <div className="border-b border-white/10 px-5 py-4 last:border-b-0 md:border-b-0">
@@ -1944,7 +1862,7 @@ function ServingMetricSummary({
         </div>
         <div className="text-right">
           <div className="text-[28px] font-semibold leading-none tracking-tight tabular-nums text-[#f3f4f6]">{fmt(headline)}</div>
-          <div className="mt-1 text-[10px] text-[#676c76]">{isDelta ? 'mean Δ (pp)' : 'MAPE'}</div>
+          <div className="mt-1 text-[10px] text-[#676c76]">MAPE</div>
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2.5 text-[10px] text-[#676c76]">
@@ -2023,12 +1941,10 @@ function ServingMatrixCell({
   row,
   selectedKey,
   onSelectPerTurn,
-  valueMode = 'mape',
 }: {
   row?: ServingRow;
   selectedKey: string | null;
   onSelectPerTurn: (key: string) => void;
-  valueMode?: ValueMode;
 }) {
   if (!row) {
     return (
@@ -2051,7 +1967,7 @@ function ServingMatrixCell({
       <div className="min-w-0 space-y-0.5" title={`ISL->OSL ${row.isl}->${row.osl}`}>
         <div className="grid min-w-0 grid-cols-3 gap-0.5">
           {SERVING_METRICS.map(metric => (
-            <ServingMiniMetric key={metric.label} row={row} metric={metric} valueMode={valueMode} />
+            <ServingMiniMetric key={metric.label} row={row} metric={metric} />
           ))}
         </div>
       </div>
@@ -2063,17 +1979,13 @@ function ServingRowMeanCell({
   matrixRow,
   metric,
   metricIndex,
-  valueMode = 'mape',
 }: {
   matrixRow: ServingMatrixRow;
   metric: ServingMetric;
   metricIndex: number;
-  valueMode?: ValueMode;
 }) {
-  const value = valueMode === 'delta'
-    ? meanMatrixRowMetricSigned(matrixRow, metric.errKey)
-    : meanMatrixRowMetricError(matrixRow, metric.errKey);
-  const tone = toneFor(value, valueMode);
+  const value = meanMatrixRowMetricError(matrixRow, metric.errKey);
+  const tone = toneFor(value);
   const rows = Object.values(matrixRow.cells).length;
 
   return (
@@ -2082,12 +1994,10 @@ function ServingRowMeanCell({
         metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#ffffff1f]'
       }`}
       style={{ right: `${(SERVING_METRICS.length - metricIndex - 1) * SERVING_MAPE_COLUMN_WIDTH}px` }}
-      title={valueMode === 'delta'
-        ? `${matrixRow.profile} ${matrixRow.backend ?? ''}: mean ${metric.label} Δ MAPE (forward − backtest) across ${rows} concurrency cells`
-        : `${matrixRow.profile} ${matrixRow.backend ?? ''}: mean absolute ${metric.label} error across ${rows} concurrency cells`}
+      title={`${matrixRow.profile} ${matrixRow.backend ?? ''}: mean absolute ${metric.label} error across ${rows} concurrency cells`}
     >
       <span className={`block rounded px-1 py-0.5 text-center font-mono text-[10px] leading-none ${tone.className}`}>
-        {compactValueFor(value, valueMode)}
+        {compactValueFor(value)}
       </span>
     </td>
   );
@@ -2098,15 +2008,6 @@ function meanMatrixRowMetricError(matrixRow: ServingMatrixRow, errKey: ServingMe
     .map(row => numericMetric(row, errKey))
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
-  return values.length ? mean(values) : undefined;
-}
-
-// Signed mean (no abs) for the Δ view — preserves the sign so a row of forward-better cells reads
-// negative.
-function meanMatrixRowMetricSigned(matrixRow: ServingMatrixRow, errKey: ServingMetricKey): number | undefined {
-  const values = Object.values(matrixRow.cells)
-    .map(row => numericMetric(row, errKey))
-    .filter((value): value is number => value !== undefined);
   return values.length ? mean(values) : undefined;
 }
 
@@ -2131,35 +2032,29 @@ function backendTooltipForMatrixRow(matrixRow: ServingMatrixRow): string {
   return row ? backendTooltip(row) : 'legacy scheduler';
 }
 
-function ServingMiniMetric({ row, metric, valueMode = 'mape' }: { row: ServingRow; metric: ServingMetric; valueMode?: ValueMode }) {
+function ServingMiniMetric({ row, metric }: { row: ServingRow; metric: ServingMetric }) {
   const pred = numericMetric(row, metric.predKey);
   const meas = numericMetric(row, metric.measKey);
   const err = numericMetric(row, metric.errKey);
   const signedMs = rowSignedErrorMs(row, metric);
-  const tone = toneFor(err, valueMode);
-  const title = valueMode === 'delta'
-    ? [
-        `${metric.label} Δ MAPE ${formatSignedDeltaPct(err)} pp (forward − backtest)`,
-        'negative = forward closer to measured',
-        `ISL->OSL ${row.isl}->${row.osl}`,
-      ].join(' | ')
-    : [
-        `${metric.label}: ${formatPercent(err)} error`,
-        `signed ${formatSignedLatency(signedMs)}`,
-        `pred ${formatLatency(pred, metric.isTotal)}`,
-        `meas ${formatLatency(meas, metric.isTotal)}`,
-        `ISL->OSL ${row.isl}->${row.osl}`,
-        cacheTooltip(row),
-        backendTooltip(row),
-        measurementTooltip(row),
-      ].join(' | ');
+  const tone = toneFor(err);
+  const title = [
+    `${metric.label}: ${formatPercent(err)} error`,
+    `signed ${formatSignedLatency(signedMs)}`,
+    `pred ${formatLatency(pred, metric.isTotal)}`,
+    `meas ${formatLatency(meas, metric.isTotal)}`,
+    `ISL->OSL ${row.isl}->${row.osl}`,
+    cacheTooltip(row),
+    backendTooltip(row),
+    measurementTooltip(row),
+  ].join(' | ');
 
   return (
     <span
       title={title}
       className={`block rounded px-1 py-0.5 text-center font-mono text-[9px] leading-none ${tone.className}`}
     >
-      {compactValueFor(err, valueMode)}
+      {compactValueFor(err)}
     </span>
   );
 }
