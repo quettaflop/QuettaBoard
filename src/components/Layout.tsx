@@ -4,6 +4,7 @@ import {
   DATA_SCOPE_OPTIONS,
   type DataScope,
 } from '../profileMeta';
+import { INTERNAL } from '../env';
 
 type PageId = 'benchmark' | 'simulator';
 type NavPage = { id: PageId; label: string; icon: ReactNode; badge?: string };
@@ -29,20 +30,26 @@ const NAV_PAGES: NavPage[] = [
       </svg>
     ),
   },
-  {
-    id: 'simulator',
-    label: 'Simulator',
-    badge: 'WIP',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19V5" />
-        <path d="M4 19h16" />
-        <path d="M7 15h3" />
-        <path d="M12 11h3" />
-        <path d="M17 7h3" />
-      </svg>
-    ),
-  },
+  // Internal-only nav entries. In a public build `INTERNAL` folds to a
+  // compile-time `false`, so these are dropped and the site shows no dead links.
+  ...(INTERNAL
+    ? ([
+        {
+          id: 'simulator',
+          label: 'Simulator',
+          badge: 'WIP',
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19V5" />
+              <path d="M4 19h16" />
+              <path d="M7 15h3" />
+              <path d="M12 11h3" />
+              <path d="M17 7h3" />
+            </svg>
+          ),
+        },
+      ] satisfies NavPage[])
+    : []),
 ];
 
 export function Layout({

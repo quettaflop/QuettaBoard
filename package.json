@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:internal": "VITE_INTERNAL=1 vite",
     "build:data": "tsx scripts/build-data.ts",
     "validate:data": "tsx scripts/validate-data.ts",
     "test:data-pipeline": "tsx scripts/test-data-pipeline.ts",
@@ -15,6 +16,8 @@
     "preview:local": "npm run preview -- --host 0.0.0.0",
     "serve:control": "node scripts/serve-control.mjs",
     "build": "tsc -b && vite build",
+    "build:public": "tsc -b && vite build",
+    "build:internal": "VITE_INTERNAL=1 tsc -b && VITE_INTERNAL=1 vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

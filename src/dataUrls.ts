@@ -1,4 +1,5 @@
 import type { DataScope } from './profileMeta';
+import { INTERNAL } from './env';
 
 declare const __BUILD_HASH__: string;
 
@@ -14,7 +15,13 @@ function withBuildHash(url: string): string {
 }
 
 const jsonBase = import.meta.env.VITE_R2_JSON_BASE || DEFAULT_R2_JSON_BASE;
-const dashboardApiBase = import.meta.env.VITE_DASHBOARD_API_BASE || (jsonBase.startsWith('http') ? '' : jsonBase);
+
+// Control-plane base for GPU orchestration. Internal-only: in a public build
+// `INTERNAL` is a compile-time `false`, so this and the API URLs below fold to
+// empty strings and the public JS has no reachable control endpoint.
+const dashboardApiBase = INTERNAL
+  ? (import.meta.env.VITE_DASHBOARD_API_BASE || (jsonBase.startsWith('http') ? '' : jsonBase))
+  : '';
 
 export const dataJsonUrl = withBuildHash(
   import.meta.env.VITE_DATA_JSON_URL || joinUrl(jsonBase, 'data.json'),
@@ -77,10 +84,14 @@ export const coverageBlockersJsonUrl = withBuildHash(
   import.meta.env.VITE_COVERAGE_BLOCKERS_JSON_URL || joinUrl(jsonBase, 'coverage-blockers.synthetic_distributional.json'),
 );
 
-export const hostDrainApiUrl = import.meta.env.VITE_HOST_DRAIN_API_URL || (
-  dashboardApiBase ? joinUrl(dashboardApiBase, 'api/host-drain') : ''
-);
+export const hostDrainApiUrl = INTERNAL
+  ? (import.meta.env.VITE_HOST_DRAIN_API_URL || (
+      dashboardApiBase ? joinUrl(dashboardApiBase, 'api/host-drain') : ''
+    ))
+  : '';
 
-export const gpuBlockApiUrl = import.meta.env.VITE_GPU_BLOCK_API_URL || (
-  dashboardApiBase ? joinUrl(dashboardApiBase, 'api/gpu-block') : ''
-);
+export const gpuBlockApiUrl = INTERNAL
+  ? (import.meta.env.VITE_GPU_BLOCK_API_URL || (
+      dashboardApiBase ? joinUrl(dashboardApiBase, 'api/gpu-block') : ''
+    ))
+  : '';

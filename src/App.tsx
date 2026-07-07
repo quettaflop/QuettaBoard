@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState, useTransition } from 'react';
 import { useData } from './hooks/useData';
 import { Layout } from './components/Layout';
 import { KPICards } from './components/KPICards';
@@ -9,14 +9,26 @@ import { ThroughputChart } from './components/charts/ThroughputChart';
 import { ComparisonChart } from './components/charts/ComparisonChart';
 import { PerTurnChart } from './components/charts/PerTurnChart';
 import { DataTable } from './components/DataTable';
-import { ServingPredictionsPage } from './components/ServingPredictionsPage';
 import { simulatorV2SimPredictionsJsonUrl } from './dataUrls';
+import { INTERNAL } from './env';
 import type { TabId } from './types';
 import { normalizeDataScope, type DataScope } from './profileMeta';
 import './index.css';
 
+// Internal-only page (simulator; future gpu/profiling orchestration lives here
+// too). Loaded via a gated dynamic import so a public build — where `INTERNAL`
+// folds to a compile-time `false` — dead-code-eliminates the `import()` and
+// Rollup never emits the chunk. Named export -> default interop for React.lazy.
+const ServingPredictionsPage = INTERNAL
+  ? lazy(() =>
+      import('./components/ServingPredictionsPage').then((m) => ({
+        default: m.ServingPredictionsPage,
+      })),
+    )
+  : null;
+
 type PageId = 'benchmark' | 'simulator';
-const PAGE_IDS: PageId[] = ['benchmark', 'simulator'];
+const PAGE_IDS: PageId[] = INTERNAL ? ['benchmark', 'simulator'] : ['benchmark'];
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
 function initialDataScope(): DataScope {
@@ -127,8 +139,14 @@ function App() {
       onDataScopeChange={setDataScope}
       scopePending={scopePending}
     >
-      {activePage === 'simulator' ? (
-        <>
+      {INTERNAL && ServingPredictionsPage && activePage === 'simulator' ? (
+        <Suspense
+          fallback={
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-[#a9afba]">Loading simulator...</div>
+            </div>
+          }
+        >
           <div className="glass-amber mb-8 flex items-start gap-3 rounded-[22px] px-5 py-4 text-[13px] leading-relaxed text-[#f7b955]">
             <span className="mt-0.5 shrink-0 rounded-full bg-[#ff9f0a]/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#f7b955]">
               WIP
@@ -144,7 +162,7 @@ function App() {
             predictionsUrl={simulatorV2SimPredictionsJsonUrl}
             pageKind="simulator"
           />
-        </>
+        </Suspense>
       ) : loading ? (
         <div className="flex h-64 items-center justify-center">
           <div className="text-[#a9afba]">Loading benchmark data...</div>
