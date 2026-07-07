@@ -155,10 +155,10 @@ export function DataTable({ data }: DataTableProps) {
 
   return (
     <div className="glass-shell rounded-[24px] p-1.5">
-      <div className="overflow-x-auto rounded-[18px] bg-white">
+      <div className="overflow-x-auto rounded-[18px] bg-[#0b0d10]">
       <table className="w-full text-xs">
         <thead>
-          <tr className="border-b border-[#ffffff1f] bg-white">
+          <tr className="border-b border-[#ffffff1f] bg-white/[0.03]">
             {COLUMNS.map((col) => (
               <th
                 key={col.key}
@@ -169,7 +169,7 @@ export function DataTable({ data }: DataTableProps) {
               >
                 {col.label}
                 {sortField === col.key && (
-                  <span className="ml-1 text-[#0071e3]">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
+                  <span className="ml-1 text-[#2dd4bf]">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
                 )}
               </th>
             ))}
@@ -181,7 +181,7 @@ export function DataTable({ data }: DataTableProps) {
             return (
               <tr
                 key={`${r.filename}-${r.config.concurrency}`}
-                className="border-b border-[#e8e8ed] bg-white transition-colors hover:bg-[#f5f5f7]"
+                className="border-b border-[#ffffff0d] transition-colors hover:bg-white/[0.04]"
               >
                 {COLUMNS.map((col) => {
                   if (col.key === 'type' && meta) {
