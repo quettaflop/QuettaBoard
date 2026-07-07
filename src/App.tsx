@@ -9,7 +9,7 @@ import { ThroughputChart } from './components/charts/ThroughputChart';
 import { ComparisonChart } from './components/charts/ComparisonChart';
 import { PerTurnChart } from './components/charts/PerTurnChart';
 import { DataTable } from './components/DataTable';
-import { simulatorV2SimPredictionsJsonUrl } from './dataUrls';
+import { simulatorPredictionsJsonUrl, simulatorV2SimPredictionsJsonUrl } from './dataUrls';
 import { INTERNAL } from './env';
 import type { TabId } from './types';
 import { normalizeDataScope, type DataScope } from './profileMeta';
@@ -27,8 +27,29 @@ const ServingPredictionsPage = INTERNAL
     )
   : null;
 
-type PageId = 'benchmark' | 'simulator';
-const PAGE_IDS: PageId[] = INTERNAL ? ['benchmark', 'simulator'] : ['benchmark'];
+// GPU fleet control + predictions matrix are internal-only too, gated the same
+// way so a public build dead-code-eliminates the `import()` and never emits the
+// chunk. Named export -> default interop for React.lazy.
+const GpuStatePage = INTERNAL
+  ? lazy(() =>
+      import('./components/GpuStatePage').then((m) => ({
+        default: m.GpuStatePage,
+      })),
+    )
+  : null;
+
+const PredictionsMatrixPage = INTERNAL
+  ? lazy(() =>
+      import('./components/PredictionsMatrixPage').then((m) => ({
+        default: m.PredictionsMatrixPage,
+      })),
+    )
+  : null;
+
+type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu';
+const PAGE_IDS: PageId[] = INTERNAL
+  ? ['benchmark', 'matrix', 'simulator_v2', 'gpu']
+  : ['benchmark'];
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
 function initialDataScope(): DataScope {
@@ -139,7 +160,27 @@ function App() {
       onDataScopeChange={setDataScope}
       scopePending={scopePending}
     >
-      {INTERNAL && ServingPredictionsPage && activePage === 'simulator' ? (
+      {INTERNAL && GpuStatePage && activePage === 'gpu' ? (
+        <Suspense
+          fallback={
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-[#a9afba]">Loading GPU state...</div>
+            </div>
+          }
+        >
+          <GpuStatePage />
+        </Suspense>
+      ) : INTERNAL && PredictionsMatrixPage && activePage === 'matrix' ? (
+        <Suspense
+          fallback={
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-[#a9afba]">Loading predictions matrix...</div>
+            </div>
+          }
+        >
+          <PredictionsMatrixPage dataScope={dataScope} predictionsUrl={simulatorPredictionsJsonUrl} />
+        </Suspense>
+      ) : INTERNAL && ServingPredictionsPage && activePage === 'simulator_v2' ? (
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">
