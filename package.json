@@ -18,6 +18,7 @@
     "build": "tsc -b && vite build",
     "build:public": "tsc -b && vite build",
     "build:internal": "VITE_INTERNAL=1 tsc -b && VITE_INTERNAL=1 vite build",
+    "postbuild:internal": "[ -e /root/agentic-serve/inference-benchmark/dashboard/dist/gpu-state.json ] && ln -sfn /root/agentic-serve/inference-benchmark/dashboard/dist/gpu-state.json dist/gpu-state.json || true",
     "lint": "eslint .",
     "preview": "vite preview"
   },
