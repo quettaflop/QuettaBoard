@@ -6,7 +6,7 @@ import {
 } from '../profileMeta';
 import { INTERNAL } from '../env';
 
-type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu';
+type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
 type NavPage = { id: PageId; label: string; icon: ReactNode; badge?: string };
 
 interface LayoutProps {
@@ -74,6 +74,18 @@ const NAV_PAGES: NavPage[] = [
               <path d="M2 15h2" />
               <path d="M20 9h2" />
               <path d="M20 15h2" />
+            </svg>
+          ),
+        },
+        {
+          id: 'coverage',
+          label: 'Coverage',
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <path d="m14 16 2 2 4-4" />
             </svg>
           ),
         },

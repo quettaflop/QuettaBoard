@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useState, useTransition } from 'react';
 import { useData } from './hooks/useData';
+import { useSweepState } from './hooks/useSweepState';
 import { Layout } from './components/Layout';
 import { KPICards } from './components/KPICards';
 import { Filters } from './components/Filters';
@@ -46,9 +47,17 @@ const PredictionsMatrixPage = INTERNAL
     )
   : null;
 
-type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu';
+const CoveragePage = INTERNAL
+  ? lazy(() =>
+      import('./components/CoveragePage').then((m) => ({
+        default: m.CoveragePage,
+      })),
+    )
+  : null;
+
+type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
 const PAGE_IDS: PageId[] = INTERNAL
-  ? ['benchmark', 'matrix', 'simulator_v2', 'gpu']
+  ? ['benchmark', 'matrix', 'simulator_v2', 'gpu', 'coverage']
   : ['benchmark'];
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
@@ -80,7 +89,14 @@ function App() {
   const [activePage, setActivePageState] = useState<PageId>(initialPage);
   const [activeTab, setActiveTab] = useState<TabId>('latency');
   const [scopePending, startScopeTransition] = useTransition();
-  const needsBenchmarkData = activePage === 'benchmark';
+  // The coverage page on the synthetic scope is driven by the compact coverage
+  // artifact + sweep-state and does NOT need the (large) benchmark data.json;
+  // other scopes fall back to benchmark rows. Only the benchmark page derives
+  // filter options / series.
+  const needsBenchmarkData =
+    activePage === 'benchmark' ||
+    (activePage === 'coverage' && dataScope !== 'synthetic_distributional');
+  const deriveBenchmarkData = activePage === 'benchmark';
   const {
     allData,
     data,
@@ -92,7 +108,8 @@ function App() {
     toggleFilter,
     clearFilters,
     clearWorkloadFilters,
-  } = useData(dataScope, { deriveBenchmarkData: needsBenchmarkData, enabled: needsBenchmarkData });
+  } = useData(dataScope, { deriveBenchmarkData, enabled: needsBenchmarkData });
+  const { sweepState } = useSweepState();
 
   const setActivePage = useCallback((page: PageId) => {
     setActivePageState(page);
@@ -160,7 +177,22 @@ function App() {
       onDataScopeChange={setDataScope}
       scopePending={scopePending}
     >
-      {INTERNAL && GpuStatePage && activePage === 'gpu' ? (
+      {INTERNAL && CoveragePage && activePage === 'coverage' ? (
+        <Suspense
+          fallback={
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-[#a9afba]">Loading coverage...</div>
+            </div>
+          }
+        >
+          <CoveragePage
+            allData={allData}
+            sweepState={sweepState}
+            loading={needsBenchmarkData ? loading : false}
+            dataScope={dataScope}
+          />
+        </Suspense>
+      ) : INTERNAL && GpuStatePage && activePage === 'gpu' ? (
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">
