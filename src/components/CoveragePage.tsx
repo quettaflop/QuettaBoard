@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useCoverageBlockers } from '../hooks/useCoverageBlockers';
 import type { BenchmarkResult } from '../types';
-import type { CoverageBlocker, CoverageFailure, CoveragePoint } from '../types-coverage-blockers';
+import type { CoverageBlocker, CoverageEvidence, CoverageFailure, CoveragePoint } from '../types-coverage-blockers';
 import type { SweepCell, SweepState } from '../types-sweep';
 import { DATA_SCOPE_META, normalizeDataScope, profileDisplayName, type DataScope } from '../profileMeta';
 
@@ -91,6 +91,26 @@ function compareModels(a: string, b: string): number {
   return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
 }
 
+// Full per-cell failure record, bundled from the blocker's missing_points[] and
+// the blocker-level failure metadata. Carries the finer failure_class so cells
+// can be colored by CLASS (red/yellow) rather than the coarse disposition.
+interface CellDetail {
+  failClass?: string;
+  disposition?: 'failed' | 'na' | 'todo' | null;
+  label?: string;
+  reason?: string;
+  explanation?: string;
+  evidence?: CoverageEvidence | null;
+  attempt?: number | null;
+  maxAttempts?: number | null;
+  remoteLog?: string | null;
+}
+
+// Machine-readable infeasibility class from sweep-state (known_oom /
+// profile_infeasible `kind`, plus VRAM skips which are always hardware):
+//   'hw_permanent' → blue "hardware can't"; 'sw_fixable' → yellow "fixable".
+type InfeasibleKind = 'hw_permanent' | 'sw_fixable';
+
 interface ProfileRow {
   profile: string;
   isMultiTurn: boolean;
@@ -98,8 +118,30 @@ interface ProfileRow {
   present: Set<number>;
   blocked?: Map<number, string>;
   failed?: Map<number, string>;
+  // Per-concurrency failure detail (class + evidence) keyed by concurrency.
+  detail?: Map<number, CellDetail>;
   infeasibleReason?: string;
+  infeasibleKind?: InfeasibleKind;
   todoReason?: string;
+}
+
+// The cell the user clicked, lifted to CoveragePage and rendered by the side card.
+interface SelectedCell {
+  hardware: string;
+  model: string;
+  backend: string;
+  profile: string;
+  concurrency: number;
+  tone: 'red' | 'yellow' | 'hw' | 'green' | 'gray';
+  failureClass?: string;
+  infeasibleKind?: InfeasibleKind;
+  label?: string;
+  reason?: string;
+  explanation?: string;
+  evidence?: CoverageEvidence | null;
+  attempt?: number | null;
+  maxAttempts?: number | null;
+  remoteLog?: string | null;
 }
 
 interface DataModel {
@@ -148,6 +190,12 @@ interface HwGroup {
     totalHave: number;
     totalNeed: number;
     failedCells: number;
+    // Tone-based counts computed via failureTone over the points, so the
+    // header chips match the cell colors exactly.
+    runtimeFailures: number;  // red cells
+    hwCells: number;          // blue cells (hardware genuinely can't)
+    blockedCells: number;     // yellow cells (couldn't run — fixable)
+    pendingCells: number;     // gray/hollow cells (expected, not run, no failure)
   };
 }
 
@@ -364,6 +412,130 @@ function classifySweepFailure(failure?: SweepCell['failure_metadata'] | null): C
   return { ...failure, category, label };
 }
 
+// --- Failure-class → tone mapping (the semantic core of this page) -----------
+// Cells are colored by the FINER failure_class, not the coarse disposition, so
+// "model not staged" reads yellow while "low success / OOM / crash" read red.
+//   RED    = ran but failed operationally.
+//   YELLOW = couldn't run / blocked (not staged, unsupported, infeasible).
+const RED_FAILURE_CLASSES = new Set<string>([
+  'engine_crash', 'low_success_rate', 'oom_kv_cache', 'timeout',
+  'requests_aborted', 'driver_fault', 'cuda_error',
+]);
+const YELLOW_FAILURE_CLASSES = new Set<string>([
+  'model_missing', 'hw_infeasible', 'arch_unsupported', 'unsupported', 'sm_unsupported',
+]);
+
+// 'hw' = blue/slate: the GPU physically can't run this (arch / compute
+// capability). Distinct from yellow "couldn't run — fixable".
+type CellTone = 'red' | 'yellow' | 'hw';
+
+// The single source of truth for failure color. Applied everywhere failure is
+// shown (cells, profile-row badges, header chips, the detail card) so they all
+// agree. failure_class wins; when absent, fall back to disposition/feasibility.
+// Infeasible cells route by `kind`: a permanent hardware limit (hw_permanent, or
+// omitted — VRAM skips) → blue 'hw'; a fixable env/software gap → yellow.
+function failureTone(
+  failureClass?: string | null,
+  disposition?: 'failed' | 'na' | 'todo' | null,
+  infeasible?: boolean,
+  infeasibleKind?: InfeasibleKind | null,
+): CellTone | null {
+  const fc = failureClass ? failureClass.toLowerCase() : '';
+  if (fc) {
+    if (fc.startsWith('oom')) return 'red';          // any oom* is red
+    if (RED_FAILURE_CLASSES.has(fc)) return 'red';
+    if (YELLOW_FAILURE_CLASSES.has(fc)) return 'yellow';
+  }
+  // Fallback when failure_class is absent or unrecognized.
+  if (infeasible) return infeasibleKind === 'sw_fixable' ? 'yellow' : 'hw';
+  if (disposition === 'failed') return 'red';
+  if (disposition === 'na') return 'yellow';
+  return null;
+}
+
+type CellVisual = 'present' | 'red' | 'yellow' | 'hw' | 'missing' | 'faint';
+
+// Resolve the visual state of one (profile, concurrency) cell. Shared by the
+// cell renderer, the model-row aggregate, the profile-row badges, and the
+// header-chip counting so every surface stays consistent.
+function profileCellTone(p: ProfileRow, c: number): { visual: CellVisual; detail?: CellDetail } {
+  const detail = p.detail?.get(c);
+  if (p.present.has(c)) return { visual: 'present', detail };
+  const expected = p.expected.includes(c);
+  const failedReason = p.failed?.get(c);
+  const blockedReason = p.blocked?.get(c);
+  const disposition = detail?.disposition
+    ?? (failedReason ? 'failed' : blockedReason ? 'na' : undefined);
+  const tone = failureTone(detail?.failClass, disposition, Boolean(p.infeasibleReason), p.infeasibleKind);
+  if (tone === 'red') return { visual: 'red', detail };
+  if (tone === 'yellow') return { visual: 'yellow', detail };
+  if (tone === 'hw') return { visual: 'hw', detail };
+  if (expected) return { visual: 'missing', detail };
+  return { visual: 'faint', detail };
+}
+
+interface ConcAgg {
+  present: number;
+  runnable: number;  // present + red + missing (expected, not blocked as N/A)
+  red: number;
+  yellow: number;
+  hw: number;        // blue cells (hardware genuinely can't)
+  missing: number;
+  rep?: { p: ProfileRow; c: number; visual: CellVisual };  // representative failing cell
+}
+
+// Aggregate every profile's cell at each concurrency into one model-row column.
+function aggregateConcs(profiles: ProfileRow[]): Map<number, ConcAgg> {
+  const out = new Map<number, ConcAgg>();
+  for (const p of profiles) {
+    for (const c of p.expected) {
+      const { visual } = profileCellTone(p, c);
+      const s = out.get(c) ?? { present: 0, runnable: 0, red: 0, yellow: 0, hw: 0, missing: 0 };
+      if (visual === 'present') { s.present += 1; s.runnable += 1; }
+      else if (visual === 'red') { s.red += 1; s.runnable += 1; if (!s.rep || s.rep.visual !== 'red') s.rep = { p, c, visual }; }
+      else if (visual === 'yellow') { s.yellow += 1; if (!s.rep) s.rep = { p, c, visual }; }
+      else if (visual === 'hw') { s.hw += 1; if (!s.rep) s.rep = { p, c, visual }; }
+      else if (visual === 'missing') { s.missing += 1; s.runnable += 1; }
+      out.set(c, s);
+    }
+  }
+  return out;
+}
+
+function toneToCard(visual: CellVisual): SelectedCell['tone'] {
+  return visual === 'red' ? 'red' : visual === 'yellow' ? 'yellow' : visual === 'hw' ? 'hw' : visual === 'present' ? 'green' : 'gray';
+}
+
+// Build the side-card payload from a profile row + concurrency.
+function buildSelectedCell(
+  hardware: string,
+  model: string,
+  backend: string,
+  p: ProfileRow,
+  c: number,
+  visual: CellVisual,
+): SelectedCell {
+  const d = p.detail?.get(c);
+  const fallbackLabel = p.failed?.get(c) ?? p.blocked?.get(c) ?? p.infeasibleReason;
+  return {
+    hardware,
+    model,
+    backend,
+    profile: p.profile,
+    concurrency: c,
+    tone: toneToCard(visual),
+    failureClass: d?.failClass,
+    infeasibleKind: p.infeasibleKind,
+    label: d?.label ?? fallbackLabel,
+    reason: d?.reason,
+    explanation: d?.explanation,
+    evidence: d?.evidence ?? null,
+    attempt: d?.attempt ?? null,
+    maxAttempts: d?.maxAttempts ?? null,
+    remoteLog: d?.remoteLog ?? null,
+  };
+}
+
 export function CoveragePage({
   allData,
   sweepState,
@@ -464,11 +636,13 @@ export function CoveragePage({
       sweepState?.models[model]?.weights_gb;
     const ratio = sweepState?.feasibility_ratio ?? 0.85;
     const profileInfeasible = new Map<string, string>();
+    const profileInfeasibleKind = new Map<string, InfeasibleKind>();
     if (canonicalCoverage) {
       for (const item of sweepState?.profile_infeasible ?? []) {
         if ((normalizeDataScope(item.data_scope ?? null) ?? 'archived') !== gridScope) continue;
         for (const key of profileInfeasibleKeys(item.hw_label, item.model, item.backend, item.profile)) {
           profileInfeasible.set(key, item.reason);
+          profileInfeasibleKind.set(key, item.kind ?? 'hw_permanent');
         }
       }
     }
@@ -481,6 +655,17 @@ export function CoveragePage({
       for (const key of profileInfeasibleKeys(hw, model, backend, profile)) {
         const reason = profileInfeasible.get(key);
         if (reason) return reason;
+      }
+      return undefined;
+    };
+    const profileInfeasibleKindFor = (
+      hw: string,
+      model: string,
+      backend: string,
+      profile: string,
+    ): InfeasibleKind | undefined => {
+      for (const key of profileInfeasibleKeys(hw, model, backend, profile)) {
+        if (profileInfeasible.has(key)) return profileInfeasibleKind.get(key) ?? 'hw_permanent';
       }
       return undefined;
     };
@@ -519,6 +704,7 @@ export function CoveragePage({
       backend: string,
       status: StatusModel['status'],
       reason?: string,
+      kind?: InfeasibleKind,
     ): ProfileRow[] => {
       const specs = new Map<string, { profile: string; isMultiTurn: boolean; expected: Set<number> }>();
       const addSpec = (profile: string, isMultiTurn: boolean, concurrencies: number[]) => {
@@ -542,12 +728,19 @@ export function CoveragePage({
 
       const rows: ProfileRow[] = [];
       const modelLevelNa = status === 'oom' || status === 'skipped' || status === 'infeasible';
+      // A VRAM-infeasible model or a known_oom cell is a structural N/A that
+      // carries an infeasibility kind, so its cells color by hw_permanent (blue)
+      // vs sw_fixable (yellow). 'skipped' has no kind and stays a generic N/A.
+      const modelLevelInfeasible = status === 'infeasible' || status === 'oom';
       const modelLevelFailed = status === 'failed';
       const todoReason = reason ?? 'expected by sweep grid; no completed run exists yet';
       for (const spec of specs.values()) {
         const expected = uniqueNumbers(Array.from(spec.expected));
         const profileReason = profileInfeasibleReasonFor(hw, model, backend, spec.profile);
-        const infeasibleReason = profileReason ?? (status === 'infeasible' ? reason : undefined);
+        const infeasibleReason = profileReason ?? (modelLevelInfeasible ? reason : undefined);
+        const infeasibleKind = profileReason
+          ? profileInfeasibleKindFor(hw, model, backend, spec.profile)
+          : (modelLevelInfeasible ? (kind ?? 'hw_permanent') : undefined);
         const blocked = new Map<number, string>();
         const failed = new Map<number, string>();
         if (modelLevelNa && !infeasibleReason) {
@@ -570,7 +763,9 @@ export function CoveragePage({
           present: new Set<number>(),
           blocked,
           failed,
+          detail: detailMapFor(hw, model, backend, spec.profile, expected),
           infeasibleReason,
+          infeasibleKind,
           todoReason: status === 'untested' || status === 'pending' ? todoReason : undefined,
         });
       }
@@ -632,6 +827,55 @@ export function CoveragePage({
       }
     }
 
+    // Per-cell failure detail keyed by point. Built from EVERY blocker's
+    // missing_points (not gated by shouldRenderBlockedPoints) so a cell can be
+    // colored by its own failure_class even when the coarse job disposition
+    // would have demoted it to TODO/N/A (e.g. oom_kv_cache marked 'todo').
+    const cellDetailByKey = new Map<string, CellDetail>();
+    for (const blocker of blockersState?.blockers ?? []) {
+      const f = blocker.failure;
+      for (const point of blocker.missing_points ?? []) {
+        const key = pointKeyFromSummary(point);
+        const failClass = point.failure_class
+          ?? blocker.coverage_failure_class
+          ?? f?.failure_class
+          ?? undefined;
+        cellDetailByKey.set(key, {
+          failClass: failClass ?? undefined,
+          disposition: point.disposition ?? blocker.coverage_disposition ?? null,
+          label: point.label ?? blocker.coverage_label ?? f?.label ?? undefined,
+          reason: f?.reason ?? blocker.reason ?? undefined,
+          explanation: blocker.coverage_explanation ?? undefined,
+          evidence: f?.evidence ?? blocker.coverage_evidence ?? null,
+          attempt: f?.attempt ?? blocker.attempt ?? null,
+          maxAttempts: f?.max_attempts ?? null,
+          remoteLog: f?.remote_log ?? null,
+        });
+      }
+    }
+    const detailFor = (
+      hw: string,
+      model: string,
+      backend: string,
+      profile: string,
+      concurrency: number,
+    ): CellDetail | undefined => cellDetailByKey.get(pointKey(hw, model, backend, profile, concurrency));
+
+    const detailMapFor = (
+      hw: string,
+      model: string,
+      backend: string,
+      profile: string,
+      expected: number[],
+    ): Map<number, CellDetail> => {
+      const map = new Map<number, CellDetail>();
+      for (const concurrency of expected) {
+        const d = detailFor(hw, model, backend, profile, concurrency);
+        if (d) map.set(concurrency, d);
+      }
+      return map;
+    };
+
     const compactJobById = new Map<string, CoverageBlocker>();
     for (const job of compactCoverageJobs) compactJobById.set(job.job_id, job);
 
@@ -683,6 +927,7 @@ export function CoveragePage({
         running: 0, pending: 0, failed: 0, skipped: 0,
         oom: 0, infeasible: 0, untested: 0,
         totalHave: 0, totalNeed: 0, failedCells: 0,
+        runtimeFailures: 0, hwCells: 0, blockedCells: 0, pendingCells: 0,
       };
       for (const model of modelList) {
         // Always include ACTIVE_BACKENDS (current sweep target) plus any
@@ -759,6 +1004,7 @@ export function CoveragePage({
                   }
                 }
                 const infeasibleReason = profileInfeasibleReasonFor(hw, model, backend, profile);
+                const infeasibleKind = profileInfeasibleKindFor(hw, model, backend, profile);
                 if (isScoped && expected.length === 0 && present.size === 0 && !infeasibleReason) return;
                 if (!infeasibleReason) {
                   const have = [...present].filter((c) => expected.includes(c) && !blocked.has(c)).length;
@@ -767,7 +1013,8 @@ export function CoveragePage({
                   totalNeed += expected.filter((c) => !blocked.has(c)).length;
                   summary.failedCells += failedMissing;
                 }
-                profiles.push({ profile, isMultiTurn, expected, present, blocked, failed, infeasibleReason });
+                const detail = detailMapFor(hw, model, backend, profile, expected);
+                profiles.push({ profile, isMultiTurn, expected, present, blocked, failed, detail, infeasibleReason, infeasibleKind });
               };
               for (const profile of singleProfiles) addProfile(profile, false);
               for (const profile of multiProfiles) addProfile(profile, true);
@@ -789,7 +1036,7 @@ export function CoveragePage({
             const attempt = failure?.attempt ?? cell.attempt;
             const maxAttempts = failure?.max_attempts ?? null;
             if (cell.status === 'known_oom') {
-              const profiles = buildStatusProfiles(hw, model, backend, 'oom', statusReason);
+              const profiles = buildStatusProfiles(hw, model, backend, 'oom', statusReason, cell.kind);
               models.push({ kind: 'status', hardware: hw, model, backend, status: 'oom', reason: statusReason, attempt: attempt ?? undefined, maxAttempts, failure, totalNeed: 0, profiles });
               summary.oom += 1;
               continue;
@@ -867,6 +1114,19 @@ export function CoveragePage({
           }
         }
       }
+      // Tone-based cell counts, computed the same way the cells render, so the
+      // header chips agree with the grid.
+      for (const m of models) {
+        for (const p of m.profiles ?? []) {
+          for (const c of p.expected) {
+            const { visual } = profileCellTone(p, c);
+            if (visual === 'red') summary.runtimeFailures += 1;
+            else if (visual === 'hw') summary.hwCells += 1;
+            else if (visual === 'yellow') summary.blockedCells += 1;
+            else if (visual === 'missing') summary.pendingCells += 1;
+          }
+        }
+      }
       hwGroups.push({ hardware: hw, models, summary });
     }
 
@@ -875,6 +1135,7 @@ export function CoveragePage({
 
   const [expandedHw, setExpandedHw] = useState<Set<string>>(new Set());
   const [expandedModel, setExpandedModel] = useState<Set<string>>(new Set());
+  const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null);
 
   const toggleHw = (hw: string) => {
     setExpandedHw((prev) => {
@@ -943,9 +1204,13 @@ export function CoveragePage({
       acc.totalHave += g.summary.totalHave;
       acc.totalNeed += g.summary.totalNeed;
       acc.failedCells += g.summary.failedCells;
+      acc.runtimeFailures += g.summary.runtimeFailures;
+      acc.hwCells += g.summary.hwCells;
+      acc.blockedCells += g.summary.blockedCells;
+      acc.pendingCells += g.summary.pendingCells;
       return acc;
     },
-    { complete: 0, partial: 0, running: 0, pending: 0, failed: 0, skipped: 0, oom: 0, infeasible: 0, untested: 0, totalHave: 0, totalNeed: 0, failedCells: 0 },
+    { complete: 0, partial: 0, running: 0, pending: 0, failed: 0, skipped: 0, oom: 0, infeasible: 0, untested: 0, totalHave: 0, totalNeed: 0, failedCells: 0, runtimeFailures: 0, hwCells: 0, blockedCells: 0, pendingCells: 0 },
   );
   const optionalPresentCount = dataScope === 'synthetic_distributional'
     ? blockersState?.optional_present_points_count ?? 0
@@ -1028,44 +1293,52 @@ export function CoveragePage({
 
       <CoverageLegend dataScope={dataScope} />
 
-      <div className="glass-shell overflow-x-auto rounded-lg">
-        <table className="min-w-full border-collapse text-xs">
-          <thead className="sticky top-0 z-10 bg-[#0b0d10]">
-            <tr className="border-b border-[#ffffff14] text-[#a9afba]">
-              <th className="px-3 py-1.5 text-left font-medium" colSpan={3}></th>
-              <th className="px-1.5 py-1.5 text-center text-[10px] font-semibold uppercase tracking-wide text-[#a9afba]" colSpan={allConcs.length}>
-                Concurrency
-              </th>
-              <th className="px-3 py-1.5 text-right font-medium"></th>
-            </tr>
-            <tr className="border-b border-[#ffffff14] text-[#a9afba]">
-              <th className="w-[116px] px-3 py-2 text-left font-medium">Family</th>
-              <th className="w-[220px] px-3 py-2 text-left font-medium">Model</th>
-              <th className="px-3 py-2 text-left font-medium">Profile / status</th>
-              {allConcs.map((c) => (
-                <th key={c} className="px-1.5 py-2 text-center font-mono font-normal">{c}</th>
-              ))}
-              <th className="px-3 py-2 text-right font-medium">Coverage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {groups.map((g) => {
-              const hwOpen = expandedHw.has(g.hardware);
-              return (
-                <GroupRows
-                  key={g.hardware}
-                  group={g}
-                  hwOpen={hwOpen}
-                  expandedModel={expandedModel}
-                  onToggleHw={() => toggleHw(g.hardware)}
-                  onToggleModel={toggleModel}
-                  allConcs={allConcs}
-                  expectedCellsPerModel={coveragePlan.expectedCellsPerModel}
-                />
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="glass-shell min-w-0 overflow-x-auto rounded-lg">
+          <table className="min-w-full border-collapse text-xs">
+            <thead className="sticky top-0 z-10 bg-[#0b0d10]">
+              <tr className="border-b border-[#ffffff14] text-[#a9afba]">
+                <th className="px-3 py-1.5 text-left font-medium" colSpan={3}></th>
+                <th className="px-1.5 py-1.5 text-center text-[10px] font-semibold uppercase tracking-wide text-[#a9afba]" colSpan={allConcs.length}>
+                  Concurrency
+                </th>
+                <th className="px-3 py-1.5 text-right font-medium"></th>
+              </tr>
+              <tr className="border-b border-[#ffffff14] text-[#a9afba]">
+                <th className="w-[116px] px-3 py-2 text-left font-medium">Family</th>
+                <th className="w-[220px] px-3 py-2 text-left font-medium">Model</th>
+                <th className="px-3 py-2 text-left font-medium">Profile / status</th>
+                {allConcs.map((c) => (
+                  <th key={c} className="px-1.5 py-2 text-center font-mono font-normal">{c}</th>
+                ))}
+                <th className="px-3 py-2 text-right font-medium">Coverage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map((g) => {
+                const hwOpen = expandedHw.has(g.hardware);
+                return (
+                  <GroupRows
+                    key={g.hardware}
+                    group={g}
+                    hwOpen={hwOpen}
+                    expandedModel={expandedModel}
+                    onToggleHw={() => toggleHw(g.hardware)}
+                    onToggleModel={toggleModel}
+                    allConcs={allConcs}
+                    expectedCellsPerModel={coveragePlan.expectedCellsPerModel}
+                    onSelectCell={setSelectedCell}
+                    selectedCell={selectedCell}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <aside className="self-start lg:sticky lg:top-4">
+          <CoverageDetailCard cell={selectedCell} onClear={() => setSelectedCell(null)} />
+        </aside>
       </div>
 
     </div>
@@ -1082,19 +1355,23 @@ interface GroupRowsProps {
   onToggleModel: (key: string) => void;
   allConcs: number[];
   expectedCellsPerModel: number;
+  onSelectCell: (cell: SelectedCell) => void;
+  selectedCell: SelectedCell | null;
 }
 
-function GroupRows({ group, hwOpen, expandedModel, onToggleHw, onToggleModel, allConcs, expectedCellsPerModel }: GroupRowsProps) {
+function GroupRows({ group, hwOpen, expandedModel, onToggleHw, onToggleModel, allConcs, expectedCellsPerModel, onSelectCell, selectedCell }: GroupRowsProps) {
   const g = group;
   const pct = g.summary.totalNeed > 0
     ? Math.round((g.summary.totalHave / g.summary.totalNeed) * 100)
     : 0;
-  const blocked = g.summary.skipped + g.summary.oom + g.summary.infeasible;
+  // Chips recomputed in the new terms (failureTone over the points) so the
+  // numbers match the cell colors: red = runtime failures, yellow = blocked.
   const chips = ([
     { count: g.summary.complete, label: 'complete', tone: 'good' },
-    { count: g.summary.failed, label: 'failed', tone: 'danger', title: `${g.summary.failedCells} failed expected cells` },
-    { count: blocked, label: 'N/A', tone: 'na', title: `${g.summary.skipped} skipped, ${g.summary.oom} OOM, ${g.summary.infeasible} infeasible` },
-    { count: g.summary.untested, label: 'TODO', tone: 'todo' },
+    { count: g.summary.runtimeFailures, label: 'runtime failures', tone: 'danger', title: 'ran but failed (crash / low success / OOM)' },
+    { count: g.summary.hwCells, label: 'hardware N/A', tone: 'hardware', title: "hardware genuinely can't (arch / compute capability, e.g. sm < 80)" },
+    { count: g.summary.blockedCells, label: 'fixable', tone: 'warn', title: "couldn't run but fixable (model not staged / needs rebuild or upgrade)" },
+    { count: g.summary.pendingCells, label: 'pending', tone: 'muted', title: 'expected by the sweep grid; no run yet' },
   ] satisfies Array<{ count: number; label: string; tone: StatusTone; title?: string }>).filter(({ count }) => count > 0);
 
   return (
@@ -1118,9 +1395,9 @@ function GroupRows({ group, hwOpen, expandedModel, onToggleHw, onToggleModel, al
               {g.summary.totalHave}/{g.summary.totalNeed} filled
             </span>
           )}
-          {g.summary.failedCells > 0 && (
+          {g.summary.runtimeFailures > 0 && (
             <span className="ml-2 text-[#f85149]">
-              {g.summary.failedCells} failed
+              {g.summary.runtimeFailures} failed
             </span>
           )}
         </td>
@@ -1143,6 +1420,8 @@ function GroupRows({ group, hwOpen, expandedModel, onToggleHw, onToggleModel, al
             onToggle={() => onToggleModel(mKey)}
             allConcs={allConcs}
             expectedCellsPerModel={expectedCellsPerModel}
+            onSelectCell={onSelectCell}
+            selectedCell={selectedCell}
           />
         );
       })}
@@ -1158,15 +1437,26 @@ interface ModelRowsProps {
   onToggle: () => void;
   allConcs: number[];
   expectedCellsPerModel: number;
+  onSelectCell: (cell: SelectedCell) => void;
+  selectedCell: SelectedCell | null;
 }
 
-function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expectedCellsPerModel }: ModelRowsProps) {
+function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expectedCellsPerModel, onSelectCell, selectedCell }: ModelRowsProps) {
   const family = modelFamily(model.model);
+  // Render one aggregated concurrency column for a model row. Clicking a
+  // failing (red/yellow) column selects its representative cell for the card.
+  const renderAggCell = (agg: Map<number, ConcAgg>, c: number) => {
+    const s = agg.get(c);
+    if (!s) return <Cell state="faint" />;
+    const rep = s.rep;
+    const onClick = rep
+      ? () => onSelectCell(buildSelectedCell(hwName, model.model, model.backend, rep.p, rep.c, rep.visual))
+      : undefined;
+    const title = rep ? rep.p.detail?.get(rep.c)?.label ?? rep.p.failed?.get(rep.c) ?? rep.p.blocked?.get(rep.c) : undefined;
+    return <PartialCell present={s.present} expected={s.runnable} failed={s.red} blocked={s.yellow} hw={s.hw} title={title} onClick={onClick} />;
+  };
 
   if (model.kind === 'status') {
-    const bg = bgForStatus(model.status);
-    const txt = colorForStatus(model.status);
-    const label = labelForStatus(model.status);
     const totalNeed = model.totalNeed ?? expectedCellsPerModel;
     const profiles = model.profiles ?? [];
     const canExpand = profiles.length > 0;
@@ -1177,27 +1467,20 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
         ? `${model.status === 'failed' ? 'run attempt ' : ''}${model.attempt}/${model.maxAttempts}`
         : `${model.status === 'failed' ? 'run attempt ' : ''}${model.attempt}`
       : null;
-    const concStats = new Map<number, { present: number; expected: number; failed: number; na: number; reason?: string; failedReason?: string }>();
-    for (const p of profiles) {
-      for (const c of p.expected) {
-        const s = concStats.get(c) ?? { present: 0, expected: 0, failed: 0, na: 0 };
-        const blockedReason = p.blocked?.get(c);
-        const naReason = p.infeasibleReason ?? blockedReason;
-        const failedReason = p.failed?.get(c);
-        if (naReason) {
-          s.na += 1;
-          s.reason = s.reason ?? naReason;
-        } else {
-          s.expected += 1;
-          if (p.present.has(c)) s.present += 1;
-          if (failedReason && !p.present.has(c)) {
-            s.failed += 1;
-            s.failedReason = s.failedReason ?? failedReason;
-          }
-        }
-        concStats.set(c, s);
-      }
-    }
+    const concStats = aggregateConcs(profiles);
+    // Drive the whole row (badge / word / number) by the actual cell tones so it
+    // matches the grid: a model-not-staged row reads yellow N/A even though the
+    // coarse job disposition is "failed".
+    let aggRed = 0;
+    let aggYellow = 0;
+    let aggHw = 0;
+    for (const s of concStats.values()) { aggRed += s.red; aggYellow += s.yellow; aggHw += s.hw; }
+    // Precedence: red (ran but failed) > yellow (fixable) > hw (hardware can't).
+    // A purely-hardware row (all blue) reads blue; any fixable cell flags yellow.
+    const rowTone: CellTone | undefined = aggRed > 0 ? 'red' : aggYellow > 0 ? 'yellow' : aggHw > 0 ? 'hw' : undefined;
+    const bg = rowTone === 'red' ? 'bg-[#f85149]/5' : rowTone === 'yellow' ? 'bg-[#ffb74d]/5' : rowTone === 'hw' ? 'bg-[#64b5f6]/5' : bgForStatus(model.status);
+    const txt = rowTone === 'red' ? 'text-[#f85149]' : rowTone === 'yellow' ? 'text-[#ffb74d]' : rowTone === 'hw' ? 'text-[#64b5f6]' : colorForStatus(model.status);
+    const label = rowTone === 'red' ? 'ran but failed' : rowTone === 'yellow' ? "couldn't run" : rowTone === 'hw' ? "hardware can't" : labelForStatus(model.status);
     return (
       <>
         <tr
@@ -1216,7 +1499,7 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
           </td>
           <td className="px-3 py-1.5">
             <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-              <StatusBadge kind={model.status} />
+              <StatusBadge kind={model.status} tone={rowTone} />
               <span className={`font-medium ${txt}`}>{label}</span>
               {profiles.length > 0 && <span className="text-[10px] uppercase tracking-wide text-[#a9afba]">· {profiles.length} profiles</span>}
               {requeueLabel && <span className="text-[#f85149]">· {requeueLabel}</span>}
@@ -1224,20 +1507,18 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
               {model.reason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[#a9afba]" title={model.reason}>— {model.reason}</span>}
             </div>
           </td>
-          {allConcs.map((c) => {
-            const s = concStats.get(c);
-            if (!s) return <td key={c} className="px-1 py-1.5 text-center"><Cell state="na" title={model.reason} /></td>;
-            if (s.expected === 0) return <td key={c} className="px-1 py-1.5 text-center"><Cell state="excluded" title={s.reason ?? model.reason} /></td>;
-            return <td key={c} className="px-1 py-1.5 text-center"><PartialCell present={s.present} expected={s.expected} failed={s.failed} title={s.failedReason} /></td>;
-          })}
+          {allConcs.map((c) => (
+            <td key={c} className="px-1 py-1.5 text-center">{renderAggCell(concStats, c)}</td>
+          ))}
           <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono">
-            {model.status === 'skipped' || model.status === 'oom' || model.status === 'infeasible' ? (
+            {aggRed > 0 ? (
+              <span className="text-[#f85149]" title={model.reason}>0/{totalNeed} failed</span>
+            ) : aggYellow > 0 ? (
+              <span className="text-[#ffb74d]" title={model.reason}>N/A</span>
+            ) : aggHw > 0 ? (
               <span className="text-[#64b5f6]" title={model.reason}>N/A</span>
-            ) : model.status === 'untested' || model.status === 'pending' ||
-             model.status === 'running' || model.status === 'failed' ? (
-              <span className={model.status === 'failed' ? 'text-[#f85149]' : 'text-[#a9afba]'}>
-                0/{totalNeed}{model.status === 'failed' ? ' failed' : ''}
-              </span>
+            ) : model.status === 'untested' || model.status === 'pending' || model.status === 'running' ? (
+              <span className="text-[#a9afba]">0/{totalNeed}</span>
             ) : (
               <span className="text-[#a9afba]">—</span>
             )}
@@ -1250,6 +1531,8 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
             backend={model.backend}
             profiles={profiles}
             allConcs={allConcs}
+            onSelectCell={onSelectCell}
+            selectedCell={selectedCell}
           />
         )}
       </>
@@ -1260,27 +1543,7 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
   const rowPct = model.totalNeed > 0 ? Math.round((model.totalHave / model.totalNeed) * 100) : 0;
   // Per-concurrency fill fraction across all profiles. A conc is "full" only
   // when every profile that expects it actually has a run at that conc.
-  const concStats = new Map<number, { present: number; expected: number; failed: number; na: number; reason?: string; failedReason?: string }>();
-  for (const p of model.profiles) {
-    if (p.infeasibleReason) continue;
-    for (const c of p.expected) {
-      const s = concStats.get(c) ?? { present: 0, expected: 0, failed: 0, na: 0 };
-      const blockedReason = p.blocked?.get(c);
-      if (blockedReason) {
-        s.na += 1;
-        s.reason = s.reason ?? blockedReason;
-      } else {
-        s.expected += 1;
-        if (p.present.has(c)) s.present += 1;
-        const failedReason = p.failed?.get(c);
-        if (failedReason && !p.present.has(c)) {
-          s.failed += 1;
-          s.failedReason = s.failedReason ?? failedReason;
-        }
-      }
-      concStats.set(c, s);
-    }
-  }
+  const concStats = aggregateConcs(model.profiles);
 
   return (
     <>
@@ -1299,15 +1562,12 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
         <td className="whitespace-nowrap px-3 py-1.5 text-[#a9afba]">
           <span className="text-[10px] uppercase tracking-wide">{model.profiles.length} profiles</span>
         </td>
-        {allConcs.map((c) => {
-          const s = concStats.get(c);
-          if (!s) return <td key={c} className="px-1 py-1.5 text-center"><Cell state="na" /></td>;
-          if (s.expected === 0 && s.na > 0) return <td key={c} className="px-1 py-1.5 text-center"><Cell state="excluded" title={s.reason} /></td>;
-          return <td key={c} className="px-1 py-1.5 text-center"><PartialCell present={s.present} expected={s.expected} failed={s.failed} title={s.failedReason} /></td>;
-        })}
+        {allConcs.map((c) => (
+          <td key={c} className="px-1 py-1.5 text-center">{renderAggCell(concStats, c)}</td>
+        ))}
         <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono">
           {model.totalNeed === 0 ? (
-            <span className="text-[#64b5f6]">N/A</span>
+            <span className="text-[#ffb74d]">N/A</span>
           ) : (
             <span
               className={
@@ -1328,6 +1588,8 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
           backend={model.backend}
           profiles={model.profiles}
           allConcs={allConcs}
+          onSelectCell={onSelectCell}
+          selectedCell={selectedCell}
         />
       )}
       </>
@@ -1340,25 +1602,44 @@ function ProfileDetailRows({
   backend,
   profiles,
   allConcs,
+  onSelectCell,
+  selectedCell,
 }: {
   hwName: string;
   modelName: string;
   backend: string;
   profiles: ProfileRow[];
   allConcs: number[];
+  onSelectCell: (cell: SelectedCell) => void;
+  selectedCell: SelectedCell | null;
 }) {
   return (
     <>
       {profiles.map((p) => {
-        const blockedCount = p.blocked?.size ?? 0;
-        const failedCount = p.failed?.size ?? 0;
-        const firstBlockedReason = p.blocked ? Array.from(p.blocked.values())[0] : undefined;
-        const firstFailedReason = p.failed ? Array.from(p.failed.values())[0] : undefined;
-        const have = [...p.present].filter((c) => p.expected.includes(c) && !p.blocked?.has(c)).length;
-        const need = p.infeasibleReason ? 0 : p.expected.filter((c) => !p.blocked?.has(c)).length;
+        // Recompute badges from failureTone over the cells so the counts match
+        // the colored squares exactly (red = ran but failed, yellow = blocked).
+        let redCount = 0;
+        let yellowCount = 0;
+        let hwCount = 0;
+        let todoCount = 0;
+        let firstRed: CellDetail | undefined;
+        let firstYellow: CellDetail | undefined;
+        for (const c of p.expected) {
+          const { visual, detail } = profileCellTone(p, c);
+          if (visual === 'red') { redCount += 1; firstRed = firstRed ?? detail; }
+          else if (visual === 'yellow') { yellowCount += 1; firstYellow = firstYellow ?? detail; }
+          else if (visual === 'hw') { hwCount += 1; }
+          else if (visual === 'missing') todoCount += 1;
+        }
+        const have = [...p.present].filter((c) => p.expected.includes(c)).length;
+        const need = p.infeasibleReason ? 0 : p.expected.length - yellowCount - hwCount;
         const profPct = need > 0 ? Math.round((have / need) * 100) : 0;
-        const profUntested = !p.infeasibleReason && blockedCount === 0 && failedCount === 0 && have === 0;
+        const profUntested = redCount === 0 && yellowCount === 0 && hwCount === 0 && have === 0 && todoCount > 0;
+        // Blue "hardware can't" vs yellow "fixable" for the N/A rendering.
+        const isHwInfeasible = p.infeasibleKind === 'hw_permanent' || hwCount > 0;
         const todoReason = p.todoReason ?? 'expected by sweep grid; no completed run exists yet';
+        const redReason = firstRed?.label ?? firstRed?.reason ?? (p.failed ? Array.from(p.failed.values())[0] : undefined);
+        const yellowReason = firstYellow?.label ?? p.infeasibleReason ?? firstYellow?.reason ?? (p.blocked ? Array.from(p.blocked.values())[0] : undefined);
         const displayName = profileDisplayName(p.profile);
         return (
           <tr key={`${hwName}|${modelName}|${backend}|${p.profile}`} className="border-b border-[#ffffff14] bg-[#0b0d10]/50">
@@ -1373,39 +1654,43 @@ function ProfileDetailRows({
                 <span className="text-[#a9afba]" title={p.profile}>{displayName}</span>
                 {displayName !== p.profile && <span className="text-[10px] text-[#676c76]">{p.profile}</span>}
                 {p.isMultiTurn && <span className="rounded bg-[#8b5cf6]/20 px-1 text-[10px] text-[#8b5cf6]">mt</span>}
-                {p.infeasibleReason && <span className="rounded border border-[#64b5f6]/40 bg-[#64b5f6]/10 px-1 text-[10px] text-[#64b5f6] uppercase" title={p.infeasibleReason}>N/A</span>}
-                {blockedCount > 0 && <span className="rounded border border-[#64b5f6]/40 bg-[#64b5f6]/10 px-1 text-[10px] text-[#64b5f6] uppercase" title={firstBlockedReason}>{blockedCount} N/A</span>}
-                {failedCount > 0 && <span className="rounded border border-[#f85149]/40 bg-[#f85149]/10 px-1 text-[10px] text-[#f85149] uppercase" title={firstFailedReason}>{failedCount} failed</span>}
+                {redCount > 0 && <span className="rounded border border-[#f85149]/40 bg-[#f85149]/10 px-1 text-[10px] text-[#f85149] uppercase" title={redReason}>{redCount} failed</span>}
+                {hwCount > 0 && <span className="rounded border border-[#64b5f6]/40 bg-[#64b5f6]/10 px-1 text-[10px] text-[#64b5f6] uppercase" title={yellowReason}>{hwCount} hardware N/A</span>}
+                {yellowCount > 0 && <span className="rounded border border-[#ffb74d]/40 bg-[#ff9800]/10 px-1 text-[10px] text-[#ffb74d] uppercase" title={yellowReason}>{yellowCount} blocked</span>}
                 {profUntested && <span className="rounded border border-[#ff9800]/40 bg-[#ff9800]/10 px-1 text-[10px] text-[#ff9800] uppercase" title={todoReason}>TODO</span>}
-                {p.infeasibleReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={p.infeasibleReason}>— {p.infeasibleReason}</span>}
-                {!p.infeasibleReason && firstFailedReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={firstFailedReason}>— {firstFailedReason}</span>}
-                {!p.infeasibleReason && firstBlockedReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={firstBlockedReason}>— {firstBlockedReason}</span>}
-                {profUntested && !p.infeasibleReason && !firstBlockedReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={todoReason}>— {todoReason}</span>}
+                {redReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={redReason}>— {redReason}</span>}
+                {!redReason && yellowReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={yellowReason}>— {yellowReason}</span>}
+                {profUntested && !redReason && !yellowReason && <span className="min-w-[220px] flex-1 whitespace-normal break-words text-[10px] text-[#a9afba]" title={todoReason}>— {todoReason}</span>}
               </div>
             </td>
             {allConcs.map((c) => {
-              const expected = p.expected.includes(c);
-              const present = p.present.has(c);
-              const blockedReason = p.blocked?.get(c);
-              const failedReason = p.failed?.get(c);
-              const state: 'present' | 'missing' | 'na' | 'excluded' =
-                p.infeasibleReason || blockedReason ? 'excluded' : !expected ? 'na' : present ? 'present' : 'missing';
-              const finalState = failedReason && !present && expected && !p.infeasibleReason && !blockedReason ? 'fail' : state;
-              return <td key={c} className="px-1 py-1.5 text-center"><Cell state={finalState} title={failedReason ?? blockedReason ?? p.infeasibleReason} /></td>;
+              const { visual, detail } = profileCellTone(p, c);
+              const selectable = visual === 'red' || visual === 'yellow' || visual === 'hw' || visual === 'present';
+              const onClick = selectable
+                ? () => onSelectCell(buildSelectedCell(hwName, modelName, backend, p, c, visual))
+                : undefined;
+              const active = selectedCell != null
+                && selectedCell.hardware === hwName
+                && selectedCell.model === modelName
+                && selectedCell.backend === backend
+                && selectedCell.profile === p.profile
+                && selectedCell.concurrency === c;
+              const title = detail?.label ?? p.failed?.get(c) ?? p.blocked?.get(c) ?? p.infeasibleReason;
+              return <td key={c} className="px-1 py-1.5 text-center"><Cell state={visual} title={title} onClick={onClick} active={active} /></td>;
             })}
             <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono">
-              {p.infeasibleReason || (need === 0 && blockedCount > 0) ? (
-                <span className="text-[#64b5f6]" title={p.infeasibleReason ?? firstBlockedReason}>N/A</span>
+              {need === 0 ? (
+                <span className={isHwInfeasible ? 'text-[#64b5f6]' : 'text-[#ffb74d]'} title={yellowReason}>N/A</span>
               ) : (
                 <span
                   className={
                     profPct === 100 ? 'text-[#3fb950]' :
-                    failedCount > 0 ? 'text-[#f85149]' :
+                    redCount > 0 ? 'text-[#f85149]' :
                     profPct === 0 ? 'text-[#a9afba]' :
                     'text-[#ff9800]'
                   }
                 >
-                  {have}/{need}{failedCount > 0 ? ' failed' : ''}
+                  {have}/{need}{redCount > 0 ? ' failed' : ''}
                 </span>
               )}
             </td>
@@ -1418,16 +1703,16 @@ function ProfileDetailRows({
 
 // --- UI helpers ---
 
-type StatusTone = 'good' | 'warn' | 'danger' | 'active' | 'na' | 'todo' | 'muted';
+type StatusTone = 'good' | 'warn' | 'danger' | 'active' | 'todo' | 'muted' | 'hardware';
 
 const TONE_CLASS: Record<StatusTone, string> = {
   good: 'border-[#3fb950]/35 bg-[#3fb950]/10 text-[#3fb950]',
-  warn: 'border-[#ff9800]/35 bg-[#ff9800]/10 text-[#ffb74d]',
+  warn: 'border-[#ffb74d]/35 bg-[#ff9800]/10 text-[#ffb74d]',
   danger: 'border-[#f85149]/35 bg-[#f85149]/10 text-[#f85149]',
   active: 'border-[#58a6ff]/35 bg-[#58a6ff]/10 text-[#58a6ff]',
-  na: 'border-[#64b5f6]/35 bg-[#64b5f6]/10 text-[#64b5f6]',
   todo: 'border-[#ff9800]/35 bg-[#ff9800]/10 text-[#ff9800]',
   muted: 'border-[#ffffff1f] bg-white/[0.04] text-[#a9afba]',
+  hardware: 'border-[#64b5f6]/35 bg-[#64b5f6]/10 text-[#64b5f6]',
 };
 
 function CoverageProgress({ value }: { value: number }) {
@@ -1474,41 +1759,47 @@ function CoverageLegend({ dataScope }: { dataScope: DataScope }) {
     <div className="glass-shell rounded-md px-4 py-3 text-xs text-[#a9afba]">
       <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className="font-medium text-[#a9afba]">Coverage legend</span>
-        <span>cell states and scope</span>
+        <span>cells are colored by failure class</span>
       </div>
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(280px,1fr)]">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="flex items-center gap-1.5"><Cell state="present" />present</span>
           {canonicalCoverage && (
-            <span className="flex items-center gap-1.5"><Cell state="missing" />expected and missing</span>
+            <span className="flex items-center gap-1.5"><Cell state="missing" />expected, not run</span>
           )}
           {canonicalCoverage && (
-            <span className="flex items-center gap-1.5"><Cell state="fail" />failed after retry</span>
+            <span className="flex items-center gap-1.5"><Cell state="red" />ran but failed (crash / low success / OOM)</span>
           )}
           {canonicalCoverage && (
-            <span className="flex items-center gap-1.5"><Cell state="excluded" />N/A after retry / blocked</span>
+            <span className="flex items-center gap-1.5"><Cell state="hw" />N/A — hardware can't (arch / sm &lt; 80)</span>
+          )}
+          {canonicalCoverage && (
+            <span className="flex items-center gap-1.5"><Cell state="yellow" />couldn't run — fixable (model not staged / needs rebuild or upgrade)</span>
           )}
             <span className="flex items-center gap-1.5">
-              <Cell state="na" />
+              <Cell state="faint" />
               {canonicalCoverage ? 'not expected in this row' : 'not observed'}
             </span>
           </div>
         <div className="space-y-1 leading-relaxed">
-          <p>{scopeNote}{canonicalCoverage ? ' Exhausted OOM, success-rate, zero-output, and incomplete-output limits are excluded as N/A; benchmark, driver, and unknown failures stay red.' : ''}</p>
+          <p>{scopeNote}{canonicalCoverage ? ' Red cells ran but failed operationally (engine crash, low success rate, OOM / KV-cache, timeout, driver / CUDA fault). Blue cells are a permanent hardware limit — the GPU physically can’t (unsupported architecture / compute capability, e.g. MXFP4 needs sm80+). Yellow cells could not run but are fixable (model not staged, or the stack needs a rebuild / upgrade / bigger max_len). Click any red, blue, or yellow cell for the full error.' : ''}</p>
         </div>
       </div>
     </div>
   );
 }
 
-function Cell({ state, title }: { state: 'present' | 'missing' | 'fail' | 'na' | 'excluded'; title?: string }) {
+function Cell({ state, title, onClick, active }: { state: CellVisual; title?: string; onClick?: () => void; active?: boolean }) {
   const cls =
     state === 'present' ? 'bg-[#3fb950] border-[#3fb950]' :
-    state === 'fail' ? 'bg-[#f85149]/30 border-[#f85149]' :
-    state === 'excluded' ? 'bg-[#64b5f6]/35 border-[#64b5f6]/70' :
+    state === 'red' ? 'bg-[#f85149]/30 border-[#f85149]' :
+    state === 'yellow' ? 'bg-[#ff9800]/30 border-[#ffb74d]' :
+    state === 'hw' ? 'bg-[#64b5f6]/30 border-[#64b5f6]' :
     state === 'missing' ? 'bg-transparent border-[#ffffff1f]' :
     'bg-white/[0.04] border-transparent';
-  return <span className={`inline-block h-3 w-3 rounded-sm border ${cls}`} title={title} />;
+  const interactive = onClick ? ' cursor-pointer hover:ring-1 hover:ring-white/50' : '';
+  const ring = active ? ' ring-2 ring-white/70' : '';
+  return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border ${cls}${interactive}${ring}`} title={title} />;
 }
 
 function BackendBadge({ backend, version }: { backend: string; version?: string }) {
@@ -1570,29 +1861,42 @@ function FamilyGroupCell({ family, showLabel }: { family: ModelFamily; showLabel
   );
 }
 
-// Aggregate cell for model-row summaries. Solid green only when every
-// profile that expects this concurrency has a run at it; partial fill from
-// bottom proportional to fraction otherwise. Empty outline = 0 / N.
+// Aggregate cell for model-row summaries. `expected` = runnable cells at this
+// concurrency (present + red + missing); `failed` = red cells; `blocked` =
+// yellow cells (couldn't run). Priority: all-blocked -> yellow, no-run-but-
+// failed -> red, otherwise green fill proportional to present/runnable.
 function PartialCell({
   present,
   expected,
   failed = 0,
+  blocked = 0,
+  hw = 0,
   title,
+  onClick,
 }: {
   present: number;
   expected: number;
   failed?: number;
+  blocked?: number;
+  hw?: number;
   title?: string;
+  onClick?: () => void;
 }) {
+  const click = onClick ? ' cursor-pointer hover:ring-1 hover:ring-white/50' : '';
+  if (expected === 0 && blocked > 0) return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border border-[#ffb74d] bg-[#ff9800]/30${click}`} title={title ?? `${blocked} blocked`} />;
+  if (expected === 0 && hw > 0) return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border border-[#64b5f6] bg-[#64b5f6]/30${click}`} title={title ?? `${hw} hardware N/A`} />;
   if (expected === 0) return <span className="inline-block h-3 w-3 rounded-sm border border-transparent bg-white/[0.04]" />;
-  if (present === 0 && failed > 0) return <span className="inline-block h-3 w-3 rounded-sm border border-[#f85149] bg-[#f85149]/30" title={title ?? `${failed}/${expected} failed`} />;
+  if (present === 0 && failed > 0) return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border border-[#f85149] bg-[#f85149]/30${click}`} title={title ?? `${failed}/${expected} failed`} />;
+  if (present === 0 && blocked > 0) return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border border-[#ffb74d] bg-[#ff9800]/30${click}`} title={title ?? `${blocked} blocked`} />;
+  if (present === 0 && hw > 0) return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border border-[#64b5f6] bg-[#64b5f6]/30${click}`} title={title ?? `${hw} hardware N/A`} />;
   if (present === 0) return <span className="inline-block h-3 w-3 rounded-sm border border-[#ffffff1f] bg-transparent" />;
-  if (present >= expected) return <span className="inline-block h-3 w-3 rounded-sm border border-[#3fb950] bg-[#3fb950]" title={`${present}/${expected}`} />;
+  if (present >= expected) return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border border-[#3fb950] bg-[#3fb950]${click}`} title={title ?? `${present}/${expected}`} />;
   const fillPct = Math.round((present / expected) * 100);
   return (
     <span
-      className="relative inline-block h-3 w-3 overflow-hidden rounded-sm border border-[#3fb950]/60 bg-transparent"
-      title={`${present}/${expected}`}
+      onClick={onClick}
+      className={`relative inline-block h-3 w-3 overflow-hidden rounded-sm border border-[#3fb950]/60 bg-transparent${click}`}
+      title={title ?? `${present}/${expected}`}
     >
       <span
         className="absolute inset-x-0 bottom-0 bg-[#3fb950]"
@@ -1604,17 +1908,26 @@ function PartialCell({
 
 type BadgeKind = StatusModel['status'];
 
-function StatusBadge({ kind }: { kind: BadgeKind }) {
+function StatusBadge({ kind, tone }: { kind: BadgeKind; tone?: CellTone }) {
     const map: Record<BadgeKind, [string, string]> = {
-      oom:        ['bg-[#64b5f6]/15 text-[#64b5f6] border-[#64b5f6]/40', 'N/A'],
-      infeasible: ['bg-[#64b5f6]/15 text-[#64b5f6] border-[#64b5f6]/40', 'N/A'],
+      oom:        ['bg-[#f85149]/15 text-[#f85149] border-[#f85149]/40', 'OOM'],
+      infeasible: ['bg-[#ffb74d]/15 text-[#ffb74d] border-[#ffb74d]/40', 'N/A'],
       running:    ['bg-[#58a6ff]/15 text-[#58a6ff] border-[#58a6ff]/40', 'RUN'],
       failed:     ['bg-[#f85149]/15 text-[#f85149] border-[#f85149]/40', 'FAIL'],
       pending:    ['bg-[#ff9800]/10 text-[#ff9800] border-[#ff9800]/40', 'TODO'],
-      skipped:  ['bg-[#64b5f6]/15 text-[#64b5f6] border-[#64b5f6]/40', 'N/A'],
+      skipped:  ['bg-[#ffb74d]/15 text-[#ffb74d] border-[#ffb74d]/40', 'N/A'],
       untested:   ['bg-[#ff9800]/10 text-[#ff9800] border-[#ff9800]/40', 'TODO'],
     };
-  const [cls, label] = map[kind];
+  // Tone override keeps the badge consistent with the cells: a model-not-staged
+  // job (coarse status "failed") reads N/A yellow, not FAIL red; a hardware limit
+  // reads N/A blue.
+  const [cls, label] = tone === 'red'
+    ? ['bg-[#f85149]/15 text-[#f85149] border-[#f85149]/40', 'FAIL']
+    : tone === 'yellow'
+      ? ['bg-[#ffb74d]/15 text-[#ffb74d] border-[#ffb74d]/40', 'N/A']
+      : tone === 'hw'
+        ? ['bg-[#64b5f6]/15 text-[#64b5f6] border-[#64b5f6]/40', 'N/A']
+        : map[kind];
   return (
     <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${cls}`}>
       {label}
@@ -1624,11 +1937,11 @@ function StatusBadge({ kind }: { kind: BadgeKind }) {
 
 function bgForStatus(s: StatusModel['status']): string {
   switch (s) {
-    case 'oom':        return 'bg-[#64b5f6]/5';
-    case 'infeasible': return 'bg-[#64b5f6]/5';
+    case 'oom':        return 'bg-[#f85149]/5';
+    case 'infeasible': return 'bg-[#ffb74d]/5';
     case 'running':    return 'bg-[#58a6ff]/5';
     case 'failed':     return 'bg-[#f85149]/5';
-    case 'skipped':  return 'bg-[#64b5f6]/5';
+    case 'skipped':  return 'bg-[#ffb74d]/5';
     case 'pending':    return 'bg-[#ff9800]/5';
     default:           return '';
   }
@@ -1636,11 +1949,11 @@ function bgForStatus(s: StatusModel['status']): string {
 
 function colorForStatus(s: StatusModel['status']): string {
   switch (s) {
-    case 'oom':        return 'text-[#64b5f6]';
-    case 'infeasible': return 'text-[#64b5f6]';
+    case 'oom':        return 'text-[#f85149]';
+    case 'infeasible': return 'text-[#ffb74d]';
     case 'running':    return 'text-[#58a6ff]';
     case 'failed':     return 'text-[#f85149]';
-    case 'skipped':  return 'text-[#64b5f6]';
+    case 'skipped':  return 'text-[#ffb74d]';
     case 'pending':    return 'text-[#ff9800]';
     default:           return 'text-[#a9afba]';
   }
@@ -1648,7 +1961,7 @@ function colorForStatus(s: StatusModel['status']): string {
 
 function labelForStatus(s: StatusModel['status']): string {
   switch (s) {
-    case 'oom':        return 'blocked by OOM / capacity';
+    case 'oom':        return 'ran but failed — OOM / capacity';
     case 'infeasible': return 'not runnable on this target';
     case 'running':    return 'running now';
     case 'failed':     return 'failed after retry';
@@ -1656,4 +1969,108 @@ function labelForStatus(s: StatusModel['status']): string {
     case 'pending':    return 'expected, not run yet';
     default:           return 'expected, not run yet';
   }
+}
+
+// --- Side detail card --------------------------------------------------------
+
+const CARD_TONE: Record<SelectedCell['tone'], { strip: string; word: string; text: string }> = {
+  red:    { strip: 'bg-[#f85149]', word: 'Runtime failure', text: 'text-[#f85149]' },
+  yellow: { strip: 'bg-[#ffb74d]', word: "Couldn't run",     text: 'text-[#ffb74d]' },
+  hw:     { strip: 'bg-[#64b5f6]', word: "Hardware — can't", text: 'text-[#64b5f6]' },
+  green:  { strip: 'bg-[#3fb950]', word: 'Complete',          text: 'text-[#3fb950]' },
+  gray:   { strip: 'bg-[#6b7280]', word: 'Not run yet',       text: 'text-[#a9afba]' },
+};
+
+function formatPct(value?: number | null): string | null {
+  if (value == null || Number.isNaN(value)) return null;
+  return `${Math.round(value * 100)}%`;
+}
+
+function CoverageDetailCard({ cell, onClear }: { cell: SelectedCell | null; onClear: () => void }) {
+  if (!cell) {
+    return (
+      <div className="glass-shell rounded-lg border border-[#ffffff14] p-4 text-xs text-[#a9afba]">
+        <div className="font-medium text-[#a9afba]">Cell detail</div>
+        <p className="mt-2 leading-relaxed text-[#676c76]">Select a failing cell to see why.</p>
+      </div>
+    );
+  }
+  const tone = CARD_TONE[cell.tone];
+  const ev = cell.evidence;
+  const gpuMem = formatPct(ev?.gpu_mem_util ?? null);
+  const outputs = ev && (ev.outputs_present != null || ev.outputs_expected != null)
+    ? `${ev.outputs_present ?? '?'} / ${ev.outputs_expected ?? '?'}`
+    : null;
+  const attempts = cell.attempt != null
+    ? cell.maxAttempts != null ? `${cell.attempt} / ${cell.maxAttempts}` : `${cell.attempt}`
+    : null;
+  const successRate = formatPct(ev?.success_rate ?? null);
+  const hasEvidence = Boolean(gpuMem || outputs || attempts || successRate);
+  return (
+    <div className="glass-shell overflow-hidden rounded-lg border border-[#ffffff14]">
+      <div className={`h-1 w-full ${tone.strip}`} />
+      <div className="space-y-3 p-4 text-xs">
+        <div className="flex items-start justify-between gap-2">
+          <span className={`text-sm font-semibold ${tone.text}`}>{tone.word}</span>
+          <button
+            onClick={onClear}
+            className="rounded border border-[#ffffff1f] px-1.5 py-0.5 text-[10px] text-[#a9afba] transition-colors hover:border-[#f97583] hover:text-[#f97583]"
+          >
+            clear
+          </button>
+        </div>
+
+        <div className="font-mono text-[11px] leading-relaxed text-[#a9afba]">
+          {cell.hardware} · {cell.model} · {cell.backend} · {profileDisplayName(cell.profile)} · C={cell.concurrency}
+        </div>
+
+        {cell.infeasibleKind && (
+          <div>
+            <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cell.infeasibleKind === 'hw_permanent' ? 'border-[#64b5f6]/40 bg-[#64b5f6]/10 text-[#64b5f6]' : 'border-[#ffb74d]/40 bg-[#ff9800]/10 text-[#ffb74d]'}`}>
+              {cell.infeasibleKind === 'hw_permanent' ? 'Hardware — unsupported (arch / compute capability)' : 'Fixable — env / version (rebuild / upgrade / bump limit)'}
+            </span>
+          </div>
+        )}
+
+        {cell.failureClass && (
+          <div>
+            <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${cell.tone === 'red' ? 'border-[#f85149]/40 bg-[#f85149]/10 text-[#f85149]' : cell.tone === 'hw' ? 'border-[#64b5f6]/40 bg-[#64b5f6]/10 text-[#64b5f6]' : 'border-[#ffb74d]/40 bg-[#ff9800]/10 text-[#ffb74d]'}`}>
+              {cell.failureClass}
+            </span>
+          </div>
+        )}
+
+        {(cell.label || cell.reason) && (
+          <div className="space-y-1 leading-relaxed text-[#c9d1d9]">
+            {cell.label && <p className="font-medium">{cell.label}</p>}
+            {cell.reason && cell.reason !== cell.label && <p className="text-[#a9afba]">{cell.reason}</p>}
+          </div>
+        )}
+
+        {cell.explanation && cell.explanation !== cell.reason && cell.explanation !== cell.label && (
+          <p className="whitespace-pre-wrap break-words leading-relaxed text-[#8b949e]">{cell.explanation}</p>
+        )}
+
+        {cell.tone === 'green' && !cell.label && !cell.reason && (
+          <p className="leading-relaxed text-[#a9afba]">This cell ran and produced complete results.</p>
+        )}
+
+        {hasEvidence && (
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 border-t border-[#ffffff14] pt-2 text-[10px] text-[#a9afba]">
+            {gpuMem && (<><span className="text-[#676c76]">gpu_mem_util</span><span className="text-right font-mono">{gpuMem}</span></>)}
+            {successRate && (<><span className="text-[#676c76]">success_rate</span><span className="text-right font-mono">{successRate}</span></>)}
+            {outputs && (<><span className="text-[#676c76]">outputs</span><span className="text-right font-mono">{outputs}</span></>)}
+            {attempts && (<><span className="text-[#676c76]">attempts</span><span className="text-right font-mono">{attempts}</span></>)}
+          </div>
+        )}
+
+        {cell.remoteLog && (
+          <div className="border-t border-[#ffffff14] pt-2">
+            <div className="text-[10px] text-[#676c76]">remote_log</div>
+            <div className="break-all font-mono text-[10px] text-[#8b949e]">{cell.remoteLog}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

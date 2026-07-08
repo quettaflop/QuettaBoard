@@ -20,6 +20,10 @@ export interface SweepCell {
   concurrencies: number[];
   max_len_override: number | null;
   reason: string | null;
+  // Machine-readable infeasibility class set for known_oom cells:
+  //   'hw_permanent' = GPU arch/compute-capability limit (never fixable) → blue.
+  //   'sw_fixable'   = env/software gap (rebuild/upgrade, bump a limit)   → yellow.
+  kind?: 'hw_permanent' | 'sw_fixable';
   updated_at: string | null;  // ISO-8601 UTC
   run_id?: string | null;
   failure_metadata?: {
@@ -59,6 +63,9 @@ export interface SweepProfileInfeasible {
   profile: string;
   max_len: number;
   reason: string;
+  // Same infeasibility taxonomy as SweepCell.kind (default 'hw_permanent' when
+  // the producing rule omits it): 'hw_permanent' → blue, 'sw_fixable' → yellow.
+  kind?: 'hw_permanent' | 'sw_fixable';
 }
 
 export interface SweepState {
