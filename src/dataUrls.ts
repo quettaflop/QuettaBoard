@@ -57,9 +57,9 @@ export const simulatorPredictionsJsonUrl = withBuildHash(
   import.meta.env.VITE_SIMULATOR_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'simulator-predictions.json'),
 );
 
-// Forward predictor (no-GT path, run over the same cells) — MAPE counterpart to the backtester's
+// Roofline predictor (no-GT path, run over the same cells) — MAPE counterpart to the backtester's
 // simulator-predictions.json. Joined per (gpu_key, model, profile, concurrency) in the matrix.
-export const forwardPredictionsJsonUrl = withBuildHash(
+export const rooflinePredictionsJsonUrl = withBuildHash(
   import.meta.env.VITE_FORWARD_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'forward-predictions.json'),
 );
 

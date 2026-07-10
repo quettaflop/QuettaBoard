@@ -17,8 +17,8 @@ import {
   normalizeProfileName,
   profileDisplayName,
 } from '../profileMeta';
-import { forwardPredictionsJsonUrl, llama31H100TpotFitJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
-import { buildFwdLookup, fwdKey, type FwdLookup } from '../forwardPredictions';
+import { rooflinePredictionsJsonUrl, llama31H100TpotFitJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
+import { buildRooflineLookup, rooflineKey, type RooflineLookup } from '../rooflinePredictions';
 
 interface ServingTurnPrediction {
   turn_index: number;
@@ -380,32 +380,32 @@ const SERVING_MAPE_COLUMN_WIDTH = 74;
 const SERVING_MAPE_RAIL_WIDTH = SERVING_METRICS.length * SERVING_MAPE_COLUMN_WIDTH;
 
 // Prediction source the Simulator page renders, mirroring the Predictions matrix' source toggle.
-type PredictionSource = 'backtester' | 'forward';
+type PredictionSource = 'backtester' | 'roofline';
 
 const PREDICTION_SOURCES: { key: PredictionSource; label: string }[] = [
   { key: 'backtester', label: 'Kernel-composed' },
-  { key: 'forward', label: 'Roofline' },
+  { key: 'roofline', label: 'Roofline' },
 ];
 
 function finiteOrUndef(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
-// Re-key the backtester serving rows onto the forward predictor's per-cell metrics, joined by
+// Re-key the backtester serving rows onto the roofline predictor's per-cell metrics, joined by
 // (gpu_key, model, profile, concurrency) — same join the Predictions matrix uses.
 //  - 'backtester' is identity (build_simulator_rows, scored vs measured GT).
-//  - 'forward' swaps pred/err to the no-GT forward values; measured GT is unchanged. Forward has no
+//  - 'roofline' swaps pred/err to the no-GT roofline values; measured GT is unchanged. Roofline has no
 //    per-turn / emulator detail, so those are cleared (the per-turn panel + emu/steady tags hide).
 function applyPredictionSource(
   rows: ServingRow[],
   gpuKey: string,
   source: PredictionSource,
-  fwd: FwdLookup,
+  roofline: RooflineLookup,
 ): ServingRow[] {
   if (source === 'backtester') return rows;
   return rows.map(row => {
     const match = row.model != null && row.profile != null && row.concurrency != null
-      ? fwd.get(fwdKey(gpuKey, row.model, row.profile, row.concurrency))
+      ? roofline.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency))
       : undefined;
     const base: ServingRow = {
       ...row,
@@ -457,7 +457,7 @@ export function ServingPredictionsPage({
   const [model, setModel] = useState('');
   const [backend, setBackend] = useState<'all' | 'vllm' | 'sglang'>('vllm');
   const [source, setSource] = useState<PredictionSource>('backtester');
-  const [fwd, setFwd] = useState<FwdLookup>(new Map());
+  const [roofline, setRoofline] = useState<RooflineLookup>(new Map());
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
 
@@ -483,12 +483,12 @@ export function ServingPredictionsPage({
       .catch(() => setFixedTpotFit(null));
   }, []);
 
-  // Forward predictions are optional — absent (404) until build_forward_rows has run.
+  // Roofline predictions are optional — absent (404) until build_forward_rows has run.
   useEffect(() => {
-    fetch(forwardPredictionsJsonUrl)
+    fetch(rooflinePredictionsJsonUrl)
       .then(response => (response.ok ? response.json() : null))
-      .then(json => setFwd(buildFwdLookup(json)))
-      .catch(() => setFwd(new Map()));
+      .then(json => setRoofline(buildRooflineLookup(json)))
+      .catch(() => setRoofline(new Map()));
   }, []);
 
   const scopeIndex = servingIndex?.[dataScope];
@@ -537,12 +537,12 @@ export function ServingPredictionsPage({
     if (selectorMode) return base.filter(row => row.model === selectedModel);
     return base;
   }, [scopeIndex, selectedGpu, focus, selectorMode, selectedModel]);
-  // Source toggle (Backtest / Forward). Forward collapses to Backtest until forward rows load.
-  const hasForward = fwd.size > 0;
-  const effectiveSource: PredictionSource = source !== 'backtester' && !hasForward ? 'backtester' : source;
+  // Source toggle (Backtest / Roofline). Roofline collapses to Backtest until roofline rows load.
+  const hasRoofline = roofline.size > 0;
+  const effectiveSource: PredictionSource = source !== 'backtester' && !hasRoofline ? 'backtester' : source;
   const sourcedRows = useMemo(
-    () => applyPredictionSource(rows, selectedGpu, effectiveSource, fwd),
-    [rows, selectedGpu, effectiveSource, fwd],
+    () => applyPredictionSource(rows, selectedGpu, effectiveSource, roofline),
+    [rows, selectedGpu, effectiveSource, roofline],
   );
   // In selector mode, keep the table's focused single-config view via a synthesized focus.
   const tableFocus: ServingFocus | undefined = selectorMode && selectedModel
@@ -554,7 +554,7 @@ export function ServingPredictionsPage({
     && (focus
       ? focus.model === fixedTpotFit.experiment.model
       : (!selectorMode || selectedModel === fixedTpotFit.experiment.model));
-  // The fixed-TPOT validation overlay is a backtester-only artifact; Forward shows the live rows.
+  // The fixed-TPOT validation overlay is a backtester-only artifact; Roofline shows the live rows.
   const fixedTpotOnly = Boolean(showFixedTpotFit && pageKind === 'simulator' && effectiveSource === 'backtester');
   const tableSourceRows = useMemo(
     () => fixedTpotOnly ? sourcedRows.filter(row => !isSingleTurnServingRow(row)) : sourcedRows,
@@ -586,7 +586,7 @@ export function ServingPredictionsPage({
           showBackend={hasSglang}
           source={effectiveSource}
           onSource={setSource}
-          hasForward={hasForward}
+          hasRoofline={hasRoofline}
           ttftMape={meanMetricError(sourcedRows, 'ttft_err')}
           tpotMape={meanMetricError(sourcedRows, 'tpot_err')}
           e2elMape={meanMetricError(sourcedRows, 'e2el_err')}
@@ -811,7 +811,7 @@ function SimulatorTargetBar({
   showBackend,
   source,
   onSource,
-  hasForward,
+  hasRoofline,
   ttftMape,
   tpotMape,
   e2elMape,
@@ -827,7 +827,7 @@ function SimulatorTargetBar({
   showBackend: boolean;
   source: PredictionSource;
   onSource: (source: PredictionSource) => void;
-  hasForward: boolean;
+  hasRoofline: boolean;
   ttftMape: OptionalMetric;
   tpotMape: OptionalMetric;
   e2elMape: OptionalMetric;
@@ -856,7 +856,7 @@ function SimulatorTargetBar({
             <span className="text-[10px] font-semibold uppercase tracking-widest text-[#676c76]">Source</span>
             <div className="seg-track">
               {PREDICTION_SOURCES.map(({ key, label }) => {
-                const disabled = key !== 'backtester' && !hasForward;
+                const disabled = key !== 'backtester' && !hasRoofline;
                 const active = source === key;
                 return (
                   <button
@@ -1426,7 +1426,7 @@ function ServingPerTurnChart({
         // shown as a comparison line. See simulator/_legacy/kernel_tpot_hint.py (retired 2026-06-10, L7).
         const kernelHint =
           metric.label === 'TPOT' ? turn.tpot_pred_kernel_hint : undefined;
-        // Forward 3D-roofline eviction-deficit ramp predictor (comparison line).
+        // Roofline 3D eviction-deficit ramp predictor (comparison line).
         // Forecasts the cohort drain from the profile survival curve and ramps the
         // saturation from the eviction-watermark crossing. See simulator/ramp_tpot.py.
         const rampPred =

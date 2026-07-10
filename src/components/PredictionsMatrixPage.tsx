@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { servingPredictionsJsonUrl, forwardPredictionsJsonUrl } from '../dataUrls';
+import { servingPredictionsJsonUrl, rooflinePredictionsJsonUrl } from '../dataUrls';
 import type { DataScope } from '../profileMeta';
 import { DATA_SCOPE_META } from '../profileMeta';
 import {
-  buildFwdLookup,
-  fwdKey,
-  type ForwardRow,
-  type FwdLookup,
-} from '../forwardPredictions';
+  buildRooflineLookup,
+  rooflineKey,
+  type RooflineRow,
+  type RooflineLookup,
+} from '../rooflinePredictions';
 import {
   buildServingIndex,
   type ServingIndex,
@@ -17,7 +17,7 @@ import {
 // The Predictions tab: one large hardware × model matrix. Rows = hardware configs (gpu_key),
 // columns = models. A metric toggle (E2EL / TTFT / TPOT) selects the metric; a SOURCE toggle picks
 // the predictor: Backtest (build_simulator_rows, reads the realized trajectory_pool + scores) vs
-// Forward (simulator.forward, fed the same workload as a client would — no-GT path). Both score
+// Roofline (simulator.forward, fed the same workload as a client would — no-GT path). Both score
 // against the SAME measured GT. Bands match the Simulator tab.
 
 interface MetricAgg {
@@ -32,13 +32,13 @@ interface CellAgg {
   ttftMape: number | null;
   tpotMape: number | null;
   e2elMape: number | null;
-  // Forward predictor: cohort-mean pred + MAPE vs the same measured GT (null if no forward row).
-  fwdTtftPred: number | null;
-  fwdTpotPred: number | null;
-  fwdE2elPred: number | null;
-  fwdTtftMape: number | null;
-  fwdTpotMape: number | null;
-  fwdE2elMape: number | null;
+  // Roofline predictor: cohort-mean pred + MAPE vs the same measured GT (null if no roofline row).
+  rflTtftPred: number | null;
+  rflTpotPred: number | null;
+  rflE2elPred: number | null;
+  rflTtftMape: number | null;
+  rflTpotMape: number | null;
+  rflE2elMape: number | null;
   n: number;
 }
 
@@ -47,7 +47,7 @@ function average(values: number[]): number | null {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-function aggregateCell(rows: ServingRow[], gpuKey: string, fwd: FwdLookup): CellAgg {
+function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLookup): CellAgg {
   const collect = (key: keyof ServingRow): number[] => {
     const out: number[] = [];
     for (const row of rows) {
@@ -60,19 +60,19 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, fwd: FwdLookup): Cell
     pred: average(collect(`${k}_pred` as keyof ServingRow)),
     meas: average(collect(`${k}_meas` as keyof ServingRow)),
   });
-  // Join the forward rows by (gpu_key, model, profile, concurrency).
-  const fwdPred: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
-  const fwdErr: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
+  // Join the roofline rows by (gpu_key, model, profile, concurrency).
+  const rflPred: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
+  const rflErr: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
   for (const row of rows) {
     const r = row as ServingRow & { profile?: string; concurrency?: number };
     if (r.model == null || r.profile == null || r.concurrency == null) continue;
-    const f = fwd.get(fwdKey(gpuKey, r.model, r.profile, r.concurrency));
+    const f = roofline.get(rooflineKey(gpuKey, r.model, r.profile, r.concurrency));
     if (!f) continue;
     for (const k of ['ttft', 'tpot', 'e2el'] as const) {
-      const p = f[`fwd_${k}_pred` as keyof ForwardRow];
-      const e = f[`fwd_${k}_err` as keyof ForwardRow];
-      if (typeof p === 'number' && Number.isFinite(p)) fwdPred[k].push(p);
-      if (typeof e === 'number' && Number.isFinite(e)) fwdErr[k].push(e);
+      const p = f[`fwd_${k}_pred` as keyof RooflineRow];
+      const e = f[`fwd_${k}_err` as keyof RooflineRow];
+      if (typeof p === 'number' && Number.isFinite(p)) rflPred[k].push(p);
+      if (typeof e === 'number' && Number.isFinite(e)) rflErr[k].push(e);
     }
   }
   return {
@@ -82,30 +82,30 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, fwd: FwdLookup): Cell
     ttftMape: average(collect('ttft_err')),
     tpotMape: average(collect('tpot_err')),
     e2elMape: average(collect('e2el_err')),
-    fwdTtftPred: average(fwdPred.ttft),
-    fwdTpotPred: average(fwdPred.tpot),
-    fwdE2elPred: average(fwdPred.e2el),
-    fwdTtftMape: average(fwdErr.ttft),
-    fwdTpotMape: average(fwdErr.tpot),
-    fwdE2elMape: average(fwdErr.e2el),
+    rflTtftPred: average(rflPred.ttft),
+    rflTpotPred: average(rflPred.tpot),
+    rflE2elPred: average(rflPred.e2el),
+    rflTtftMape: average(rflErr.ttft),
+    rflTpotMape: average(rflErr.tpot),
+    rflE2elMape: average(rflErr.e2el),
     n: rows.length,
   };
 }
 
 const BT_MAPE = { ttft: 'ttftMape', tpot: 'tpotMape', e2el: 'e2elMape' } as const;
-const FWD_MAPE = { ttft: 'fwdTtftMape', tpot: 'fwdTpotMape', e2el: 'fwdE2elMape' } as const;
-const FWD_PRED = { ttft: 'fwdTtftPred', tpot: 'fwdTpotPred', e2el: 'fwdE2elPred' } as const;
+const RFL_MAPE = { ttft: 'rflTtftMape', tpot: 'rflTpotMape', e2el: 'rflE2elMape' } as const;
+const RFL_PRED = { ttft: 'rflTtftPred', tpot: 'rflTpotPred', e2el: 'rflE2elPred' } as const;
 
 function btMape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[BT_MAPE[metric]];
 }
-function fwdMape(cell: CellAgg, metric: MetricKey): number | null {
-  return cell[FWD_MAPE[metric]];
+function rflMape(cell: CellAgg, metric: MetricKey): number | null {
+  return cell[RFL_MAPE[metric]];
 }
 
 // The pred MetricAgg the cell shows for the selected source (measured is the same GT either way).
 function predFor(cell: CellAgg, metric: MetricKey, source: SourceKey): MetricAgg {
-  if (source === 'forward') return { pred: cell[FWD_PRED[metric]], meas: cell[metric].meas };
+  if (source === 'roofline') return { pred: cell[RFL_PRED[metric]], meas: cell[metric].meas };
   return cell[metric];
 }
 
@@ -156,17 +156,17 @@ type BackendKey = (typeof BACKENDS)[number]['key'];
 
 const SOURCES = [
   { key: 'backtester', label: 'Kernel-composed' },
-  { key: 'forward', label: 'Roofline' },
+  { key: 'roofline', label: 'Roofline' },
 ] as const;
 type SourceKey = (typeof SOURCES)[number]['key'];
 
 function cellTooltip(gpuKey: string, model: string, cell: CellAgg): string {
-  const line = (label: string, m: MetricAgg, mape: number | null, fwdM: number | null) =>
+  const line = (label: string, m: MetricAgg, mape: number | null, rflM: number | null) =>
     `${label} kern ${formatMs(m.pred)}/${formatMs(m.meas)}` +
     (mape != null ? ` (${mape.toFixed(1)}%)` : '') +
-    (fwdM != null ? ` · rfl ${fwdM.toFixed(1)}%` : '');
+    (rflM != null ? ` · rfl ${rflM.toFixed(1)}%` : '');
   const head = `${gpuKey} × ${model} — avg over ${cell.n} cells (kernel-composed vs roofline MAPE)`;
-  return `${head}\n${line('TTFT', cell.ttft, cell.ttftMape, cell.fwdTtftMape)}\n${line('TPOT', cell.tpot, cell.tpotMape, cell.fwdTpotMape)}\n${line('E2EL', cell.e2el, cell.e2elMape, cell.fwdE2elMape)}`;
+  return `${head}\n${line('TTFT', cell.ttft, cell.ttftMape, cell.rflTtftMape)}\n${line('TPOT', cell.tpot, cell.tpotMape, cell.rflTpotMape)}\n${line('E2EL', cell.e2el, cell.e2elMape, cell.rflE2elMape)}`;
 }
 
 export function PredictionsMatrixPage({
@@ -177,7 +177,7 @@ export function PredictionsMatrixPage({
   predictionsUrl?: string;
 }) {
   const [servingIndex, setServingIndex] = useState<ServingIndex | null>(null);
-  const [fwd, setFwd] = useState<FwdLookup>(new Map());
+  const [roofline, setRoofline] = useState<RooflineLookup>(new Map());
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [metric, setMetric] = useState<MetricKey>('e2el');
@@ -199,12 +199,12 @@ export function PredictionsMatrixPage({
       });
   }, [predictionsUrl]);
 
-  // Forward predictions are optional — absent (404) until build_forward_rows has run.
+  // Roofline predictions are optional — absent (404) until build_forward_rows has run.
   useEffect(() => {
-    fetch(forwardPredictionsJsonUrl)
+    fetch(rooflinePredictionsJsonUrl)
       .then(r => (r.ok ? r.json() : null))
-      .then((json: Record<string, ForwardRow[]> | null) => setFwd(buildFwdLookup(json)))
-      .catch(() => setFwd(new Map()));
+      .then((json: Record<string, RooflineRow[]> | null) => setRoofline(buildRooflineLookup(json)))
+      .catch(() => setRoofline(new Map()));
   }, []);
 
   const scopeIndex = servingIndex?.[dataScope];
@@ -221,12 +221,12 @@ export function PredictionsMatrixPage({
       const byModel: Record<string, CellAgg> = {};
       for (const model of modelList) {
         const modelRows = rows.filter(r => r.model === model);
-        if (modelRows.length) byModel[model] = aggregateCell(modelRows, gpuKey, fwd);
+        if (modelRows.length) byModel[model] = aggregateCell(modelRows, gpuKey, roofline);
       }
       return { gpuKey, parts: hardwareParts(gpuKey, rows), byModel };
     }).filter(h => Object.keys(h.byModel).length > 0);
     return { modelList, hardware };
-  }, [scopeIndex, fwd]);
+  }, [scopeIndex, roofline]);
 
   if (loading) {
     return <div className="flex h-64 items-center justify-center text-[#a9afba]">Loading predictions…</div>;
@@ -251,9 +251,9 @@ export function PredictionsMatrixPage({
     backend !== 'all' && !availableBackends.includes(backend) ? 'all' : backend;
   const shownHardware = matrix.hardware.filter(h => effBackend === 'all' || h.parts.backend === effBackend);
   const shownModelList = matrix.modelList.filter(model => shownHardware.some(h => h.byModel[model]));
-  const hasForward = fwd.size > 0;
+  const hasRoofline = roofline.size > 0;
   const metricLabel = METRICS.find(mm => mm.key === metric)!.label;
-  const sourceLabel = source === 'forward' ? 'roofline' : 'kernel-composed';
+  const sourceLabel = source === 'roofline' ? 'roofline' : 'kernel-composed';
 
   const toggle = (
     items: readonly { key: string; label: string }[],
@@ -297,7 +297,7 @@ export function PredictionsMatrixPage({
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex items-center gap-2">
-            {toggle(SOURCES, source, k => setSource(k as SourceKey), hasForward ? [] : ['forward'])}
+            {toggle(SOURCES, source, k => setSource(k as SourceKey), hasRoofline ? [] : ['roofline'])}
             {availableBackends.length > 1 &&
               toggle(BACKENDS.filter(b => b.key === 'all' || availableBackends.includes(b.key)),
                 effBackend, k => setBackend(k as BackendKey))}
@@ -344,7 +344,7 @@ export function PredictionsMatrixPage({
                     return <td key={model} className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
                   }
                   const m = predFor(cell, metric, source);
-                  const mape = source === 'forward' ? fwdMape(cell, metric) : btMape(cell, metric);
+                  const mape = source === 'roofline' ? rflMape(cell, metric) : btMape(cell, metric);
                   const tone = mapeTone(mape);
                   const hasGt = mape != null;
                   return (
