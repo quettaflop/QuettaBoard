@@ -5,6 +5,7 @@ import {
   type DataScope,
 } from '../profileMeta';
 import { INTERNAL } from '../env';
+import brandMark from '../assets/quettaflop-icon-white.png';
 
 type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
 type NavPage = { id: PageId; label: string; icon: ReactNode; badge?: string };
@@ -138,16 +139,8 @@ export function Layout({
               aria-label="Home"
               className="flex shrink-0 items-center gap-2.5 rounded-full text-left transition-opacity hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2dd4bf]/50"
             >
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-[10px] text-[#04211c]"
-                style={{
-                  background: 'linear-gradient(150deg, #2dd4bf, rgba(45,212,191,0.4))',
-                  boxShadow: '0 0 0 1px rgba(45,212,191,0.3), 0 6px 22px rgba(45,212,191,0.25)',
-                }}
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
+              <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#0d0f13] ring-1 ring-inset ring-white/10">
+                <img src={brandMark} alt="QuettaFlop" className="h-5 w-5" draggable={false} />
               </div>
               <h1 className="hidden text-[15px] font-semibold tracking-tight text-[#f3f4f6] md:block">
                 QuettaBoard
