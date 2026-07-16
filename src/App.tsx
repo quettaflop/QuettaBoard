@@ -220,12 +220,6 @@ function App() {
             </div>
           }
         >
-          <div className="glass-amber mb-8 flex items-start gap-3 rounded-[22px] px-5 py-4 text-[13px] leading-relaxed text-[#f7b955]">
-            <span>
-              H100 and A100 Llama-3.1-8B deployments are calibrated against measured ground truth;
-              other configurations are analytic first-cuts and should be read as rough estimates.
-            </span>
-          </div>
           <ServingPredictionsPage
             dataScope="synthetic_distributional"
             predictionsUrl={simulatorV2SimPredictionsJsonUrl}
