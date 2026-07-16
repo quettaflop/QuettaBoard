@@ -103,12 +103,6 @@ function rflMape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[RFL_MAPE[metric]];
 }
 
-// The pred MetricAgg the cell shows for the selected source (measured is the same GT either way).
-function predFor(cell: CellAgg, metric: MetricKey, source: SourceKey): MetricAgg {
-  if (source === 'roofline') return { pred: cell[RFL_PRED[metric]], meas: cell[metric].meas };
-  return cell[metric];
-}
-
 function formatMs(value: number | null): string {
   if (value == null) return '—';
   if (value >= 10000) return `${(value / 1000).toFixed(1)} s`;
@@ -154,11 +148,28 @@ const BACKENDS = [
 ] as const;
 type BackendKey = (typeof BACKENDS)[number]['key'];
 
-const SOURCES = [
-  { key: 'backtester', label: 'Kernel-composed' },
-  { key: 'roofline', label: 'Roofline' },
-] as const;
-type SourceKey = (typeof SOURCES)[number]['key'];
+// Per-cell predictor accent colors — one dot per series so both read at a glance without a toggle.
+const KC_COLOR = '#2dd4bf';   // kernel-composed
+const RFL_COLOR = '#a855f7';  // roofline
+
+// One predictor's line inside a matrix cell: colored dot + label + predicted value, then its MAPE
+// badge toned by accuracy (the same bands the legend explains). "no GT" when the predictor produced
+// no scored row for this cell.
+function PredLine({ label, color, pred, mape }: { label: string; color: string; pred: number | null; mape: number | null }) {
+  const tone = mapeTone(mape);
+  return (
+    <div className="flex items-baseline justify-between gap-2">
+      <span className="flex items-baseline gap-1">
+        <span className="inline-block h-1.5 w-1.5 shrink-0 self-center rounded-full" style={{ backgroundColor: color }} aria-hidden />
+        <span className="text-[9px] uppercase tracking-wide" style={{ color }}>{label}</span>
+        <span className="tabular-nums" style={{ color }}>{pred != null ? formatMs(pred) : '—'}</span>
+      </span>
+      {mape != null
+        ? <span className={`tabular-nums text-[10px] ${tone.badge}`}>{mape.toFixed(0)}%</span>
+        : <span className="text-[10px] text-[#676c76]">no GT</span>}
+    </div>
+  );
+}
 
 function cellTooltip(gpuKey: string, model: string, cell: CellAgg): string {
   const line = (label: string, m: MetricAgg, mape: number | null, rflM: number | null) =>
@@ -182,7 +193,6 @@ export function PredictionsMatrixPage({
   const [failed, setFailed] = useState(false);
   const [metric, setMetric] = useState<MetricKey>('e2el');
   const [backend, setBackend] = useState<BackendKey>('vllm');
-  const [source, setSource] = useState<SourceKey>('backtester');
 
   useEffect(() => {
     setLoading(true);
@@ -253,7 +263,6 @@ export function PredictionsMatrixPage({
   const shownModelList = matrix.modelList.filter(model => shownHardware.some(h => h.byModel[model]));
   const hasRoofline = roofline.size > 0;
   const metricLabel = METRICS.find(mm => mm.key === metric)!.label;
-  const sourceLabel = source === 'roofline' ? 'roofline' : 'kernel-composed';
 
   const toggle = (
     items: readonly { key: string; label: string }[],
@@ -290,14 +299,26 @@ export function PredictionsMatrixPage({
           <h2 className="text-lg font-semibold text-[#f3f4f6]">Predictions matrix</h2>
           <p className="text-sm text-[#a9afba]">
             Per hardware config × model, averaged over all profiles and concurrencies
-            ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Source = <span className="text-[#f3f4f6]">{sourceLabel}</span>;
-            cells show {metricLabel} <span className="text-[#f3f4f6]">predicted</span> /{' '}
-            <span className="text-[#a9afba]">measured</span>; background = MAPE. Hover for kernel-composed vs roofline.
+            ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows {metricLabel}{' '}
+            <span className="text-[#f3f4f6]">measured</span> plus both predictors against the same GT —{' '}
+            <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
+            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Hover for details.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
-            {toggle(SOURCES, source, k => setSource(k as SourceKey), hasRoofline ? [] : ['roofline'])}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 text-xs text-[#a9afba]">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: KC_COLOR }} aria-hidden />
+                kernel-composed
+              </span>
+              {hasRoofline && (
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: RFL_COLOR }} aria-hidden />
+                  roofline
+                </span>
+              )}
+            </div>
             {availableBackends.length > 1 &&
               toggle(BACKENDS.filter(b => b.key === 'all' || availableBackends.includes(b.key)),
                 effBackend, k => setBackend(k as BackendKey))}
@@ -343,16 +364,20 @@ export function PredictionsMatrixPage({
                   if (!cell) {
                     return <td key={model} className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
                   }
-                  const m = predFor(cell, metric, source);
-                  const mape = source === 'roofline' ? rflMape(cell, metric) : btMape(cell, metric);
-                  const tone = mapeTone(mape);
-                  const hasGt = mape != null;
+                  const agg = cell[metric];
+                  const kcMape = btMape(cell, metric);
+                  const rflMapeVal = rflMape(cell, metric);
+                  const tone = mapeTone(kcMape);
+                  const hasGt = agg.meas != null;
                   return (
-                    <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-0.5 align-middle leading-none ${hasGt ? tone.cell : 'bg-white/[0.04]'}`} title={cellTooltip(gpuKey, model, cell)}>
-                      <div className="flex items-baseline justify-between gap-2 font-mono text-xs">
-                        <span className="tabular-nums text-[#f3f4f6]">{formatMs(m.pred)}</span>
-                        <span className="tabular-nums text-[#676c76]">/ {m.meas != null ? formatMs(m.meas) : '—'}</span>
-                        {hasGt && <span className={`tabular-nums text-[10px] ${tone.badge}`}>{mape!.toFixed(0)}%</span>}
+                    <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-1 align-middle ${hasGt ? tone.cell : 'bg-white/[0.04]'}`} title={cellTooltip(gpuKey, model, cell)}>
+                      <div className="flex flex-col gap-0.5 font-mono text-[11px] leading-tight">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="text-[9px] uppercase tracking-wide text-[#676c76]">meas</span>
+                          <span className="tabular-nums text-[#f3f4f6]">{agg.meas != null ? formatMs(agg.meas) : '—'}</span>
+                        </div>
+                        <PredLine label="kc" color={KC_COLOR} pred={agg.pred} mape={kcMape} />
+                        {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} pred={cell[RFL_PRED[metric]]} mape={rflMapeVal} />}
                       </div>
                     </td>
                   );

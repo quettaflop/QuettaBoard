@@ -18,8 +18,9 @@
     "build": "tsc -b && vite build",
     "build:public": "tsc -b && vite build",
     "build:internal": "VITE_INTERNAL=1 tsc -b && VITE_INTERNAL=1 vite build",
-    "postbuild:internal": "[ -n \"$LOCAL_ARTIFACTS_DIR\" ] && for f in gpu-state.json coverage-blockers.synthetic_distributional.json; do [ -e \"$LOCAL_ARTIFACTS_DIR/$f\" ] && ln -sfn \"$LOCAL_ARTIFACTS_DIR/$f\" \"dist/$f\"; done; true",
-    "deploy:tailscale": "VITE_DASHBOARD_API_BASE=/agentic-serve VITE_GPU_STATE_JSON_URL=/agentic-serve/gpu-state.json VITE_COVERAGE_BLOCKERS_JSON_URL=/agentic-serve/coverage-blockers.synthetic_distributional.json npm run build:internal -- --base=/agentic-serve/",
+    "postbuild:internal": "[ -n \"$LOCAL_ARTIFACTS_DIR\" ] && for f in gpu-state.json coverage-blockers.synthetic_distributional.json coverage-blockers.moe_ep.json; do [ -e \"$LOCAL_ARTIFACTS_DIR/$f\" ] && ln -sfn \"$LOCAL_ARTIFACTS_DIR/$f\" \"dist/$f\"; done; true",
+    "deploy": "bash scripts/deploy-dashboard.sh",
+    "deploy:tailscale": "bash scripts/deploy-dashboard.sh",
     "lint": "eslint .",
     "preview": "vite preview"
   },

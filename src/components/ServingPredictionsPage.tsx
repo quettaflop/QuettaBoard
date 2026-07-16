@@ -18,7 +18,7 @@ import {
   profileDisplayName,
 } from '../profileMeta';
 import { rooflinePredictionsJsonUrl, llama31H100TpotFitJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
-import { buildRooflineLookup, rooflineKey, type RooflineLookup } from '../rooflinePredictions';
+import { buildRooflineLookup, rooflineKey, type RooflineLookup, type RooflineRow } from '../rooflinePredictions';
 
 interface ServingTurnPrediction {
   turn_index: number;
@@ -379,56 +379,40 @@ const SERVING_TPOT_METRIC = SERVING_METRICS[1];
 const SERVING_MAPE_COLUMN_WIDTH = 74;
 const SERVING_MAPE_RAIL_WIDTH = SERVING_METRICS.length * SERVING_MAPE_COLUMN_WIDTH;
 
-// Prediction source the Simulator page renders, mirroring the Predictions matrix' source toggle.
-type PredictionSource = 'backtester' | 'roofline';
+// Per-predictor accent colors, shared with the Predictions matrix so both surfaces read the same:
+// kernel-composed = teal, roofline = purple.
+const KC_COLOR = '#2dd4bf';
+const RFL_COLOR = '#a855f7';
 
-const PREDICTION_SOURCES: { key: PredictionSource; label: string }[] = [
-  { key: 'backtester', label: 'Kernel-composed' },
-  { key: 'roofline', label: 'Roofline' },
-];
-
-function finiteOrUndef(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
-}
-
-// Re-key the backtester serving rows onto the roofline predictor's per-cell metrics, joined by
-// (gpu_key, model, profile, concurrency) — same join the Predictions matrix uses.
-//  - 'backtester' is identity (build_simulator_rows, scored vs measured GT).
-//  - 'roofline' swaps pred/err to the no-GT roofline values; measured GT is unchanged. Roofline has no
-//    per-turn / emulator detail, so those are cleared (the per-turn panel + emu/steady tags hide).
-function applyPredictionSource(
+// The analytic roofline predictor is joined to the kernel-composed serving rows by
+// (gpu_key, model, profile, concurrency) — the same join the Predictions matrix uses — and shown
+// ALONGSIDE kernel-composed rather than behind a source toggle: a mean-MAPE badge in the target bar
+// and a flat reference line in the per-turn chart. Both predictors score against the same measured GT.
+function meanRooflineError(
   rows: ServingRow[],
   gpuKey: string,
-  source: PredictionSource,
   roofline: RooflineLookup,
-): ServingRow[] {
-  if (source === 'backtester') return rows;
-  return rows.map(row => {
-    const match = row.model != null && row.profile != null && row.concurrency != null
-      ? roofline.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency))
-      : undefined;
-    const base: ServingRow = {
-      ...row,
-      multiturn_turn_predictions: undefined,
-      backend_emulator_status: undefined,
-      continuous_batching_mode: undefined,
-      ttft_signed_err_ms: undefined,
-      tpot_signed_err_ms: undefined,
-      e2el_signed_err_ms: undefined,
-      ttft_abs_err_ms: undefined,
-      tpot_abs_err_ms: undefined,
-      e2el_abs_err_ms: undefined,
-    };
-    return {
-      ...base,
-      ttft_pred: finiteOrUndef(match?.fwd_ttft_pred),
-      tpot_pred: finiteOrUndef(match?.fwd_tpot_pred),
-      e2el_pred: finiteOrUndef(match?.fwd_e2el_pred),
-      ttft_err: finiteOrUndef(match?.fwd_ttft_err),
-      tpot_err: finiteOrUndef(match?.fwd_tpot_err),
-      e2el_err: finiteOrUndef(match?.fwd_e2el_err),
-    };
-  });
+  metric: 'ttft' | 'tpot' | 'e2el',
+): number | undefined {
+  const errs: number[] = [];
+  for (const row of rows) {
+    if (row.model == null || row.profile == null || row.concurrency == null) continue;
+    const match = roofline.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency));
+    const err = match?.[`fwd_${metric}_err` as keyof RooflineRow];
+    if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
+  }
+  return errs.length ? mean(errs) : undefined;
+}
+
+// The roofline predictor's per-config scalar row for a single serving cell (no per-turn resolution),
+// used to overlay a flat reference line on the per-turn chart. Undefined when no roofline row joins.
+function rooflineRefFor(
+  row: ServingRow | undefined,
+  gpuKey: string,
+  roofline: RooflineLookup,
+): RooflineRow | undefined {
+  if (!row || row.model == null || row.profile == null || row.concurrency == null) return undefined;
+  return roofline.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency));
 }
 
 // Tone + compact formatting shared by the cells, the row-MAPE rail and the badges.
@@ -456,7 +440,6 @@ export function ServingPredictionsPage({
   const [gpu, setGpu] = useState('H100');
   const [model, setModel] = useState('');
   const [backend, setBackend] = useState<'all' | 'vllm' | 'sglang'>('vllm');
-  const [source, setSource] = useState<PredictionSource>('backtester');
   const [roofline, setRoofline] = useState<RooflineLookup>(new Map());
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -537,13 +520,10 @@ export function ServingPredictionsPage({
     if (selectorMode) return base.filter(row => row.model === selectedModel);
     return base;
   }, [scopeIndex, selectedGpu, focus, selectorMode, selectedModel]);
-  // Source toggle (Backtest / Roofline). Roofline collapses to Backtest until roofline rows load.
+  // Predictions are always the kernel-composed backtester rows (per-turn detail intact). The analytic
+  // roofline is no longer a table-replacing mode toggle — it is joined via the `roofline` lookup and
+  // shown alongside: as a MAPE badge group in the target bar and a reference line in the per-turn chart.
   const hasRoofline = roofline.size > 0;
-  const effectiveSource: PredictionSource = source !== 'backtester' && !hasRoofline ? 'backtester' : source;
-  const sourcedRows = useMemo(
-    () => applyPredictionSource(rows, selectedGpu, effectiveSource, roofline),
-    [rows, selectedGpu, effectiveSource, roofline],
-  );
   // In selector mode, keep the table's focused single-config view via a synthesized focus.
   const tableFocus: ServingFocus | undefined = selectorMode && selectedModel
     ? { gpu: selectedGpu, model: selectedModel, title: 'Simulator', description: '' }
@@ -554,11 +534,10 @@ export function ServingPredictionsPage({
     && (focus
       ? focus.model === fixedTpotFit.experiment.model
       : (!selectorMode || selectedModel === fixedTpotFit.experiment.model));
-  // The fixed-TPOT validation overlay is a backtester-only artifact; Roofline shows the live rows.
-  const fixedTpotOnly = Boolean(showFixedTpotFit && pageKind === 'simulator' && effectiveSource === 'backtester');
+  const fixedTpotOnly = Boolean(showFixedTpotFit && pageKind === 'simulator');
   const tableSourceRows = useMemo(
-    () => fixedTpotOnly ? sourcedRows.filter(row => !isSingleTurnServingRow(row)) : sourcedRows,
-    [fixedTpotOnly, sourcedRows],
+    () => fixedTpotOnly ? rows.filter(row => !isSingleTurnServingRow(row)) : rows,
+    [fixedTpotOnly, rows],
   );
   const fixedTpotRows = fixedTpotOnly && fixedTpotFit
     ? fixedTpotServingRows(fixedTpotFit, pageKind)
@@ -584,12 +563,13 @@ export function ServingPredictionsPage({
           backend={backend}
           onBackend={setBackend}
           showBackend={hasSglang}
-          source={effectiveSource}
-          onSource={setSource}
           hasRoofline={hasRoofline}
-          ttftMape={meanMetricError(sourcedRows, 'ttft_err')}
-          tpotMape={meanMetricError(sourcedRows, 'tpot_err')}
-          e2elMape={meanMetricError(sourcedRows, 'e2el_err')}
+          ttftMape={meanMetricError(rows, 'ttft_err')}
+          tpotMape={meanMetricError(rows, 'tpot_err')}
+          e2elMape={meanMetricError(rows, 'e2el_err')}
+          rflTtftMape={meanRooflineError(rows, selectedGpu, roofline, 'ttft')}
+          rflTpotMape={meanRooflineError(rows, selectedGpu, roofline, 'tpot')}
+          rflE2elMape={meanRooflineError(rows, selectedGpu, roofline, 'e2el')}
         />
       ) : (
         <>
@@ -629,6 +609,8 @@ export function ServingPredictionsPage({
         focus={tableFocus}
         tpotOnly={fixedTpotOnly}
         validationRows={useFixedTpotRows}
+        roofline={roofline}
+        gpuKey={selectedGpu}
       />
     </div>
   );
@@ -809,12 +791,13 @@ function SimulatorTargetBar({
   backend,
   onBackend,
   showBackend,
-  source,
-  onSource,
   hasRoofline,
   ttftMape,
   tpotMape,
   e2elMape,
+  rflTtftMape,
+  rflTpotMape,
+  rflE2elMape,
 }: {
   modelOptions: string[];
   selectedModel: string;
@@ -825,12 +808,13 @@ function SimulatorTargetBar({
   backend: 'all' | 'vllm' | 'sglang';
   onBackend: (backend: 'all' | 'vllm' | 'sglang') => void;
   showBackend: boolean;
-  source: PredictionSource;
-  onSource: (source: PredictionSource) => void;
   hasRoofline: boolean;
   ttftMape: OptionalMetric;
   tpotMape: OptionalMetric;
   e2elMape: OptionalMetric;
+  rflTtftMape: OptionalMetric;
+  rflTpotMape: OptionalMetric;
+  rflE2elMape: OptionalMetric;
 }) {
   return (
     <section className="glass rounded-[22px] px-5 py-4">
@@ -852,36 +836,32 @@ function SimulatorTargetBar({
               </select>
             </label>
           )}
-          <label className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#676c76]">Source</span>
-            <div className="seg-track">
-              {PREDICTION_SOURCES.map(({ key, label }) => {
-                const disabled = key !== 'backtester' && !hasRoofline;
-                const active = source === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    disabled={disabled}
-                    onClick={() => onSource(key)}
-                    title={disabled ? 'Roofline predictions not loaded yet' : undefined}
-                    className={`seg-item px-3 py-1 text-[12px] font-medium ${
-                      active ? 'seg-item-active'
-                        : disabled ? 'text-[#c7c7cc] cursor-not-allowed'
-                        : 'text-[#a9afba] hover:text-[#f3f4f6]'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </label>
         </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <MetricBadge label="TTFT MAPE" value={ttftMape} />
-          <MetricBadge label="TPOT MAPE" value={tpotMape} />
-          <MetricBadge label="E2EL MAPE" value={e2elMape} />
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="flex w-[104px] shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: KC_COLOR }}>
+              <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: KC_COLOR }} aria-hidden />
+              kernel-composed
+            </span>
+            <div className="grid grow gap-2 sm:grid-cols-3">
+              <MetricBadge label="TTFT MAPE" value={ttftMape} />
+              <MetricBadge label="TPOT MAPE" value={tpotMape} />
+              <MetricBadge label="E2EL MAPE" value={e2elMape} />
+            </div>
+          </div>
+          {hasRoofline && (
+            <div className="flex items-center gap-2">
+              <span className="flex w-[104px] shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: RFL_COLOR }}>
+                <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: RFL_COLOR }} aria-hidden />
+                roofline
+              </span>
+              <div className="grid grow gap-2 sm:grid-cols-3">
+                <MetricBadge label="TTFT MAPE" value={rflTtftMape} />
+                <MetricBadge label="TPOT MAPE" value={rflTpotMape} />
+                <MetricBadge label="E2EL MAPE" value={rflE2elMape} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -1117,6 +1097,8 @@ function ServingTable({
   focus,
   tpotOnly = false,
   validationRows = false,
+  roofline,
+  gpuKey,
 }: {
   rows: ServingRow[];
   summaryRows?: ServingRow[];
@@ -1125,6 +1107,8 @@ function ServingTable({
   focus?: ServingFocus;
   tpotOnly?: boolean;
   validationRows?: boolean;
+  roofline?: RooflineLookup;
+  gpuKey?: string;
 }) {
   const [selectedPerTurnKey, setSelectedPerTurnKey] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<ServingMetric>(SERVING_TPOT_METRIC);
@@ -1291,6 +1275,7 @@ function ServingTable({
 
       <ServingPerTurnBreakdown
         row={selectedPerTurnRow}
+        rooflineRef={roofline && gpuKey ? rooflineRefFor(selectedPerTurnRow, gpuKey, roofline) : undefined}
         selectedMetric={selectedMetric}
         onSelectMetric={setSelectedMetric}
       />
@@ -1400,12 +1385,23 @@ function hasTurnPredictions(row: ServingRow): row is ServingPerTurnRow {
 function ServingPerTurnChart({
   turns,
   metric,
+  rooflineRef,
   onSelectMetric,
 }: {
   turns: ServingTurnPrediction[];
   metric: ServingMetric;
+  rooflineRef?: RooflineRow;
   onSelectMetric: (m: ServingMetric) => void;
 }) {
+  // The analytic roofline predictor is per-config (one value, no per-turn resolution), so it overlays
+  // as a flat reference line — a second predictor series against the same measured GT trajectory.
+  const rooflinePredRaw =
+    metric.label === 'TTFT' ? rooflineRef?.fwd_ttft_pred
+      : metric.label === 'TPOT' ? rooflineRef?.fwd_tpot_pred
+        : rooflineRef?.fwd_e2el_pred;
+  const rooflineFlat =
+    typeof rooflinePredRaw === 'number' && Number.isFinite(rooflinePredRaw) ? rooflinePredRaw : null;
+  const showRoofline = rooflineFlat !== null;
   // Build (turn_index, meas, pred) rows the chart can plot.  Nulls for
   // missing entries so Recharts breaks the line at gaps rather than
   // interpolating across them.
@@ -1461,9 +1457,12 @@ function ServingPerTurnChart({
             typeof staticPred === 'number' && Number.isFinite(staticPred)
               ? staticPred
               : null,
+          // Flat per-config roofline value repeated on every turn, so it renders as a line AND shows
+          // up in the hover tooltip (a ReferenceLine would draw but not report a value on hover).
+          roofline: rooflineFlat,
         };
       }),
-    [turns, metric.measKey, metric.predKey, metric.label],
+    [turns, metric.measKey, metric.predKey, metric.label, rooflineFlat],
   );
   const showKernel =
     metric.label === 'TPOT' && chartData.some(d => d.kernel !== null);
@@ -1585,6 +1584,14 @@ function ServingPerTurnChart({
                       <span className="text-[11px] text-[#a9afba]">{metric.label} predicted (static M0)</span>
                     </span>
                   )}
+                  {showRoofline && (
+                    <span className="flex items-center gap-2">
+                      <svg width="26" height="8" aria-hidden>
+                        <line x1="0" y1="4" x2="26" y2="4" stroke={RFL_COLOR} strokeWidth="2" strokeDasharray="2 3" />
+                      </svg>
+                      <span className="text-[11px] text-[#a9afba]">{metric.label} roofline (analytic, per-config)</span>
+                    </span>
+                  )}
                   </div>
                   <div className="mt-1 text-center text-[10px] text-[#676c76]">
                     ★ = the line the prediction table &amp; MAPE badge use · other predicted lines are comparison-only
@@ -1668,6 +1675,20 @@ function ServingPerTurnChart({
                 isAnimationActive={false}
               />
             )}
+            {showRoofline && (
+              <Line
+                type="monotone"
+                dataKey="roofline"
+                name={`${metric.label} roofline (analytic)`}
+                stroke={RFL_COLOR}
+                strokeDasharray="2 3"
+                strokeWidth={1.5}
+                dot={false}
+                activeDot={{ r: 4 }}
+                connectNulls
+                isAnimationActive={false}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -1677,10 +1698,12 @@ function ServingPerTurnChart({
 
 function ServingPerTurnBreakdown({
   row,
+  rooflineRef,
   selectedMetric,
   onSelectMetric,
 }: {
   row?: ServingPerTurnRow;
+  rooflineRef?: RooflineRow;
   selectedMetric: ServingMetric;
   onSelectMetric: (m: ServingMetric) => void;
 }) {
@@ -1750,6 +1773,7 @@ function ServingPerTurnBreakdown({
       <ServingPerTurnChart
         turns={turns}
         metric={selectedMetric}
+        rooflineRef={rooflineRef}
         onSelectMetric={onSelectMetric}
       />
 
