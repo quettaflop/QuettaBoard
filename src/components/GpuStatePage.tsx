@@ -523,7 +523,10 @@ function HostPanel({
       <div className="px-4 py-3">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="font-mono text-base font-semibold text-[#f3f4f6]">{host.host}</h3>
+            <div className="flex flex-col">
+              <h3 className="font-mono text-base font-semibold leading-tight text-[#f3f4f6]">{host.host}</h3>
+              {host.ip && <span className="font-mono text-[11px] leading-tight text-[#676c76]">{host.ip}</span>}
+            </div>
             <span
               className="rounded border px-2 py-0.5 text-xs font-medium"
               style={{
@@ -538,11 +541,19 @@ function HostPanel({
             {runningPorts.length > 0 && (
               <span className="text-xs text-[#a9afba]">running ports {runningPorts.join(', ')}</span>
             )}
-            {drained && (
-              <span className="rounded border border-[#d29922]/40 bg-[#d29922]/12 px-2 py-0.5 text-xs font-medium text-[#d29922]">
-                draining
-              </span>
-            )}
+            {/* Explicit, always-visible dispatch state (not inferred from the button). */}
+            <span
+              className={`rounded border px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${
+                drained
+                  ? 'border-[#f85149]/45 bg-[#f85149]/12 text-[#f85149]'
+                  : 'border-[#3fb950]/40 bg-[#3fb950]/12 text-[#3fb950]'
+              }`}
+              title={drained
+                ? 'Drained: running jobs finish, but no new jobs dispatch here.'
+                : 'Accepting jobs: the orchestrator can dispatch new jobs here.'}
+            >
+              {drained ? 'drained · no new jobs' : 'accepting jobs'}
+            </span>
             {blockedGpuCount > 0 && (
               <span className="rounded border border-[#d29922]/40 bg-[#d29922]/12 px-2 py-0.5 text-xs font-medium text-[#d29922]">
                 {blockedGpuCount} GPU{blockedGpuCount === 1 ? '' : 's'} blocked

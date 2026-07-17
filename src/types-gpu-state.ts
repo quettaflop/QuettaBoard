@@ -88,6 +88,8 @@ export interface GpuHostState {
   host: string;
   ok: boolean;
   remote_user: string;
+  // Configured address (from ~/.ssh/config, resolved via `ssh -G`), shown under the alias.
+  ip?: string;
   error: string;
   drained?: boolean;
   blocked_gpus?: string[];
