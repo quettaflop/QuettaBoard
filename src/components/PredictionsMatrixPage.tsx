@@ -173,24 +173,35 @@ const HW_LABEL: Record<string, string> = {
   RTX2080Ti: '2080Ti',
 };
 
-// Why a (hardware, model) cell has no data: it physically can't run ("won't fit" — the model
-// weights exceed the VRAM budget, so it was never benchmarked) vs simply "not run yet". Returns
-// the reason string when infeasible, else null. Mirrors CoveragePage.infeasibilityReason.
-function fitReason(
+// Prediction gpu_key base -> sweep-state host key, for the known_oom lookup.
+const GPU2HOST: Record<string, string> = {
+  A100: 'a100',
+  H100: 'h100',
+  RTX3090: '3090',
+  RTX2080Ti: '2080ti',
+};
+
+// Why a (hardware, model) cell can't run — rendered as a shaded (hatched) cell, reason in the
+// tooltip, matching what the Coverage tab marks infeasible. Two sources: it won't fit in VRAM, or
+// it is declared known_oom in the sweep (an arch limit like MXFP4-on-sm75, or a fixable software
+// gap). Returns null when the cell is feasible and simply has no data yet (rendered "—").
+function cellBlockReason(
   gpu: string,
   tp: number,
+  backend: string,
   model: string,
   vramByLabel: Map<string, number>,
   weightsByModel: Map<string, number>,
   ratio: number,
+  knownOom: Map<string, string>,
 ): string | null {
   const vram = vramByLabel.get(HW_LABEL[gpu] ?? gpu);
   const weights = weightsByModel.get(model);
-  if (!vram || !weights) return null;
-  if (weights > vram * tp * ratio) {
+  if (vram && weights && weights > vram * tp * ratio) {
     return `won't fit — needs ≥${Math.ceil(weights / ratio)} GB VRAM (weights ${weights} GB); ${gpu}${tp > 1 ? `×${tp}` : ''} has ${vram * tp} GB`;
   }
-  return null;
+  const host = GPU2HOST[gpu] ?? gpu;
+  return knownOom.get(`${host}|${model}|${tp}|${backend}`) ?? knownOom.get(`${host}|${model}|${tp}`) ?? null;
 }
 
 const METRICS = [
@@ -272,6 +283,18 @@ export function PredictionsMatrixPage({
     return m;
   }, [sweepState]);
   const feasRatio = sweepState?.feasibility_ratio ?? 0.9;
+  // Cells the sweep declares infeasible (arch or software), so the matrix can shade them like the
+  // Coverage tab instead of a bare "—". hw_permanent limits apply to any engine (backend-agnostic).
+  const knownOom = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of sweepState?.cells ?? []) {
+      if (c.status !== 'known_oom') continue;
+      const reason = c.reason ?? 'declared infeasible';
+      m.set(`${c.host}|${c.model}|${c.tp}|${c.backend}`, reason);
+      if (c.kind === 'hw_permanent') m.set(`${c.host}|${c.model}|${c.tp}`, reason);
+    }
+    return m;
+  }, [sweepState]);
 
   useEffect(() => {
     setLoading(true);
@@ -389,7 +412,7 @@ export function PredictionsMatrixPage({
             Per hardware config × model, averaged over all profiles and concurrencies
             ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows the {metricLabel} APE per predictor —{' '}
             <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
-            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Empty cells are shaded when the model won&apos;t fit, or{' '}
+            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Empty cells are shaded when the config can&apos;t run (won&apos;t fit or declared infeasible), or{' '}
             <span className="text-[#676c76]">—</span> when not run. Hover for details.
           </p>
         </div>
@@ -427,7 +450,7 @@ export function PredictionsMatrixPage({
             <span className="rounded border border-[#ffffff1f] bg-white/[0.08] px-2 py-0.5 text-[#676c76]">no GT</span>
             <span className="inline-flex items-center gap-1.5 rounded border border-[#ffffff1f] px-2 py-0.5 text-[#8b949e]">
               <span className="inline-block h-2.5 w-2.5 rounded-sm border border-[#ffffff1f]" style={{ backgroundImage: NA_HATCH }} aria-hidden />
-              won&apos;t fit
+              can&apos;t run
             </span>
             <span className="rounded border border-[#ffffff1f] px-2 py-0.5 text-[#676c76]">— = not run</span>
           </div>
@@ -461,7 +484,7 @@ export function PredictionsMatrixPage({
                 {shownModelList.map(model => {
                   const cell = byModel[model];
                   if (!cell) {
-                    const reason = fitReason(parts.gpu, parts.tp, model, vramByLabel, weightsByModel, feasRatio);
+                    const reason = cellBlockReason(parts.gpu, parts.tp, parts.backend, model, vramByLabel, weightsByModel, feasRatio, knownOom);
                     return reason
                       ? <td key={model} title={reason} style={{ backgroundImage: NA_HATCH }} className="border-t border-[#ffffff1f] px-2.5 py-1 align-middle"></td>
                       : <td key={model} title="not run yet" className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
