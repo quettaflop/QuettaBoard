@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { servingPredictionsJsonUrl, rooflinePredictionsJsonUrl } from '../dataUrls';
+import { servingPredictionsJsonUrl, rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl } from '../dataUrls';
 import type { DataScope } from '../profileMeta';
 import { DATA_SCOPE_META } from '../profileMeta';
 import {
@@ -8,6 +8,7 @@ import {
   type RooflineRow,
   type RooflineLookup,
 } from '../rooflinePredictions';
+import { buildLssLookup, type LssRow, type LssLookup } from '../llmsimPredictions';
 import {
   buildServingIndex,
   type ServingIndex,
@@ -39,6 +40,13 @@ interface CellAgg {
   rflTtftMape: number | null;
   rflTpotMape: number | null;
   rflE2elMape: number | null;
+  // LLMServingSim 2.0 predictor: cohort-mean pred + MAPE vs the same measured GT (null if no row).
+  lssTtftPred: number | null;
+  lssTpotPred: number | null;
+  lssE2elPred: number | null;
+  lssTtftMape: number | null;
+  lssTpotMape: number | null;
+  lssE2elMape: number | null;
   n: number;
 }
 
@@ -47,7 +55,7 @@ function average(values: number[]): number | null {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLookup): CellAgg {
+function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLookup, llmsim: LssLookup): CellAgg {
   const collect = (key: keyof ServingRow): number[] => {
     const out: number[] = [];
     for (const row of rows) {
@@ -63,16 +71,29 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLoo
   // Join the roofline rows by (gpu_key, model, profile, concurrency).
   const rflPred: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
   const rflErr: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
+  const lssPred: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
+  const lssErr: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
   for (const row of rows) {
     const r = row as ServingRow & { profile?: string; concurrency?: number };
     if (r.model == null || r.profile == null || r.concurrency == null) continue;
-    const f = roofline.get(rooflineKey(gpuKey, r.model, r.profile, r.concurrency));
-    if (!f) continue;
-    for (const k of ['ttft', 'tpot', 'e2el'] as const) {
-      const p = f[`fwd_${k}_pred` as keyof RooflineRow];
-      const e = f[`fwd_${k}_err` as keyof RooflineRow];
-      if (typeof p === 'number' && Number.isFinite(p)) rflPred[k].push(p);
-      if (typeof e === 'number' && Number.isFinite(e)) rflErr[k].push(e);
+    const key = rooflineKey(gpuKey, r.model, r.profile, r.concurrency);
+    const f = roofline.get(key);
+    if (f) {
+      for (const k of ['ttft', 'tpot', 'e2el'] as const) {
+        const p = f[`fwd_${k}_pred` as keyof RooflineRow];
+        const e = f[`fwd_${k}_err` as keyof RooflineRow];
+        if (typeof p === 'number' && Number.isFinite(p)) rflPred[k].push(p);
+        if (typeof e === 'number' && Number.isFinite(e)) rflErr[k].push(e);
+      }
+    }
+    const l = llmsim.get(key);
+    if (l) {
+      for (const k of ['ttft', 'tpot', 'e2el'] as const) {
+        const p = l[`${k}_pred` as keyof LssRow];
+        const e = l[`${k}_err` as keyof LssRow];
+        if (typeof p === 'number' && Number.isFinite(p)) lssPred[k].push(p);
+        if (typeof e === 'number' && Number.isFinite(e)) lssErr[k].push(e);
+      }
     }
   }
   return {
@@ -88,19 +109,28 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLoo
     rflTtftMape: average(rflErr.ttft),
     rflTpotMape: average(rflErr.tpot),
     rflE2elMape: average(rflErr.e2el),
+    lssTtftPred: average(lssPred.ttft),
+    lssTpotPred: average(lssPred.tpot),
+    lssE2elPred: average(lssPred.e2el),
+    lssTtftMape: average(lssErr.ttft),
+    lssTpotMape: average(lssErr.tpot),
+    lssE2elMape: average(lssErr.e2el),
     n: rows.length,
   };
 }
 
 const BT_MAPE = { ttft: 'ttftMape', tpot: 'tpotMape', e2el: 'e2elMape' } as const;
 const RFL_MAPE = { ttft: 'rflTtftMape', tpot: 'rflTpotMape', e2el: 'rflE2elMape' } as const;
-const RFL_PRED = { ttft: 'rflTtftPred', tpot: 'rflTpotPred', e2el: 'rflE2elPred' } as const;
+const LSS_MAPE = { ttft: 'lssTtftMape', tpot: 'lssTpotMape', e2el: 'lssE2elMape' } as const;
 
 function btMape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[BT_MAPE[metric]];
 }
 function rflMape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[RFL_MAPE[metric]];
+}
+function lssMape(cell: CellAgg, metric: MetricKey): number | null {
+  return cell[LSS_MAPE[metric]];
 }
 
 function formatMs(value: number | null): string {
@@ -151,18 +181,19 @@ type BackendKey = (typeof BACKENDS)[number]['key'];
 // Per-cell predictor accent colors — one dot per series so both read at a glance without a toggle.
 const KC_COLOR = '#2dd4bf';   // kernel-composed
 const RFL_COLOR = '#a855f7';  // roofline
+const LSS_COLOR = '#fb923c';  // LLMServingSim 2.0
 
-// One predictor's line inside a matrix cell: colored dot + label + predicted value, then its MAPE
-// badge toned by accuracy (the same bands the legend explains). "no GT" when the predictor produced
-// no scored row for this cell.
-function PredLine({ label, color, pred, mape }: { label: string; color: string; pred: number | null; mape: number | null }) {
+// One predictor's line inside a matrix cell: colored dot + label + its APE (absolute
+// percentage error vs the measured GT), toned by accuracy (the bands the legend
+// explains). "no GT" when the predictor produced no scored row for this cell. The
+// predicted/measured ms live in the cell tooltip, not the grid.
+function PredLine({ label, color, mape }: { label: string; color: string; mape: number | null }) {
   const tone = mapeTone(mape);
   return (
     <div className="flex items-baseline justify-between gap-2">
       <span className="flex items-baseline gap-1">
         <span className="inline-block h-1.5 w-1.5 shrink-0 self-center rounded-full" style={{ backgroundColor: color }} aria-hidden />
         <span className="text-[9px] uppercase tracking-wide" style={{ color }}>{label}</span>
-        <span className="tabular-nums" style={{ color }}>{pred != null ? formatMs(pred) : '—'}</span>
       </span>
       {mape != null
         ? <span className={`tabular-nums text-[10px] ${tone.badge}`}>{mape.toFixed(0)}%</span>
@@ -189,6 +220,7 @@ export function PredictionsMatrixPage({
 }) {
   const [servingIndex, setServingIndex] = useState<ServingIndex | null>(null);
   const [roofline, setRoofline] = useState<RooflineLookup>(new Map());
+  const [llmsim, setLlmsim] = useState<LssLookup>(new Map());
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [metric, setMetric] = useState<MetricKey>('e2el');
@@ -217,6 +249,14 @@ export function PredictionsMatrixPage({
       .catch(() => setRoofline(new Map()));
   }, []);
 
+  // LLMServingSim 2.0 predictions are optional — absent (404) until the sweep has been built.
+  useEffect(() => {
+    fetch(llmsimPredictionsJsonUrl)
+      .then(r => (r.ok ? r.json() : null))
+      .then((json: Record<string, LssRow[]> | null) => setLlmsim(buildLssLookup(json)))
+      .catch(() => setLlmsim(new Map()));
+  }, []);
+
   const scopeIndex = servingIndex?.[dataScope];
 
   const matrix = useMemo(() => {
@@ -231,12 +271,12 @@ export function PredictionsMatrixPage({
       const byModel: Record<string, CellAgg> = {};
       for (const model of modelList) {
         const modelRows = rows.filter(r => r.model === model);
-        if (modelRows.length) byModel[model] = aggregateCell(modelRows, gpuKey, roofline);
+        if (modelRows.length) byModel[model] = aggregateCell(modelRows, gpuKey, roofline, llmsim);
       }
       return { gpuKey, parts: hardwareParts(gpuKey, rows), byModel };
     }).filter(h => Object.keys(h.byModel).length > 0);
     return { modelList, hardware };
-  }, [scopeIndex, roofline]);
+  }, [scopeIndex, roofline, llmsim]);
 
   if (loading) {
     return <div className="flex h-64 items-center justify-center text-[#a9afba]">Loading predictions…</div>;
@@ -262,6 +302,7 @@ export function PredictionsMatrixPage({
   const shownHardware = matrix.hardware.filter(h => effBackend === 'all' || h.parts.backend === effBackend);
   const shownModelList = matrix.modelList.filter(model => shownHardware.some(h => h.byModel[model]));
   const hasRoofline = roofline.size > 0;
+  const hasLss = llmsim.size > 0;
   const metricLabel = METRICS.find(mm => mm.key === metric)!.label;
 
   const toggle = (
@@ -318,6 +359,12 @@ export function PredictionsMatrixPage({
                   roofline
                 </span>
               )}
+              {hasLss && (
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: LSS_COLOR }} aria-hidden />
+                  LLMServingSim
+                </span>
+              )}
             </div>
             {availableBackends.length > 1 &&
               toggle(BACKENDS.filter(b => b.key === 'all' || availableBackends.includes(b.key)),
@@ -367,17 +414,15 @@ export function PredictionsMatrixPage({
                   const agg = cell[metric];
                   const kcMape = btMape(cell, metric);
                   const rflMapeVal = rflMape(cell, metric);
+                  const lssMapeVal = lssMape(cell, metric);
                   const tone = mapeTone(kcMape);
                   const hasGt = agg.meas != null;
                   return (
                     <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-1 align-middle ${hasGt ? tone.cell : 'bg-white/[0.04]'}`} title={cellTooltip(gpuKey, model, cell)}>
                       <div className="flex flex-col gap-0.5 font-mono text-[11px] leading-tight">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <span className="text-[9px] uppercase tracking-wide text-[#676c76]">meas</span>
-                          <span className="tabular-nums text-[#f3f4f6]">{agg.meas != null ? formatMs(agg.meas) : '—'}</span>
-                        </div>
-                        <PredLine label="kc" color={KC_COLOR} pred={agg.pred} mape={kcMape} />
-                        {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} pred={cell[RFL_PRED[metric]]} mape={rflMapeVal} />}
+                        <PredLine label="kc" color={KC_COLOR} mape={kcMape} />
+                        {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} mape={rflMapeVal} />}
+                        {hasLss && <PredLine label="lss" color={LSS_COLOR} mape={lssMapeVal} />}
                       </div>
                     </td>
                   );
