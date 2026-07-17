@@ -56,14 +56,14 @@ interface EnrichedResult {
   seriesKey: string;
   filename: string;
   engineVersion?: string;  // e.g. "0.19.0" — from _engine_version.txt sidecar or fallback
-  dataScope: 'trace_replay' | 'synthetic_distributional' | 'archived';
+  dataScope: 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep';
   perTurn?: PerTurnEntry[];
   scatterData?: ScatterPoint[];
 }
 
 type DataScope = EnrichedResult['dataScope'];
 
-const DATA_SCOPES: DataScope[] = ['trace_replay', 'synthetic_distributional', 'archived'];
+const DATA_SCOPES: DataScope[] = ['trace_replay', 'synthetic_distributional', 'archived', 'moe_ep'];
 
 // Fallback engine versions applied to historical runs without an
 // `_engine_version.txt` sidecar. Update when hosts upgrade or when
@@ -187,7 +187,8 @@ function normalizeProfile(profile: string): string {
   return HISTORICAL_PROFILE_ALIASES[normalized] ?? normalized;
 }
 
-function normalizeDataScope(scope: string | undefined): 'trace_replay' | 'synthetic_distributional' | 'archived' | undefined {
+function normalizeDataScope(scope: string | undefined): 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep' | undefined {
+  if (scope === 'moe_ep') return 'moe_ep';
   if (scope === 'synthetic_distributional' || scope === 'synthetic' || scope === 'latest') return 'synthetic_distributional';
   if (scope === 'trace_replay' || scope === 'archive') return 'trace_replay';
   if (scope === 'archived' || scope === 'current' || scope === 'canonical' || scope === 'fixed' || scope === 'fixed-grid' || scope === 'mse') {
@@ -196,7 +197,7 @@ function normalizeDataScope(scope: string | undefined): 'trace_replay' | 'synthe
   return undefined;
 }
 
-function detectDataScope(raw: RawResult, relDir: string): 'trace_replay' | 'synthetic_distributional' | 'archived' {
+function detectDataScope(raw: RawResult, relDir: string): 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep' {
   const firstDir = relDir.split(/[\\/]/)[0];
   const pathScope = normalizeDataScope(firstDir);
   if (pathScope) return pathScope;
@@ -487,6 +488,7 @@ function main() {
     trace_replay: 0,
     synthetic_distributional: 0,
     archived: 0,
+    moe_ep: 0,
   };
   for (const scope of DATA_SCOPES) {
     const scopedResults = slimResults.filter((r) => r.dataScope === scope);

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useCoverageBlockers } from '../hooks/useCoverageBlockers';
+import { coverageBlockersMoeEpJsonUrl } from '../dataUrls';
 import type { BenchmarkResult } from '../types';
-import type { CoverageBlocker, CoverageEvidence, CoverageFailure, CoveragePoint } from '../types-coverage-blockers';
+import type { CoverageBlocker, CoverageBlockersState, CoverageEvidence, CoverageFailure, CoveragePoint } from '../types-coverage-blockers';
 import type { SweepCell, SweepState } from '../types-sweep';
 import { DATA_SCOPE_META, normalizeDataScope, profileDisplayName, type DataScope } from '../profileMeta';
 
@@ -238,6 +239,90 @@ function stateCellScope(cell: SweepCell): DataScope {
   return normalizeDataScope(cell.data_scope ?? null) ?? 'archived';
 }
 
+// EP-on (expert-parallel) cells live in the dedicated moe_ep scope. To show EP
+// off vs on as distinct, labeled rows in the same grid, MoE cells + coverage
+// jobs are relabeled with a display backend ("sglang · tp" / "· tp+ep") and
+// their job ids recomputed so the grid's hw|model|backend keying and per-job
+// blocker lookups line up. EP-on entries are folded into the synthetic scope.
+const SYNTHETIC_SCOPE_VALUES = new Set(['synthetic_distributional', 'synthetic', 'synthetic-distributional', 'latest']);
+
+function isEpOnCell(cell: Pick<SweepCell, 'ep' | 'data_scope'>): boolean {
+  return cell.ep === true || cell.data_scope === 'moe_ep';
+}
+
+// Parallelism strategy shown to users. The launcher today only expresses
+// tensor-parallel and expert-parallel-over-TP, so a run is "tp" (EP off) or
+// "tp+ep" (EP on). The label is suffixed onto the backend so EP-off and EP-on
+// render as distinct grid rows and keying + blocker lookups line up. The other
+// strategies (ep = expert-parallel without TP, pp = pipeline, ep+pp) are not
+// wired in the launcher yet — see the parallelism legend.
+function epBackendLabel(backend: string, on: boolean): string {
+  return `${backend} · ${on ? 'tp+ep' : 'tp'}`;
+}
+
+function moeModelsFromCells(cells: SweepCell[] | undefined): Set<string> {
+  return new Set((cells ?? []).filter(isEpOnCell).map((c) => c.model));
+}
+
+// Relabel MoE cells: EP-on -> "· tp+ep" (folded into synthetic scope), EP-off
+// synthetic -> "· tp". Dense models and other scopes pass through untouched.
+function transformSweepCellsForEp(cells: SweepCell[], moeModels: Set<string>): SweepCell[] {
+  if (moeModels.size === 0) return cells;
+  return cells.map((c) => {
+    if (!moeModels.has(c.model)) return c;
+    if (isEpOnCell(c)) {
+      return { ...c, backend: epBackendLabel(c.backend, true), data_scope: 'synthetic_distributional' };
+    }
+    if (SYNTHETIC_SCOPE_VALUES.has(String(c.data_scope))) {
+      return { ...c, backend: epBackendLabel(c.backend, false) };
+    }
+    return c;
+  });
+}
+
+function relabelPoints(points: CoveragePoint[] | undefined, on: boolean): CoveragePoint[] | undefined {
+  return points?.map((p) => ({ ...p, backend: epBackendLabel(p.backend, on) }));
+}
+
+function transformBlockerForEp(job: CoverageBlocker, on: boolean): CoverageBlocker {
+  const backend = epBackendLabel(job.backend, on);
+  return {
+    ...job,
+    backend,
+    job_id: jobIdForCell({ host: job.host, model: job.model, tp: job.tp, mode: job.mode, backend }),
+    scope: 'synthetic_distributional',
+    present_points: relabelPoints(job.present_points, on),
+    missing_points: relabelPoints(job.missing_points, on),
+    expected_points: relabelPoints(job.expected_points, on),
+  };
+}
+
+// Merge the EP-off (synthetic) + EP-on (moe_ep) coverage manifests into one, with
+// MoE jobs/blockers relabeled so they render as separate "· tp"/"· tp+ep" rows.
+function mergeEpBlockers(
+  base: CoverageBlockersState | null,
+  moeEp: CoverageBlockersState | null,
+  moeModels: Set<string>,
+): CoverageBlockersState | null {
+  if (!base && !moeEp) return null;
+  const offJobs = (base?.jobs ?? []).map((j) => (moeModels.has(j.model) ? transformBlockerForEp(j, false) : j));
+  const offBlockers = (base?.blockers ?? []).map((b) => (moeModels.has(b.model) ? transformBlockerForEp(b, false) : b));
+  const onJobs = (moeEp?.jobs ?? []).map((j) => transformBlockerForEp(j, true));
+  const onBlockers = (moeEp?.blockers ?? []).map((b) => transformBlockerForEp(b, true));
+  const seed = base ?? moeEp!;
+  const sum = (a: number | undefined, b: number | undefined) => (a ?? 0) + (b ?? 0);
+  return {
+    ...seed,
+    jobs: [...offJobs, ...onJobs],
+    blockers: [...offBlockers, ...onBlockers],
+    expected_points: sum(base?.expected_points, moeEp?.expected_points),
+    present_points: sum(base?.present_points, moeEp?.present_points),
+    missing_points: sum(base?.missing_points, moeEp?.missing_points),
+    observed_present_points: sum(base?.observed_present_points, moeEp?.observed_present_points),
+    coverage_required_points: sum(base?.coverage_required_points, moeEp?.coverage_required_points),
+  };
+}
+
 function isMultiTurnProfile(profile: string): boolean {
   return profile.includes('multiturn') || profile.includes('multi-turn');
 }
@@ -266,7 +351,7 @@ function sweepConcurrenciesForMode(cells: SweepCell[], mode: SweepCell['mode']):
   return uniqueNumbers(cells.flatMap((cell) => cell.mode === mode ? cell.concurrencies ?? [] : []));
 }
 
-function jobIdForCell(cell: Pick<SweepCell, 'host' | 'model' | 'tp' | 'mode' | 'backend'>): string {
+function jobIdForCell(cell: { host: string; model: string; tp: number; mode: string; backend: string }): string {
   const base = `${cell.host}_${cell.model}_tp${cell.tp}_${cell.mode}`;
   return cell.backend && cell.backend !== 'vllm' ? `${base}_${cell.backend}` : base;
 }
@@ -538,16 +623,31 @@ function buildSelectedCell(
 
 export function CoveragePage({
   allData,
-  sweepState,
+  sweepState: rawSweepState,
   loading,
   dataScope,
 }: CoveragePageProps) {
   const canonicalCoverage = usesCanonicalCoverage(dataScope);
   const gridScope = coverageGridScope(dataScope);
   const {
-    blockersState,
+    blockersState: rawBlockersState,
     loading: blockersLoading,
   } = useCoverageBlockers(dataScope === 'synthetic_distributional');
+  const { blockersState: moeEpBlockersState } = useCoverageBlockers(
+    dataScope === 'synthetic_distributional',
+    coverageBlockersMoeEpJsonUrl,
+  );
+  // Fold MoE EP off/on into the grid as labeled rows: relabel MoE cells +
+  // coverage jobs with a display backend and merge the two blocker manifests.
+  const moeModels = useMemo(() => moeModelsFromCells(rawSweepState?.cells), [rawSweepState]);
+  const sweepState = useMemo(
+    () => (rawSweepState ? { ...rawSweepState, cells: transformSweepCellsForEp(rawSweepState.cells, moeModels) } : rawSweepState),
+    [rawSweepState, moeModels],
+  );
+  const blockersState = useMemo(
+    () => mergeEpBlockers(rawBlockersState, moeEpBlockersState, moeModels),
+    [rawBlockersState, moeEpBlockersState, moeModels],
+  );
   const compactCoverageJobs = dataScope === 'synthetic_distributional' ? blockersState?.jobs ?? [] : [];
   const usingCompactCoverage = dataScope === 'synthetic_distributional' && compactCoverageJobs.length > 0;
 
@@ -1025,6 +1125,11 @@ export function CoveragePage({
             summary.totalNeed += totalNeed;
             if (totalNeed === 0) summary.skipped += 1;
             else if (totalHave === totalNeed) summary.complete += 1;
+            // A config with ANY successful cell is PARTIAL (has data but
+            // incomplete), even when some profiles failed -- e.g. osworld runs
+            // for every concurrency while chat fails for all of them. Only a
+            // config with zero successful cells is counted (and colored) failed.
+            else if (totalHave > 0) summary.partial += 1;
             else if (profiles.some((profile) => (profile.failed?.size ?? 0) > 0)) summary.failed += 1;
             else summary.partial += 1;
             continue;
@@ -1785,6 +1890,25 @@ function CoverageLegend({ dataScope }: { dataScope: DataScope }) {
           <p>{scopeNote}{canonicalCoverage ? ' Red cells ran but failed operationally (engine crash, low success rate, OOM / KV-cache, timeout, driver / CUDA fault). Blue cells are a permanent hardware limit — the GPU physically can’t (unsupported architecture / compute capability, e.g. MXFP4 needs sm80+). Yellow cells could not run but are fixable (model not staged, or the stack needs a rebuild / upgrade / bigger max_len). Click any red, blue, or yellow cell for the full error.' : ''}</p>
         </div>
       </div>
+      {dataScope === 'synthetic_distributional' && (
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-white/10 pt-3">
+          <span className="font-medium text-[#a9afba]">Parallelism</span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="rounded border border-[#ffffff1f] bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-semibold lowercase text-[#8b949e]">tp</span>
+            tensor-parallel
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="rounded border border-[#2dd4bf]/45 bg-[#2dd4bf]/15 px-1.5 py-0.5 text-[10px] font-semibold lowercase text-[#2dd4bf]">tp+ep</span>
+            + expert-parallel
+          </span>
+          <span className="text-[#676c76]">
+            planned, not yet run:
+            <span className="mx-1 font-mono text-[#8b949e]">ep</span>(expert without tp),
+            <span className="mx-1 font-mono text-[#8b949e]">pp</span>(pipeline),
+            <span className="mx-1 font-mono text-[#8b949e]">ep+pp</span>
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -1803,14 +1927,31 @@ function Cell({ state, title, onClick, active }: { state: CellVisual; title?: st
 }
 
 function BackendBadge({ backend, version }: { backend: string; version?: string }) {
+  // MoE rows carry a parallelism marker appended to the backend
+  // ("sglang · tp+ep"). Render the engine and the parallelism strategy as two
+  // separate badges.
+  const parMatch = backend.match(/^(.*) · (tp\+ep|tp)$/);
+  const base = parMatch ? parMatch[1] : backend;
+  const par = parMatch ? parMatch[2] : null;
   const cls =
-    backend === 'vllm'   ? 'bg-[#3fb950]/15 text-[#3fb950] border-[#3fb950]/40' :
-    backend === 'sglang' ? 'bg-[#ffb74d]/15 text-[#ffb74d] border-[#ffb74d]/40' :
-                           'bg-white/[0.08] text-[#a9afba] border-[#ffffff1f]';
+    base === 'vllm'   ? 'bg-[#3fb950]/15 text-[#3fb950] border-[#3fb950]/40' :
+    base === 'sglang' ? 'bg-[#ffb74d]/15 text-[#ffb74d] border-[#ffb74d]/40' :
+                        'bg-white/[0.08] text-[#a9afba] border-[#ffffff1f]';
+  // Highlight tp+ep (expert-parallel on); plain tp stays muted.
+  const parCls = par === 'tp+ep'
+    ? 'bg-[#2dd4bf]/15 text-[#2dd4bf] border-[#2dd4bf]/45'
+    : 'bg-white/[0.06] text-[#8b949e] border-[#ffffff1f]';
   return (
-    <span className={`ml-2 rounded border px-1.5 py-0.5 text-[10px] font-medium lowercase tracking-wide ${cls}`}>
-      {backend}{version ? ` ${version}` : ''}
-    </span>
+    <>
+      <span className={`ml-2 rounded border px-1.5 py-0.5 text-[10px] font-medium lowercase tracking-wide ${cls}`}>
+        {base}{version ? ` ${version}` : ''}
+      </span>
+      {par && (
+        <span className={`ml-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold lowercase tracking-wide ${parCls}`}>
+          {par}
+        </span>
+      )}
+    </>
   );
 }
 

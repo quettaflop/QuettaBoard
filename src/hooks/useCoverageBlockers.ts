@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { coverageBlockersJsonUrl } from '../dataUrls';
 import type { CoverageBlockersState } from '../types-coverage-blockers';
 
-export function useCoverageBlockers(enabled = true) {
+export function useCoverageBlockers(enabled = true, url: string = coverageBlockersJsonUrl) {
   const [blockersState, setBlockersState] = useState<CoverageBlockersState | null>(null);
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
@@ -21,8 +21,8 @@ export function useCoverageBlockers(enabled = true) {
     const load = () => {
       controller?.abort();
       controller = new AbortController();
-      const separator = coverageBlockersJsonUrl.includes('?') ? '&' : '?';
-      fetch(`${coverageBlockersJsonUrl}${separator}_=${Date.now()}`, {
+      const separator = url.includes('?') ? '&' : '?';
+      fetch(`${url}${separator}_=${Date.now()}`, {
         cache: 'no-store',
         signal: controller.signal,
       })
@@ -51,7 +51,7 @@ export function useCoverageBlockers(enabled = true) {
       window.clearInterval(interval);
       controller?.abort();
     };
-  }, [enabled]);
+  }, [enabled, url]);
 
   return { blockersState, loading, error };
 }

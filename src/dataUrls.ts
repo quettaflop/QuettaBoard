@@ -84,6 +84,12 @@ export const coverageBlockersJsonUrl = withBuildHash(
   import.meta.env.VITE_COVERAGE_BLOCKERS_JSON_URL || joinUrl(jsonBase, 'coverage-blockers.synthetic_distributional.json'),
 );
 
+// EP-on (moe_ep scope) coverage. Merged into the coverage grid as labeled
+// "· tp+ep" rows alongside the "· tp" (EP-off) rows.
+export const coverageBlockersMoeEpJsonUrl = withBuildHash(
+  import.meta.env.VITE_COVERAGE_BLOCKERS_MOE_EP_JSON_URL || joinUrl(jsonBase, 'coverage-blockers.moe_ep.json'),
+);
+
 export const hostDrainApiUrl = INTERNAL
   ? (import.meta.env.VITE_HOST_DRAIN_API_URL || (
       dashboardApiBase ? joinUrl(dashboardApiBase, 'api/host-drain') : ''
