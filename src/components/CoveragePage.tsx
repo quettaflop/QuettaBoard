@@ -250,16 +250,28 @@ function isEpOnCell(cell: Pick<SweepCell, 'ep' | 'data_scope'>): boolean {
   return cell.ep === true || cell.data_scope === 'moe_ep';
 }
 
-// Parallelism strategy shown to users. The launcher today only expresses
-// tensor-parallel and expert-parallel-over-TP, so a run is "tp" (EP off) or
-// "tp+ep" (EP on). The label is suffixed onto the backend so EP-off and EP-on
-// render as distinct grid rows and keying + blocker lookups line up. The other
-// strategies (ep = expert-parallel without TP, pp = pipeline, ep+pp) are not
-// wired in the launcher yet — see the parallelism legend.
-function epBackendLabel(backend: string, on: boolean, label?: string): string {
-  // Prefer the parallelism label from the data; fall back to deriving it from
-  // the ep flag for manifests that predate the field.
-  return `${backend} · ${label ?? (on ? 'tp+ep' : 'tp')}`;
+// Canonical parallelism-strategy label, composed from the active parallel axes
+// (mirrors compile_sweep.parallelism_label): tensor-parallel when tp > 1, plus
+// expert-parallel when ep is on; a single-GPU run (tp == 1, no ep) has no
+// parallelism and reads "1gpu". So: "1gpu", "tp", "tp+ep" (and "ep" once
+// expert-without-tensor is wired). pp / ep+pp compose here later.
+function parallelismLabel(tp: number, ep: boolean): string {
+  const axes: string[] = [];
+  if (tp > 1) axes.push('tp');
+  if (ep) axes.push('ep');
+  return axes.length ? axes.join('+') : '1gpu';
+}
+
+// Tensor-parallel degree encoded in a hardware label ("h100x2" -> 2, "3090" -> 1).
+function tpFromHwLabel(hw: string): number {
+  const m = hw.match(/x(\d+)$/);
+  return m ? parseInt(m[1], 10) : 1;
+}
+
+// The parallelism label is suffixed onto the backend so EP-off and EP-on MoE
+// runs render as distinct grid rows and keying + blocker lookups line up.
+function epBackendLabel(backend: string, label: string): string {
+  return `${backend} · ${label}`;
 }
 
 function moeModelsFromCells(cells: SweepCell[] | undefined): Set<string> {
@@ -273,29 +285,32 @@ function transformSweepCellsForEp(cells: SweepCell[], moeModels: Set<string>): S
   return cells.map((c) => {
     if (!moeModels.has(c.model)) return c;
     if (isEpOnCell(c)) {
-      return { ...c, backend: epBackendLabel(c.backend, true, c.parallelism), data_scope: 'synthetic_distributional' };
+      const label = c.parallelism ?? parallelismLabel(c.tp, true);
+      return { ...c, backend: epBackendLabel(c.backend, label), data_scope: 'synthetic_distributional' };
     }
     if (SYNTHETIC_SCOPE_VALUES.has(String(c.data_scope))) {
-      return { ...c, backend: epBackendLabel(c.backend, false, c.parallelism) };
+      const label = c.parallelism ?? parallelismLabel(c.tp, false);
+      return { ...c, backend: epBackendLabel(c.backend, label) };
     }
     return c;
   });
 }
 
-function relabelPoints(points: CoveragePoint[] | undefined, on: boolean): CoveragePoint[] | undefined {
-  return points?.map((p) => ({ ...p, backend: epBackendLabel(p.backend, on) }));
+function relabelPoints(points: CoveragePoint[] | undefined, label: string): CoveragePoint[] | undefined {
+  return points?.map((p) => ({ ...p, backend: epBackendLabel(p.backend, label) }));
 }
 
 function transformBlockerForEp(job: CoverageBlocker, on: boolean): CoverageBlocker {
-  const backend = epBackendLabel(job.backend, on);
+  const label = parallelismLabel(job.tp, on);
+  const backend = epBackendLabel(job.backend, label);
   return {
     ...job,
     backend,
     job_id: jobIdForCell({ host: job.host, model: job.model, tp: job.tp, mode: job.mode, backend }),
     scope: 'synthetic_distributional',
-    present_points: relabelPoints(job.present_points, on),
-    missing_points: relabelPoints(job.missing_points, on),
-    expected_points: relabelPoints(job.expected_points, on),
+    present_points: relabelPoints(job.present_points, label),
+    missing_points: relabelPoints(job.missing_points, label),
+    expected_points: relabelPoints(job.expected_points, label),
   };
 }
 
@@ -1602,7 +1617,7 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
               {canExpand ? (open ? '▼' : '▶') : '·'}
             </span>
             {model.model}
-            <BackendBadge backend={model.backend} />
+            <BackendBadge backend={model.backend} tp={tpFromHwLabel(hwName)} />
           </td>
           <td className="px-3 py-1.5">
             <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
@@ -1664,7 +1679,7 @@ function ModelRows({ hwName, model, showFamily, open, onToggle, allConcs, expect
         <td className="whitespace-nowrap px-3 py-1.5 text-[#a9afba]">
           <span className="mr-2 inline-block w-3 text-[#a9afba]">{open ? '▼' : '▶'}</span>
           {model.model}
-          <BackendBadge backend={model.backend} version={model.engineVersion} />
+          <BackendBadge backend={model.backend} version={model.engineVersion} tp={tpFromHwLabel(hwName)} />
         </td>
         <td className="whitespace-nowrap px-3 py-1.5 text-[#a9afba]">
           <span className="text-[10px] uppercase tracking-wide">{model.profiles.length} profiles</span>
@@ -1896,6 +1911,10 @@ function CoverageLegend({ dataScope }: { dataScope: DataScope }) {
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-white/10 pt-3">
           <span className="font-medium text-[#a9afba]">Parallelism</span>
           <span className="inline-flex items-center gap-1.5">
+            <span className="rounded border border-[#ffffff14] bg-transparent px-1.5 py-0.5 text-[10px] font-semibold lowercase text-[#676c76]">1gpu</span>
+            single GPU
+          </span>
+          <span className="inline-flex items-center gap-1.5">
             <span className="rounded border border-[#ffffff1f] bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-semibold lowercase text-[#8b949e]">tp</span>
             tensor-parallel
           </span>
@@ -1928,21 +1947,26 @@ function Cell({ state, title, onClick, active }: { state: CellVisual; title?: st
   return <span onClick={onClick} className={`inline-block h-3 w-3 rounded-sm border ${cls}${interactive}${ring}`} title={title} />;
 }
 
-function BackendBadge({ backend, version }: { backend: string; version?: string }) {
-  // MoE rows carry a parallelism marker appended to the backend
-  // ("sglang · tp+ep"). Render the engine and the parallelism strategy as two
-  // separate badges.
-  const parMatch = backend.match(/^(.*) · (tp\+ep|tp)$/);
-  const base = parMatch ? parMatch[1] : backend;
-  const par = parMatch ? parMatch[2] : null;
+function BackendBadge({ backend, version, tp }: { backend: string; version?: string; tp?: number }) {
+  // Rows may carry a parallelism suffix ("sglang · tp+ep") used to split MoE
+  // EP-off/EP-on into separate rows. Strip it for the engine name and read
+  // EP-on from it, then label every row (dense + MoE) by its parallelism.
+  // Compute from tp when known so single-GPU rows read "1gpu", not a bogus "tp".
+  const sufMatch = backend.match(/^(.*) · (tp\+ep|tp|ep|1gpu)$/);
+  const base = sufMatch ? sufMatch[1] : backend;
+  const epOn = sufMatch ? (sufMatch[2] === 'tp+ep' || sufMatch[2] === 'ep') : false;
+  const par = tp != null ? parallelismLabel(tp, epOn) : (sufMatch ? sufMatch[2] : null);
   const cls =
     base === 'vllm'   ? 'bg-[#3fb950]/15 text-[#3fb950] border-[#3fb950]/40' :
     base === 'sglang' ? 'bg-[#ffb74d]/15 text-[#ffb74d] border-[#ffb74d]/40' :
                         'bg-white/[0.08] text-[#a9afba] border-[#ffffff1f]';
-  // Highlight tp+ep (expert-parallel on); plain tp stays muted.
-  const parCls = par === 'tp+ep'
-    ? 'bg-[#2dd4bf]/15 text-[#2dd4bf] border-[#2dd4bf]/45'
-    : 'bg-white/[0.06] text-[#8b949e] border-[#ffffff1f]';
+  // tp+ep / ep highlighted (expert-parallel on); tp muted; 1gpu (no parallelism) dimmest.
+  const parCls =
+    par === 'tp+ep' || par === 'ep'
+      ? 'bg-[#2dd4bf]/15 text-[#2dd4bf] border-[#2dd4bf]/45'
+      : par === '1gpu'
+        ? 'bg-transparent text-[#676c76] border-[#ffffff14]'
+        : 'bg-white/[0.06] text-[#8b949e] border-[#ffffff1f]';
   return (
     <>
       <span className={`ml-2 rounded border px-1.5 py-0.5 text-[10px] font-medium lowercase tracking-wide ${cls}`}>
