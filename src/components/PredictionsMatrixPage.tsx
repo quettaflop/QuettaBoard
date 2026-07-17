@@ -389,8 +389,8 @@ export function PredictionsMatrixPage({
             Per hardware config × model, averaged over all profiles and concurrencies
             ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows the {metricLabel} APE per predictor —{' '}
             <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
-            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Empty cells read{' '}
-            <span className="text-[#8b949e]">n/a</span> (won&apos;t fit) or <span className="text-[#676c76]">—</span> (not run). Hover for details.
+            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Empty cells are shaded when the model won&apos;t fit, or{' '}
+            <span className="text-[#676c76]">—</span> when not run. Hover for details.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -427,7 +427,7 @@ export function PredictionsMatrixPage({
             <span className="rounded border border-[#ffffff1f] bg-white/[0.08] px-2 py-0.5 text-[#676c76]">no GT</span>
             <span className="inline-flex items-center gap-1.5 rounded border border-[#ffffff1f] px-2 py-0.5 text-[#8b949e]">
               <span className="inline-block h-2.5 w-2.5 rounded-sm border border-[#ffffff1f]" style={{ backgroundImage: NA_HATCH }} aria-hidden />
-              n/a = won&apos;t fit
+              won&apos;t fit
             </span>
             <span className="rounded border border-[#ffffff1f] px-2 py-0.5 text-[#676c76]">— = not run</span>
           </div>
@@ -463,7 +463,7 @@ export function PredictionsMatrixPage({
                   if (!cell) {
                     const reason = fitReason(parts.gpu, parts.tp, model, vramByLabel, weightsByModel, feasRatio);
                     return reason
-                      ? <td key={model} title={reason} style={{ backgroundImage: NA_HATCH }} className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[10px] font-medium text-[#8b949e]">n/a</td>
+                      ? <td key={model} title={reason} style={{ backgroundImage: NA_HATCH }} className="border-t border-[#ffffff1f] px-2.5 py-1 align-middle"></td>
                       : <td key={model} title="not run yet" className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
                   }
                   const agg = cell[metric];
