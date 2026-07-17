@@ -212,6 +212,10 @@ const KC_COLOR = '#2dd4bf';   // kernel-composed
 const RFL_COLOR = '#a855f7';  // roofline
 const LSS_COLOR = '#fb923c';  // LLMServingSim 2.0
 
+// "not applicable" (won't fit) is shown as a diagonal hatch — a texture, not a hue — so it can
+// never collide with the green/blue/orange/red MAPE bands or the predictor dot colors.
+const NA_HATCH = 'repeating-linear-gradient(45deg, rgba(148,163,184,0.20) 0 1px, transparent 1px 6px)';
+
 // One predictor's line inside a matrix cell: colored dot + label + its APE (absolute
 // percentage error vs the measured GT), toned by accuracy (the bands the legend
 // explains). "no GT" when the predictor produced no scored row for this cell. The
@@ -386,7 +390,7 @@ export function PredictionsMatrixPage({
             ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows the {metricLabel} APE per predictor —{' '}
             <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
             <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Empty cells read{' '}
-            <span className="text-[#64b5f6]">n/a</span> (won&apos;t fit) or <span className="text-[#676c76]">—</span> (not run). Hover for details.
+            <span className="text-[#8b949e]">n/a</span> (won&apos;t fit) or <span className="text-[#676c76]">—</span> (not run). Hover for details.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -421,7 +425,10 @@ export function PredictionsMatrixPage({
             <span className="rounded border border-[#f0883e]/30 bg-[#f0883e]/10 px-2 py-0.5 text-[#f0883e]">25–50%</span>
             <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">≥50%</span>
             <span className="rounded border border-[#ffffff1f] bg-white/[0.08] px-2 py-0.5 text-[#676c76]">no GT</span>
-            <span className="rounded border border-[#64b5f6]/30 bg-[#64b5f6]/10 px-2 py-0.5 text-[#64b5f6]">n/a = won&apos;t fit</span>
+            <span className="inline-flex items-center gap-1.5 rounded border border-[#ffffff1f] px-2 py-0.5 text-[#8b949e]">
+              <span className="inline-block h-2.5 w-2.5 rounded-sm border border-[#ffffff1f]" style={{ backgroundImage: NA_HATCH }} aria-hidden />
+              n/a = won&apos;t fit
+            </span>
             <span className="rounded border border-[#ffffff1f] px-2 py-0.5 text-[#676c76]">— = not run</span>
           </div>
         </div>
@@ -456,7 +463,7 @@ export function PredictionsMatrixPage({
                   if (!cell) {
                     const reason = fitReason(parts.gpu, parts.tp, model, vramByLabel, weightsByModel, feasRatio);
                     return reason
-                      ? <td key={model} title={reason} className="border-t border-[#ffffff1f] bg-[#64b5f6]/10 px-2.5 py-1 text-center align-middle text-[10px] font-medium text-[#64b5f6]">n/a</td>
+                      ? <td key={model} title={reason} style={{ backgroundImage: NA_HATCH }} className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[10px] font-medium text-[#8b949e]">n/a</td>
                       : <td key={model} title="not run yet" className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
                   }
                   const agg = cell[metric];
