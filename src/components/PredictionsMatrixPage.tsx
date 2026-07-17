@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { servingPredictionsJsonUrl, rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl } from '../dataUrls';
+import { useSweepState } from '../hooks/useSweepState';
 import type { DataScope } from '../profileMeta';
 import { DATA_SCOPE_META } from '../profileMeta';
 import {
@@ -164,6 +165,34 @@ function hardwareParts(gpuKey: string, rows: ServingRow[]): { gpu: string; tp: n
   };
 }
 
+// Prediction gpu_key base -> sweep-state hardware_label (they name the same GPUs differently).
+const HW_LABEL: Record<string, string> = {
+  A100: 'A100-40GB',
+  H100: 'H100',
+  RTX3090: '3090',
+  RTX2080Ti: '2080Ti',
+};
+
+// Why a (hardware, model) cell has no data: it physically can't run ("won't fit" — the model
+// weights exceed the VRAM budget, so it was never benchmarked) vs simply "not run yet". Returns
+// the reason string when infeasible, else null. Mirrors CoveragePage.infeasibilityReason.
+function fitReason(
+  gpu: string,
+  tp: number,
+  model: string,
+  vramByLabel: Map<string, number>,
+  weightsByModel: Map<string, number>,
+  ratio: number,
+): string | null {
+  const vram = vramByLabel.get(HW_LABEL[gpu] ?? gpu);
+  const weights = weightsByModel.get(model);
+  if (!vram || !weights) return null;
+  if (weights > vram * tp * ratio) {
+    return `won't fit — needs ≥${Math.ceil(weights / ratio)} GB VRAM (weights ${weights} GB); ${gpu}${tp > 1 ? `×${tp}` : ''} has ${vram * tp} GB`;
+  }
+  return null;
+}
+
 const METRICS = [
   { key: 'e2el', label: 'E2EL' },
   { key: 'ttft', label: 'TTFT' },
@@ -225,6 +254,20 @@ export function PredictionsMatrixPage({
   const [failed, setFailed] = useState(false);
   const [metric, setMetric] = useState<MetricKey>('e2el');
   const [backend, setBackend] = useState<BackendKey>('vllm');
+
+  // VRAM / weights so an empty cell can be told apart: "won't fit" (not plausible) vs "not run".
+  const { sweepState } = useSweepState();
+  const vramByLabel = useMemo(() => {
+    const m = new Map<string, number>();
+    if (sweepState) for (const h of Object.values(sweepState.hosts)) m.set(h.hardware_label, h.vram_gb_per_gpu);
+    return m;
+  }, [sweepState]);
+  const weightsByModel = useMemo(() => {
+    const m = new Map<string, number>();
+    if (sweepState) for (const [k, v] of Object.entries(sweepState.models)) m.set(k, v.weights_gb);
+    return m;
+  }, [sweepState]);
+  const feasRatio = sweepState?.feasibility_ratio ?? 0.9;
 
   useEffect(() => {
     setLoading(true);
@@ -340,10 +383,10 @@ export function PredictionsMatrixPage({
           <h2 className="text-lg font-semibold text-[#f3f4f6]">Predictions matrix</h2>
           <p className="text-sm text-[#a9afba]">
             Per hardware config × model, averaged over all profiles and concurrencies
-            ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows {metricLabel}{' '}
-            <span className="text-[#f3f4f6]">measured</span> plus both predictors against the same GT —{' '}
+            ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows the {metricLabel} APE per predictor —{' '}
             <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
-            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Hover for details.
+            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MAPE. Empty cells read{' '}
+            <span className="text-[#64b5f6]">n/a</span> (won&apos;t fit) or <span className="text-[#676c76]">—</span> (not run). Hover for details.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -378,6 +421,8 @@ export function PredictionsMatrixPage({
             <span className="rounded border border-[#f0883e]/30 bg-[#f0883e]/10 px-2 py-0.5 text-[#f0883e]">25–50%</span>
             <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">≥50%</span>
             <span className="rounded border border-[#ffffff1f] bg-white/[0.08] px-2 py-0.5 text-[#676c76]">no GT</span>
+            <span className="rounded border border-[#64b5f6]/30 bg-[#64b5f6]/10 px-2 py-0.5 text-[#64b5f6]">n/a = won&apos;t fit</span>
+            <span className="rounded border border-[#ffffff1f] px-2 py-0.5 text-[#676c76]">— = not run</span>
           </div>
         </div>
       </div>
@@ -409,7 +454,10 @@ export function PredictionsMatrixPage({
                 {shownModelList.map(model => {
                   const cell = byModel[model];
                   if (!cell) {
-                    return <td key={model} className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
+                    const reason = fitReason(parts.gpu, parts.tp, model, vramByLabel, weightsByModel, feasRatio);
+                    return reason
+                      ? <td key={model} title={reason} className="border-t border-[#ffffff1f] bg-[#64b5f6]/10 px-2.5 py-1 text-center align-middle text-[10px] font-medium text-[#64b5f6]">n/a</td>
+                      : <td key={model} title="not run yet" className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
                   }
                   const agg = cell[metric];
                   const kcMape = btMape(cell, metric);
