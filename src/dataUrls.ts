@@ -53,12 +53,8 @@ export const llama31H100TpotFitJsonUrl = withBuildHash(
   import.meta.env.VITE_LLAMA31_H100_TPOT_FIT_JSON_URL || joinUrl(jsonBase, 'llama31-8b-h100-tpot-fit.json'),
 );
 
-export const simulatorPredictionsJsonUrl = withBuildHash(
-  import.meta.env.VITE_SIMULATOR_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'simulator-predictions.json'),
-);
-
 // Roofline predictor (no-GT path, run over the same cells) — MAPE counterpart to the backtester's
-// simulator-predictions.json. Joined per (gpu_key, model, profile, concurrency) in the matrix.
+// simulator-v2sim-predictions.json. Joined per (gpu_key, model, profile, concurrency) in the matrix.
 export const rooflinePredictionsJsonUrl = withBuildHash(
   import.meta.env.VITE_FORWARD_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'forward-predictions.json'),
 );
@@ -66,6 +62,12 @@ export const rooflinePredictionsJsonUrl = withBuildHash(
 // simulator_v2 (kernel-composition rewrite) backtest predictions — drives the "Simulator v2" tab.
 export const simulatorV2SimPredictionsJsonUrl = withBuildHash(
   import.meta.env.VITE_SIMULATOR_V2SIM_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'simulator-v2sim-predictions.json'),
+);
+
+// LLMServingSim 2.0 predictions (external simulator on QuettaSim-synthesized profiles). Optional
+// (404 until built). Joined per (gpu_key, model, profile, concurrency), same key as roofline.
+export const llmsimPredictionsJsonUrl = withBuildHash(
+  import.meta.env.VITE_LLMSIM_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'llmservingsim-predictions.json'),
 );
 
 export const profilingStateJsonUrl = withBuildHash(

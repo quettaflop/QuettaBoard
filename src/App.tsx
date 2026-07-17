@@ -10,7 +10,7 @@ import { ThroughputChart } from './components/charts/ThroughputChart';
 import { ComparisonChart } from './components/charts/ComparisonChart';
 import { PerTurnChart } from './components/charts/PerTurnChart';
 import { DataTable } from './components/DataTable';
-import { simulatorPredictionsJsonUrl, simulatorV2SimPredictionsJsonUrl } from './dataUrls';
+import { simulatorV2SimPredictionsJsonUrl } from './dataUrls';
 import { INTERNAL } from './env';
 import type { TabId } from './types';
 import { normalizeDataScope, type DataScope } from './profileMeta';
@@ -210,7 +210,7 @@ function App() {
             </div>
           }
         >
-          <PredictionsMatrixPage dataScope={dataScope} predictionsUrl={simulatorPredictionsJsonUrl} />
+          <PredictionsMatrixPage dataScope={dataScope} predictionsUrl={simulatorV2SimPredictionsJsonUrl} />
         </Suspense>
       ) : INTERNAL && ServingPredictionsPage && activePage === 'simulator_v2' ? (
         <Suspense
