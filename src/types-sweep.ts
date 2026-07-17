@@ -14,6 +14,9 @@ export interface SweepCell {
   backend: string;   // "vllm" | "sglang"
   // Expert-parallelism flag. true only for cells in the moe_ep (EP-on) scope.
   ep?: boolean;
+  // Canonical parallelism-strategy label from the sweep data ("tp" | "tp+ep";
+  // ep / pp / ep+pp planned). Preferred over deriving the label from `ep`.
+  parallelism?: string;
   status: CellStatus;
   attempt: number;
   max_len: number | null;

@@ -256,8 +256,10 @@ function isEpOnCell(cell: Pick<SweepCell, 'ep' | 'data_scope'>): boolean {
 // render as distinct grid rows and keying + blocker lookups line up. The other
 // strategies (ep = expert-parallel without TP, pp = pipeline, ep+pp) are not
 // wired in the launcher yet — see the parallelism legend.
-function epBackendLabel(backend: string, on: boolean): string {
-  return `${backend} · ${on ? 'tp+ep' : 'tp'}`;
+function epBackendLabel(backend: string, on: boolean, label?: string): string {
+  // Prefer the parallelism label from the data; fall back to deriving it from
+  // the ep flag for manifests that predate the field.
+  return `${backend} · ${label ?? (on ? 'tp+ep' : 'tp')}`;
 }
 
 function moeModelsFromCells(cells: SweepCell[] | undefined): Set<string> {
@@ -271,10 +273,10 @@ function transformSweepCellsForEp(cells: SweepCell[], moeModels: Set<string>): S
   return cells.map((c) => {
     if (!moeModels.has(c.model)) return c;
     if (isEpOnCell(c)) {
-      return { ...c, backend: epBackendLabel(c.backend, true), data_scope: 'synthetic_distributional' };
+      return { ...c, backend: epBackendLabel(c.backend, true, c.parallelism), data_scope: 'synthetic_distributional' };
     }
     if (SYNTHETIC_SCOPE_VALUES.has(String(c.data_scope))) {
-      return { ...c, backend: epBackendLabel(c.backend, false) };
+      return { ...c, backend: epBackendLabel(c.backend, false, c.parallelism) };
     }
     return c;
   });
