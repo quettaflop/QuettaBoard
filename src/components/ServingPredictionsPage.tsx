@@ -17,8 +17,9 @@ import {
   normalizeProfileName,
   profileDisplayName,
 } from '../profileMeta';
-import { rooflinePredictionsJsonUrl, llama31H100TpotFitJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
+import { rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl, llama31H100TpotFitJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
 import { buildRooflineLookup, rooflineKey, type RooflineLookup, type RooflineRow } from '../rooflinePredictions';
+import { buildLssLookup, type LssLookup, type LssRow } from '../llmsimPredictions';
 
 interface ServingTurnPrediction {
   turn_index: number;
@@ -383,6 +384,7 @@ const SERVING_MAPE_RAIL_WIDTH = SERVING_METRICS.length * SERVING_MAPE_COLUMN_WID
 // kernel-composed = teal, roofline = purple.
 const KC_COLOR = '#2dd4bf';
 const RFL_COLOR = '#a855f7';
+const LSS_COLOR = '#fb923c';  // LLMServingSim 2.0 (external simulator)
 
 // The analytic roofline predictor is joined to the kernel-composed serving rows by
 // (gpu_key, model, profile, concurrency) — the same join the Predictions matrix uses — and shown
@@ -401,7 +403,7 @@ function meanRooflineError(
     const err = match?.[`fwd_${metric}_err` as keyof RooflineRow];
     if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
   }
-  return errs.length ? mean(errs) : undefined;
+  return errs.length ? median(errs) : undefined;  // MdAPE (median), not mean
 }
 
 // The roofline predictor's per-config scalar row for a single serving cell (no per-turn resolution),
@@ -413,6 +415,33 @@ function rooflineRefFor(
 ): RooflineRow | undefined {
   if (!row || row.model == null || row.profile == null || row.concurrency == null) return undefined;
   return roofline.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency));
+}
+
+// LLMServingSim 2.0 (external simulator on QuettaSim-synthesized profiles). Joined the same way as
+// roofline; shown as a third mean-MAPE badge + a third flat per-turn reference line.
+function meanLssError(
+  rows: ServingRow[],
+  gpuKey: string,
+  llmsim: LssLookup,
+  metric: 'ttft' | 'tpot' | 'e2el',
+): number | undefined {
+  const errs: number[] = [];
+  for (const row of rows) {
+    if (row.model == null || row.profile == null || row.concurrency == null) continue;
+    const match = llmsim.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency));
+    const err = match?.[`${metric}_err` as keyof LssRow];
+    if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
+  }
+  return errs.length ? median(errs) : undefined;  // MdAPE (median), not mean
+}
+
+function lssRefFor(
+  row: ServingRow | undefined,
+  gpuKey: string,
+  llmsim: LssLookup,
+): LssRow | undefined {
+  if (!row || row.model == null || row.profile == null || row.concurrency == null) return undefined;
+  return llmsim.get(rooflineKey(gpuKey, row.model, row.profile, row.concurrency));
 }
 
 // Tone + compact formatting shared by the cells, the row-MAPE rail and the badges.
@@ -441,6 +470,7 @@ export function ServingPredictionsPage({
   const [model, setModel] = useState('');
   const [backend, setBackend] = useState<'all' | 'vllm' | 'sglang'>('vllm');
   const [roofline, setRoofline] = useState<RooflineLookup>(new Map());
+  const [llmsim, setLlmsim] = useState<LssLookup>(new Map());
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
 
@@ -472,6 +502,14 @@ export function ServingPredictionsPage({
       .then(response => (response.ok ? response.json() : null))
       .then(json => setRoofline(buildRooflineLookup(json)))
       .catch(() => setRoofline(new Map()));
+  }, []);
+
+  // LLMServingSim 2.0 predictions are optional — absent (404) until the sweep has been built.
+  useEffect(() => {
+    fetch(llmsimPredictionsJsonUrl)
+      .then(response => (response.ok ? response.json() : null))
+      .then(json => setLlmsim(buildLssLookup(json)))
+      .catch(() => setLlmsim(new Map()));
   }, []);
 
   const scopeIndex = servingIndex?.[dataScope];
@@ -524,6 +562,7 @@ export function ServingPredictionsPage({
   // roofline is no longer a table-replacing mode toggle — it is joined via the `roofline` lookup and
   // shown alongside: as a MAPE badge group in the target bar and a reference line in the per-turn chart.
   const hasRoofline = roofline.size > 0;
+  const hasLss = llmsim.size > 0;
   // In selector mode, keep the table's focused single-config view via a synthesized focus.
   const tableFocus: ServingFocus | undefined = selectorMode && selectedModel
     ? { gpu: selectedGpu, model: selectedModel, title: 'Simulator', description: '' }
@@ -564,12 +603,16 @@ export function ServingPredictionsPage({
           onBackend={setBackend}
           showBackend={hasSglang}
           hasRoofline={hasRoofline}
+          hasLss={hasLss}
           ttftMape={meanMetricError(rows, 'ttft_err')}
           tpotMape={meanMetricError(rows, 'tpot_err')}
           e2elMape={meanMetricError(rows, 'e2el_err')}
           rflTtftMape={meanRooflineError(rows, selectedGpu, roofline, 'ttft')}
           rflTpotMape={meanRooflineError(rows, selectedGpu, roofline, 'tpot')}
           rflE2elMape={meanRooflineError(rows, selectedGpu, roofline, 'e2el')}
+          lssTtftMape={meanLssError(rows, selectedGpu, llmsim, 'ttft')}
+          lssTpotMape={meanLssError(rows, selectedGpu, llmsim, 'tpot')}
+          lssE2elMape={meanLssError(rows, selectedGpu, llmsim, 'e2el')}
         />
       ) : (
         <>
@@ -610,6 +653,7 @@ export function ServingPredictionsPage({
         tpotOnly={fixedTpotOnly}
         validationRows={useFixedTpotRows}
         roofline={roofline}
+        llmsim={llmsim}
         gpuKey={selectedGpu}
       />
     </div>
@@ -724,9 +768,9 @@ function ServingFocusSummary({
           </div>
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <MetricBadge label="TTFT MAPE" value={summary.meanTtftMape} />
-          <MetricBadge label="TPOT MAPE" value={summary.meanTpotMape} />
-          <MetricBadge label="E2EL MAPE" value={summary.meanE2elMape} />
+          <MetricBadge label="TTFT MdAPE" value={summary.meanTtftMape} />
+          <MetricBadge label="TPOT MdAPE" value={summary.meanTpotMape} />
+          <MetricBadge label="E2EL MdAPE" value={summary.meanE2elMape} />
         </div>
       </div>
 
@@ -798,6 +842,10 @@ function SimulatorTargetBar({
   rflTtftMape,
   rflTpotMape,
   rflE2elMape,
+  hasLss,
+  lssTtftMape,
+  lssTpotMape,
+  lssE2elMape,
 }: {
   modelOptions: string[];
   selectedModel: string;
@@ -815,6 +863,10 @@ function SimulatorTargetBar({
   rflTtftMape: OptionalMetric;
   rflTpotMape: OptionalMetric;
   rflE2elMape: OptionalMetric;
+  hasLss: boolean;
+  lssTtftMape: OptionalMetric;
+  lssTpotMape: OptionalMetric;
+  lssE2elMape: OptionalMetric;
 }) {
   return (
     <section className="glass rounded-[22px] px-5 py-4">
@@ -844,9 +896,9 @@ function SimulatorTargetBar({
               kernel-composed
             </span>
             <div className="grid grow gap-2 sm:grid-cols-3">
-              <MetricBadge label="TTFT MAPE" value={ttftMape} />
-              <MetricBadge label="TPOT MAPE" value={tpotMape} />
-              <MetricBadge label="E2EL MAPE" value={e2elMape} />
+              <MetricBadge label="TTFT MdAPE" value={ttftMape} />
+              <MetricBadge label="TPOT MdAPE" value={tpotMape} />
+              <MetricBadge label="E2EL MdAPE" value={e2elMape} />
             </div>
           </div>
           {hasRoofline && (
@@ -856,9 +908,22 @@ function SimulatorTargetBar({
                 roofline
               </span>
               <div className="grid grow gap-2 sm:grid-cols-3">
-                <MetricBadge label="TTFT MAPE" value={rflTtftMape} />
-                <MetricBadge label="TPOT MAPE" value={rflTpotMape} />
-                <MetricBadge label="E2EL MAPE" value={rflE2elMape} />
+                <MetricBadge label="TTFT MdAPE" value={rflTtftMape} />
+                <MetricBadge label="TPOT MdAPE" value={rflTpotMape} />
+                <MetricBadge label="E2EL MdAPE" value={rflE2elMape} />
+              </div>
+            </div>
+          )}
+          {hasLss && (
+            <div className="flex items-center gap-2">
+              <span className="flex w-[104px] shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: LSS_COLOR }}>
+                <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: LSS_COLOR }} aria-hidden />
+                LLMServingSim
+              </span>
+              <div className="grid grow gap-2 sm:grid-cols-3">
+                <MetricBadge label="TTFT MdAPE" value={lssTtftMape} />
+                <MetricBadge label="TPOT MdAPE" value={lssTpotMape} />
+                <MetricBadge label="E2EL MdAPE" value={lssE2elMape} />
               </div>
             </div>
           )}
@@ -895,10 +960,10 @@ function GpuConfigSelector({
                 <span className="text-[#676c76]">{selectedSummary.rows} rows</span>
                 <span className="text-[#676c76]">{selectedSummary.models} models</span>
                 <span className="text-[#676c76]">{selectedSummary.profiles} profiles</span>
-                <MetricBadge label="TTFT MAPE" value={selectedSummary.meanTtftMape} />
-                <MetricBadge label="TPOT MAPE" value={selectedSummary.meanTpotMape} />
+                <MetricBadge label="TTFT MdAPE" value={selectedSummary.meanTtftMape} />
+                <MetricBadge label="TPOT MdAPE" value={selectedSummary.meanTpotMape} />
                 <span className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(selectedSummary.meanE2elMape).className}`}>
-                  E2EL MAPE {formatCompactPercent(selectedSummary.meanE2elMape)}
+                  E2EL MdAPE {formatCompactPercent(selectedSummary.meanE2elMape)}
                 </span>
               </>
             )}
@@ -951,7 +1016,7 @@ function GpuConfigButton({
           ? 'border-[#2dd4bf] bg-[#2dd4bf]/[0.06] shadow-[inset_0_0_0_1px_rgba(45,212,191,0.35)]'
           : 'border-[#ffffff14] bg-white/[0.02] hover:border-[#ffffff2e] hover:bg-white/[0.05]'
       }`}
-      title={`${summary.gpu}: TTFT MAPE ${formatPercent(summary.meanTtftMape)}, TPOT MAPE ${formatPercent(summary.meanTpotMape)}, E2EL MAPE ${formatPercent(summary.meanE2elMape)}`}
+      title={`${summary.gpu}: TTFT MdAPE ${formatPercent(summary.meanTtftMape)}, TPOT MdAPE ${formatPercent(summary.meanTpotMape)}, E2EL MdAPE ${formatPercent(summary.meanE2elMape)}`}
     >
       <div className="min-w-0">
         <div className="flex items-center justify-between gap-2">
@@ -964,8 +1029,8 @@ function GpuConfigButton({
           {acceleratorCount === 1 ? '1 GPU' : `${acceleratorCount} GPUs`} · {summary.models} models
         </div>
         <div className="mt-1.5 grid grid-cols-2 gap-1">
-          <MetricBadge label="TTFT MAPE" value={summary.meanTtftMape} compact />
-          <MetricBadge label="TPOT MAPE" value={summary.meanTpotMape} compact />
+          <MetricBadge label="TTFT MdAPE" value={summary.meanTtftMape} compact />
+          <MetricBadge label="TPOT MdAPE" value={summary.meanTpotMape} compact />
         </div>
       </div>
     </button>
@@ -1008,7 +1073,7 @@ function meanMetricError(rows: ServingRow[], errKey: ServingMetricKey): number |
     .map(row => numericMetric(row, errKey))
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
-  return errors.length ? mean(errors) : undefined;
+  return errors.length ? median(errors) : undefined;  // MdAPE (median), not mean
 }
 
 function groupGpuSummaries(summaries: GpuConfigSummary[]): Record<string, GpuConfigSummary[]> {
@@ -1098,6 +1163,7 @@ function ServingTable({
   tpotOnly = false,
   validationRows = false,
   roofline,
+  llmsim,
   gpuKey,
 }: {
   rows: ServingRow[];
@@ -1108,6 +1174,7 @@ function ServingTable({
   tpotOnly?: boolean;
   validationRows?: boolean;
   roofline?: RooflineLookup;
+  llmsim?: LssLookup;
   gpuKey?: string;
 }) {
   const [selectedPerTurnKey, setSelectedPerTurnKey] = useState<string | null>(null);
@@ -1276,6 +1343,7 @@ function ServingTable({
       <ServingPerTurnBreakdown
         row={selectedPerTurnRow}
         rooflineRef={roofline && gpuKey ? rooflineRefFor(selectedPerTurnRow, gpuKey, roofline) : undefined}
+        lssRef={llmsim && gpuKey ? lssRefFor(selectedPerTurnRow, gpuKey, llmsim) : undefined}
         selectedMetric={selectedMetric}
         onSelectMetric={setSelectedMetric}
       />
@@ -1386,11 +1454,13 @@ function ServingPerTurnChart({
   turns,
   metric,
   rooflineRef,
+  lssRef,
   onSelectMetric,
 }: {
   turns: ServingTurnPrediction[];
   metric: ServingMetric;
   rooflineRef?: RooflineRow;
+  lssRef?: LssRow;
   onSelectMetric: (m: ServingMetric) => void;
 }) {
   // The analytic roofline predictor is per-config (one value, no per-turn resolution), so it overlays
@@ -1402,6 +1472,18 @@ function ServingPerTurnChart({
   const rooflineFlat =
     typeof rooflinePredRaw === 'number' && Number.isFinite(rooflinePredRaw) ? rooflinePredRaw : null;
   const showRoofline = rooflineFlat !== null;
+  // LLMServingSim 2.0 DOES predict per-turn (mean over sessions at each turn index), so it plots as a
+  // real curve keyed by turn_index — not a flat line like the analytic roofline.
+  const lssByTurn = useMemo(() => {
+    const key = metric.label === 'TTFT' ? 'ttft_pred' : metric.label === 'TPOT' ? 'tpot_pred' : 'e2el_pred';
+    const m = new Map<number, number>();
+    for (const t of lssRef?.multiturn_turn_predictions ?? []) {
+      const v = t[key];
+      if (typeof v === 'number' && Number.isFinite(v)) m.set(t.turn_index, v);
+    }
+    return m;
+  }, [lssRef, metric.label]);
+  const showLss = lssByTurn.size > 0;
   // Build (turn_index, meas, pred) rows the chart can plot.  Nulls for
   // missing entries so Recharts breaks the line at gaps rather than
   // interpolating across them.
@@ -1460,9 +1542,11 @@ function ServingPerTurnChart({
           // Flat per-config roofline value repeated on every turn, so it renders as a line AND shows
           // up in the hover tooltip (a ReferenceLine would draw but not report a value on hover).
           roofline: rooflineFlat,
+          // LLMServingSim's per-turn value at this turn index (a real curve, gaps left null).
+          lss: lssByTurn.get(turn.turn_index) ?? null,
         };
       }),
-    [turns, metric.measKey, metric.predKey, metric.label, rooflineFlat],
+    [turns, metric.measKey, metric.predKey, metric.label, rooflineFlat, lssByTurn],
   );
   const showKernel =
     metric.label === 'TPOT' && chartData.some(d => d.kernel !== null);
@@ -1592,9 +1676,17 @@ function ServingPerTurnChart({
                       <span className="text-[11px] text-[#a9afba]">{metric.label} roofline (analytic, per-config)</span>
                     </span>
                   )}
+                  {showLss && (
+                    <span className="flex items-center gap-2">
+                      <svg width="26" height="8" aria-hidden>
+                        <line x1="0" y1="4" x2="26" y2="4" stroke={LSS_COLOR} strokeWidth="2" />
+                      </svg>
+                      <span className="text-[11px] text-[#a9afba]">{metric.label} LLMServingSim 2.0 (per-turn)</span>
+                    </span>
+                  )}
                   </div>
                   <div className="mt-1 text-center text-[10px] text-[#676c76]">
-                    ★ = the line the prediction table &amp; MAPE badge use · other predicted lines are comparison-only
+                    ★ = the line the prediction table &amp; MdAPE badge use · other predicted lines are comparison-only
                   </div>
                 </div>
               )}
@@ -1689,6 +1781,19 @@ function ServingPerTurnChart({
                 isAnimationActive={false}
               />
             )}
+            {showLss && (
+              <Line
+                type="monotone"
+                dataKey="lss"
+                name={`${metric.label} LLMServingSim 2.0`}
+                stroke={LSS_COLOR}
+                strokeWidth={2}
+                dot={{ r: 2 }}
+                activeDot={{ r: 5 }}
+                connectNulls={false}
+                isAnimationActive={false}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -1699,11 +1804,13 @@ function ServingPerTurnChart({
 function ServingPerTurnBreakdown({
   row,
   rooflineRef,
+  lssRef,
   selectedMetric,
   onSelectMetric,
 }: {
   row?: ServingPerTurnRow;
   rooflineRef?: RooflineRow;
+  lssRef?: LssRow;
   selectedMetric: ServingMetric;
   onSelectMetric: (m: ServingMetric) => void;
 }) {
@@ -1774,6 +1881,7 @@ function ServingPerTurnBreakdown({
         turns={turns}
         metric={selectedMetric}
         rooflineRef={rooflineRef}
+        lssRef={lssRef}
         onSelectMetric={onSelectMetric}
       />
 
@@ -2228,4 +2336,13 @@ function displayTurn(turn: ServingTurnPrediction): number {
 function mean(arr: number[]): number {
   if (!arr.length) return 0;
   return arr.reduce((total, value) => total + value, 0) / arr.length;
+}
+
+// The serving badges report MdAPE = median APE (not MAPE = mean): the per-cell APE has
+// a heavy tail on herd/queue-collapse cells, so the mean is outlier-fragile.
+function median(arr: number[]): number {
+  if (!arr.length) return 0;
+  const s = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
