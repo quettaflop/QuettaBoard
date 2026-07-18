@@ -414,7 +414,7 @@ const LSS_COLOR = '#fb923c';  // LLMServingSim 2.0 (external simulator)
 
 // The analytic roofline predictor is joined to the kernel-composed serving rows by
 // (gpu_key, model, profile, concurrency) — the same join the Predictions matrix uses — and shown
-// ALONGSIDE kernel-composed rather than behind a source toggle: a mean-MAPE badge in the target bar
+// ALONGSIDE kernel-composed rather than behind a source toggle: an MdAPE badge in the target bar
 // and a flat reference line in the per-turn chart. Both predictors score against the same measured GT.
 function meanRooflineError(
   rows: ServingRow[],
@@ -444,7 +444,7 @@ function rooflineRefFor(
 }
 
 // LLMServingSim 2.0 (external simulator on QuettaSim-synthesized profiles). Joined the same way as
-// roofline; shown as a third mean-MAPE badge + a third flat per-turn reference line.
+// roofline; shown as a third MdAPE badge + a third flat per-turn reference line.
 function meanLssError(
   rows: ServingRow[],
   gpuKey: string,
@@ -1296,8 +1296,8 @@ function ServingTable({
                 style={{ right: 0, width: `${SERVING_MAPE_RAIL_WIDTH}px` }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a9afba]">Row MAPE</span>
-                  <span className="text-[9px] font-normal text-[#676c76]">mean abs error</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a9afba]">Row MdAPE</span>
+                  <span className="text-[9px] font-normal text-[#676c76]">median abs error</span>
                 </div>
               </th>
             </tr>
@@ -1314,7 +1314,7 @@ function ServingTable({
                     metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#ffffff1f]'
                   }`}
                   style={{ right: `${(SERVING_METRICS.length - metricIndex - 1) * SERVING_MAPE_COLUMN_WIDTH}px` }}
-                  title={`Mean absolute ${metric.label} error across displayed concurrencies`}
+                  title={`Median absolute ${metric.label} error across displayed concurrencies`}
                 >
                   {metric.label}
                 </th>
@@ -1412,7 +1412,7 @@ function ServingTable({
         <span className="rounded-full border border-[#2dd4bf]/30 bg-[#2dd4bf]/10 px-2 py-0.5 text-[#2dd4bf]">10-25%</span>
         <span className="rounded-full border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
         <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">&gt;=50%</span>
-        <span>Rightmost MAPE columns are mean absolute row errors across concurrency cells.</span>
+        <span>Rightmost MdAPE columns are median absolute row errors across concurrency cells.</span>
       </div>
     </div>
   );
@@ -2017,7 +2017,7 @@ function ServingMetricSummary({
   rowCount?: number;
   fallbackRows?: ServingRow[];
 }) {
-  // Aggregate absolute errors for the MAPE view.
+  // Aggregate absolute errors for the MdAPE view (median, matching the badges/matrix).
   const valuesFrom = (rs: ServingRow[]) => rs
     .map(row => numericMetric(row, metric.errKey))
     .filter((value): value is number => value !== undefined)
@@ -2030,7 +2030,7 @@ function ServingMetricSummary({
     values = valuesFrom(fallbackRows);
     usedFallback = values.length > 0;
   }
-  const headline = values.length ? mean(values) : undefined;
+  const headline = values.length ? median(values) : undefined;
   const best = values.length ? Math.min(...values) : undefined;
   const worst = values.length ? Math.max(...values) : undefined;
   const displayedRowCount = headline !== undefined && rowCount !== undefined && !usedFallback
@@ -2047,7 +2047,7 @@ function ServingMetricSummary({
         </div>
         <div className="text-right">
           <div className="text-[28px] font-semibold leading-none tracking-tight tabular-nums text-[#f3f4f6]">{fmt(headline)}</div>
-          <div className="mt-1 text-[10px] text-[#676c76]">MAPE</div>
+          <div className="mt-1 text-[10px] text-[#676c76]">MdAPE</div>
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2.5 text-[10px] text-[#676c76]">
@@ -2169,7 +2169,7 @@ function ServingRowMeanCell({
   metric: ServingMetric;
   metricIndex: number;
 }) {
-  const value = meanMatrixRowMetricError(matrixRow, metric.errKey);
+  const value = medianMatrixRowMetricError(matrixRow, metric.errKey);
   const tone = toneFor(value);
   const rows = Object.values(matrixRow.cells).length;
 
@@ -2188,12 +2188,12 @@ function ServingRowMeanCell({
   );
 }
 
-function meanMatrixRowMetricError(matrixRow: ServingMatrixRow, errKey: ServingMetricKey): number | undefined {
+function medianMatrixRowMetricError(matrixRow: ServingMatrixRow, errKey: ServingMetricKey): number | undefined {
   const values = Object.values(matrixRow.cells)
     .map(row => numericMetric(row, errKey))
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
-  return values.length ? mean(values) : undefined;
+  return values.length ? median(values) : undefined;  // MdAPE (median), matching the cells/badges
 }
 
 function representativeMatrixRowCell(matrixRow: ServingMatrixRow): ServingRow | undefined {
@@ -2384,11 +2384,6 @@ function formatConcurrencyRange(values: number[]): string {
 
 function displayTurn(turn: ServingTurnPrediction): number {
   return turn.turn_index + 1;
-}
-
-function mean(arr: number[]): number {
-  if (!arr.length) return 0;
-  return arr.reduce((total, value) => total + value, 0) / arr.length;
 }
 
 // The serving badges report MdAPE = median APE (not MAPE = mean): the per-cell APE has
