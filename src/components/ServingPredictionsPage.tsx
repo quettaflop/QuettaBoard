@@ -733,7 +733,9 @@ function fixedTpotServingRows(data: FixedTpotFitData, pageKind: PredictionPageKi
       isl: 0,
       osl: 1,
       data_scope: data.experiment.dashboard_scope,
-      tpot_err: finiteMetric(fit.kernel_composed_mape) ?? finiteMetric(fit.physics_loo_mape),
+      // MdAPE headline: the fit's MEDIAN APE (its mean is tail-inflated ~2x here); fall back to MAPE.
+      tpot_err: finiteMetric(fit.kernel_composed_median_ape) ?? finiteMetric(fit.physics_loo_median_ape)
+        ?? finiteMetric(fit.kernel_composed_mape) ?? finiteMetric(fit.physics_loo_mape),
     }];
   }
 
@@ -745,7 +747,8 @@ function fixedTpotServingRows(data: FixedTpotFitData, pageKind: PredictionPageKi
     isl: 0,
     osl: 1,
     data_scope: data.experiment.dashboard_scope,
-    tpot_err: finiteMetric(comparison.tpot_mape),
+    // MdAPE (median), matching the other summary cards; fall back to the mean if absent.
+    tpot_err: finiteMetric(comparison.tpot_median_ape) ?? finiteMetric(comparison.tpot_mape),
   }));
 }
 
