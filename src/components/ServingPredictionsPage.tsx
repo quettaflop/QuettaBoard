@@ -778,7 +778,7 @@ function SimulatorTargetBar({
               </select>
             </label>
           )}
-          {parallelismOpts.length > 1 && (
+          {parallelismOpts.length > 0 && (
             <LabeledSelect label="Parallelism" value={selectedParallelism}
               options={parallelismOpts} onChange={onParallelism} />
           )}
