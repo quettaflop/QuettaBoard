@@ -277,9 +277,10 @@ const NA_HATCH = 'repeating-linear-gradient(45deg, rgba(148,163,184,0.20) 0 1px,
 
 // One predictor's line inside a matrix cell: colored dot + label + its APE (absolute
 // percentage error vs the measured GT), toned by accuracy (the bands the legend
-// explains). "no GT" when the predictor produced no scored row for this cell. The
-// predicted/measured ms live in the cell tooltip, not the grid.
-function PredLine({ label, color, mape, emptyLabel = 'no GT' }: { label: string; color: string; mape: number | null; emptyLabel?: string }) {
+// explains). Shows "n/a" when this predictor produced no value for a cell that still has
+// GT (e.g. kc on a roofline-fallback model, or lss where it didn't run) -- distinct from
+// the "—" cells, which are not-run. The predicted/measured ms live in the tooltip.
+function PredLine({ label, color, mape, emptyLabel = 'n/a' }: { label: string; color: string; mape: number | null; emptyLabel?: string }) {
   const tone = mapeTone(mape);
   return (
     <div className="flex items-baseline justify-between gap-2">
@@ -517,7 +518,7 @@ export function PredictionsMatrixPage({
             <span className="rounded border border-[#58a6ff]/30 bg-[#58a6ff]/10 px-2 py-0.5 text-[#58a6ff]">10–25%</span>
             <span className="rounded border border-[#f0883e]/30 bg-[#f0883e]/10 px-2 py-0.5 text-[#f0883e]">25–50%</span>
             <span className="rounded border border-[#f85149]/30 bg-[#f85149]/10 px-2 py-0.5 text-[#f85149]">≥50%</span>
-            <span className="rounded border border-[#ffffff1f] bg-white/[0.08] px-2 py-0.5 text-[#676c76]">no GT</span>
+            <span className="rounded border border-[#ffffff1f] bg-white/[0.08] px-2 py-0.5 text-[#676c76]">n/a = no prediction</span>
             <span className="inline-flex items-center gap-1.5 rounded border border-[#ffffff1f] px-2 py-0.5 text-[#8b949e]">
               <span className="inline-block h-2.5 w-2.5 rounded-sm border border-[#ffffff1f]" style={{ backgroundImage: NA_HATCH }} aria-hidden />
               can&apos;t run
@@ -568,7 +569,7 @@ export function PredictionsMatrixPage({
                   return (
                     <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-1 align-middle ${hasGt ? tone.cell : 'bg-white/[0.04]'}`} title={cellTooltip(gpuKey, model, cell)}>
                       <div className="flex flex-col gap-0.5 font-mono text-[11px] leading-tight">
-                        <PredLine label="kc" color={KC_COLOR} mape={kcMdape} emptyLabel="n/a" />
+                        <PredLine label="kc" color={KC_COLOR} mape={kcMdape} />
                         {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} mape={rflMdapeVal} />}
                         {hasLss && <PredLine label="lss" color={LSS_COLOR} mape={lssMdapeVal} />}
                       </div>
