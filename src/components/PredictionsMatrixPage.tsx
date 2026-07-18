@@ -80,17 +80,25 @@ function median(values: number[]): number | null {
 }
 
 function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLookup, llmsim: LssLookup): CellAgg {
-  const collect = (key: keyof ServingRow): number[] => {
+  // Only genuinely kernel-composed rows feed the "kc" line. A roofline FALLBACK
+  // (multiturn_prediction_mode !== 'v2_kernel_composed' -- Qwen3.5 GDN, gpt-oss, or a
+  // GPU with no device YAML) must never masquerade as kernel-composed; its number
+  // surfaces on the rfl line instead. `meas` still comes from every row (GT exists
+  // regardless of which predictor priced the cell).
+  const isKc = (r: ServingRow): boolean => r.multiturn_prediction_mode === 'v2_kernel_composed';
+  const kcRows = rows.filter(isKc);
+  const rflFallbackRows = rows.filter(r => !isKc(r));
+  const collectFrom = (rs: ServingRow[], key: keyof ServingRow): number[] => {
     const out: number[] = [];
-    for (const row of rows) {
+    for (const row of rs) {
       const v = row[key];
       if (typeof v === 'number' && Number.isFinite(v)) out.push(v);
     }
     return out;
   };
   const metric = (k: 'ttft' | 'tpot' | 'e2el'): MetricAgg => ({
-    pred: average(collect(`${k}_pred` as keyof ServingRow)),
-    meas: average(collect(`${k}_meas` as keyof ServingRow)),
+    pred: average(collectFrom(kcRows, `${k}_pred` as keyof ServingRow)),
+    meas: average(collectFrom(rows, `${k}_meas` as keyof ServingRow)),
   });
   // Join the roofline rows by (gpu_key, model, profile, concurrency).
   const rflPred: Record<'ttft' | 'tpot' | 'e2el', number[]> = { ttft: [], tpot: [], e2el: [] };
@@ -120,16 +128,23 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLoo
       }
     }
   }
+  // forward-predictions.json doesn't cover every roofline model (e.g. Qwen3.5). For any
+  // metric it leaves empty, fall back to the in-file roofline rows so a roofline cell's
+  // number still shows on the rfl line rather than vanishing once kc is blanked.
+  for (const k of ['ttft', 'tpot', 'e2el'] as const) {
+    if (!rflPred[k].length) rflPred[k] = collectFrom(rflFallbackRows, `${k}_pred` as keyof ServingRow);
+    if (!rflErr[k].length) rflErr[k] = collectFrom(rflFallbackRows, `${k}_err` as keyof ServingRow);
+  }
   return {
     ttft: metric('ttft'),
     tpot: metric('tpot'),
     e2el: metric('e2el'),
-    ttftMape: average(collect('ttft_err')),
-    tpotMape: average(collect('tpot_err')),
-    e2elMape: average(collect('e2el_err')),
-    ttftMdape: median(collect('ttft_err')),
-    tpotMdape: median(collect('tpot_err')),
-    e2elMdape: median(collect('e2el_err')),
+    ttftMape: average(collectFrom(kcRows, 'ttft_err')),
+    tpotMape: average(collectFrom(kcRows, 'tpot_err')),
+    e2elMape: average(collectFrom(kcRows, 'e2el_err')),
+    ttftMdape: median(collectFrom(kcRows, 'ttft_err')),
+    tpotMdape: median(collectFrom(kcRows, 'tpot_err')),
+    e2elMdape: median(collectFrom(kcRows, 'e2el_err')),
     rflTtftPred: average(rflPred.ttft),
     rflTpotPred: average(rflPred.tpot),
     rflE2elPred: average(rflPred.e2el),
@@ -264,7 +279,7 @@ const NA_HATCH = 'repeating-linear-gradient(45deg, rgba(148,163,184,0.20) 0 1px,
 // percentage error vs the measured GT), toned by accuracy (the bands the legend
 // explains). "no GT" when the predictor produced no scored row for this cell. The
 // predicted/measured ms live in the cell tooltip, not the grid.
-function PredLine({ label, color, mape }: { label: string; color: string; mape: number | null }) {
+function PredLine({ label, color, mape, emptyLabel = 'no GT' }: { label: string; color: string; mape: number | null; emptyLabel?: string }) {
   const tone = mapeTone(mape);
   return (
     <div className="flex items-baseline justify-between gap-2">
@@ -274,7 +289,7 @@ function PredLine({ label, color, mape }: { label: string; color: string; mape: 
       </span>
       {mape != null
         ? <span className={`tabular-nums text-[10px] ${tone.badge}`}>{mape.toFixed(0)}%</span>
-        : <span className="text-[10px] text-[#676c76]">no GT</span>}
+        : <span className="text-[10px] text-[#676c76]">{emptyLabel}</span>}
     </div>
   );
 }
@@ -553,7 +568,7 @@ export function PredictionsMatrixPage({
                   return (
                     <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-1 align-middle ${hasGt ? tone.cell : 'bg-white/[0.04]'}`} title={cellTooltip(gpuKey, model, cell)}>
                       <div className="flex flex-col gap-0.5 font-mono text-[11px] leading-tight">
-                        <PredLine label="kc" color={KC_COLOR} mape={kcMdape} />
+                        <PredLine label="kc" color={KC_COLOR} mape={kcMdape} emptyLabel="n/a" />
                         {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} mape={rflMdapeVal} />}
                         {hasLss && <PredLine label="lss" color={LSS_COLOR} mape={lssMdapeVal} />}
                       </div>

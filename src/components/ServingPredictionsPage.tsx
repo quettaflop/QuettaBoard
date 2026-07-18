@@ -364,6 +364,15 @@ function meanRooflineError(
     const err = match?.[`fwd_${metric}_err` as keyof RooflineRow];
     if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
   }
+  // forward-predictions.json doesn't cover every roofline model (e.g. Qwen3.5). Fall back
+  // to the in-file roofline-fallback rows so the roofline rail still shows a number.
+  if (!errs.length) {
+    for (const row of rows) {
+      if (isKernelComposedRow(row)) continue;
+      const err = numericMetric(row, `${metric}_err` as ServingMetricKey);
+      if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
+    }
+  }
   return errs.length ? median(errs) : undefined;  // MdAPE (median), not mean
 }
 
@@ -962,8 +971,16 @@ function MetricBadge({
   );
 }
 
+// A config is kernel-composed only when tagged so; a roofline FALLBACK (Qwen3.5 GDN,
+// gpt-oss, or a GPU with no device YAML) must not count toward the "kernel-composed"
+// headline -- its number belongs on the roofline rail.
+function isKernelComposedRow(row: ServingRow): boolean {
+  return row.multiturn_prediction_mode === 'v2_kernel_composed';
+}
+
 function meanMetricError(rows: ServingRow[], errKey: ServingMetricKey): number | undefined {
   const errors = rows
+    .filter(isKernelComposedRow)
     .map(row => numericMetric(row, errKey))
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
