@@ -117,6 +117,11 @@ interface BackendSpecSummary {
 
 export interface ServingRow {
   model: string; backend?: string; profile: string; concurrency?: number; isl: number; osl: number;
+  tensor_parallel_size?: number;
+  enable_ep?: boolean;
+  // Canonical parallelism-strategy label ("1gpu" | "tp" | "tp+ep" | "ep"), emitted by
+  // build_simulator_predictions. Absent on legacy configs -> derived from tp (EP-off).
+  parallelism?: string;
   data_scope?: string;
   dataScope?: string;
   mode?: string;
@@ -149,6 +154,27 @@ export interface ServingRow {
   e2el_pred?: number; e2el_meas?: number; e2el_err?: number;
   e2el_signed_err_ms?: number; e2el_abs_err_ms?: number;
   e2el_pred_static?: number; e2el_err_static?: number;
+}
+
+// Parallelism axis (shared with the Predictions matrix). Canonical order for the
+// selector; "1gpu" (single GPU) sorts before the multi-GPU strategies.
+export const PARALLELISM_ORDER = ['1gpu', 'tp', 'tp+ep', 'ep', 'pp', 'ep+pp'] as const;
+
+// A row's parallelism label, deriving it from tensor_parallel_size (EP-off) when the
+// field is absent (legacy configs predate it): tp>1 -> "tp", else "1gpu".
+export function rowParallelism(row: ServingRow): string {
+  if (row.parallelism) return row.parallelism;
+  const tp = row.tensor_parallel_size ?? 1;
+  const axes: string[] = [];
+  if (tp > 1) axes.push('tp');
+  if (row.enable_ep) axes.push('ep');
+  return axes.join('+') || '1gpu';
+}
+
+// Distinct parallelism labels present in a set of rows, in canonical order.
+export function parallelismOptions(rows: ServingRow[]): string[] {
+  const present = new Set(rows.map(rowParallelism));
+  return PARALLELISM_ORDER.filter(p => present.has(p));
 }
 
 type ServingPerTurnRow = ServingRow & { multiturn_turn_predictions: ServingTurnPrediction[] };
@@ -469,6 +495,7 @@ export function ServingPredictionsPage({
   const [gpu, setGpu] = useState('H100');
   const [model, setModel] = useState('');
   const [backend, setBackend] = useState<'all' | 'vllm' | 'sglang'>('vllm');
+  const [parallelism, setParallelism] = useState<string>('');
   const [roofline, setRoofline] = useState<RooflineLookup>(new Map());
   const [llmsim, setLlmsim] = useState<LssLookup>(new Map());
   const [loading, setLoading] = useState(true);
@@ -552,12 +579,25 @@ export function ServingPredictionsPage({
     setGpu(current => gpuOptions.includes(current) ? current : gpuOptions[0]);
   }, [focus?.gpu, gpuOptions]);
 
+  // Parallelism axis, scoped to the selected (GPU, model): its rows can carry both a
+  // tp and a tp+ep run (EP-off vs EP-on) that must not conflate (they'd collide in the
+  // per-concurrency cell map). Options come from what's actually present; the effective
+  // value defaults to the first in canonical order (1gpu/tp before tp+ep).
+  const parallelismOpts = useMemo(() => {
+    if (!scopeIndex) return EMPTY_GPU_OPTIONS;
+    const base = (scopeIndex.rowsByGpu[selectedGpu] ?? []).filter(row => row.model === selectedModel);
+    return parallelismOptions(base);
+  }, [scopeIndex, selectedGpu, selectedModel]);
+  const effParallelism = parallelismOpts.includes(parallelism)
+    ? parallelism : (parallelismOpts[0] ?? '');
+
   const rows = useMemo(() => {
     const base = scopeIndex?.rowsByGpu[selectedGpu] ?? [];
     if (focus) return applyServingFocus(base, focus);
-    if (selectorMode) return base.filter(row => row.model === selectedModel);
+    if (selectorMode) return base.filter(row =>
+      row.model === selectedModel && (!effParallelism || rowParallelism(row) === effParallelism));
     return base;
-  }, [scopeIndex, selectedGpu, focus, selectorMode, selectedModel]);
+  }, [scopeIndex, selectedGpu, focus, selectorMode, selectedModel, effParallelism]);
   // Predictions are always the kernel-composed backtester rows (per-turn detail intact). The analytic
   // roofline is no longer a table-replacing mode toggle — it is joined via the `roofline` lookup and
   // shown alongside: as a MAPE badge group in the target bar and a reference line in the per-turn chart.
@@ -602,6 +642,9 @@ export function ServingPredictionsPage({
           backend={backend}
           onBackend={setBackend}
           showBackend={hasSglang}
+          parallelismOpts={parallelismOpts}
+          selectedParallelism={effParallelism}
+          onParallelism={setParallelism}
           hasRoofline={hasRoofline}
           hasLss={hasLss}
           ttftMape={meanMetricError(rows, 'ttft_err')}
@@ -835,6 +878,9 @@ function SimulatorTargetBar({
   backend,
   onBackend,
   showBackend,
+  parallelismOpts,
+  selectedParallelism,
+  onParallelism,
   hasRoofline,
   ttftMape,
   tpotMape,
@@ -856,6 +902,9 @@ function SimulatorTargetBar({
   backend: 'all' | 'vllm' | 'sglang';
   onBackend: (backend: 'all' | 'vllm' | 'sglang') => void;
   showBackend: boolean;
+  parallelismOpts: string[];
+  selectedParallelism: string;
+  onParallelism: (parallelism: string) => void;
   hasRoofline: boolean;
   ttftMape: OptionalMetric;
   tpotMape: OptionalMetric;
@@ -887,6 +936,10 @@ function SimulatorTargetBar({
                 <option value="all">All</option>
               </select>
             </label>
+          )}
+          {parallelismOpts.length > 1 && (
+            <LabeledSelect label="Parallelism" value={selectedParallelism}
+              options={parallelismOpts} onChange={onParallelism} />
           )}
         </div>
         <div className="flex flex-col gap-2">

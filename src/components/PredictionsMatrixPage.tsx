@@ -12,6 +12,8 @@ import {
 import { buildLssLookup, type LssRow, type LssLookup } from '../llmsimPredictions';
 import {
   buildServingIndex,
+  rowParallelism,
+  PARALLELISM_ORDER,
   type ServingIndex,
   type ServingRow,
 } from './ServingPredictionsPage';
@@ -301,6 +303,11 @@ export function PredictionsMatrixPage({
   const [failed, setFailed] = useState(false);
   const [metric, setMetric] = useState<MetricKey>('e2el');
   const [backend, setBackend] = useState<BackendKey>('vllm');
+  // Parallelism axis: "all" blends every strategy into one cell (fine when a cell has a
+  // single strategy; a coarse overview when it has more, since preds are identical), while
+  // a specific value (tp / tp+ep / ...) disaggregates. EP-on and EP-off runs of one
+  // (gpu, model) otherwise land in the same cell and mix their (different) measured GT.
+  const [parallelism, setParallelism] = useState<string>('all');
 
   // VRAM / weights so an empty cell can be told apart: "won't fit" (not plausible) vs "not run".
   const { sweepState } = useSweepState();
@@ -361,6 +368,18 @@ export function PredictionsMatrixPage({
 
   const scopeIndex = servingIndex?.[dataScope];
 
+  // Parallelism strategies present anywhere in the scope, in canonical order — drives
+  // the toggle. A stale selection (scope switch) falls back to "all".
+  const availableParallelisms = useMemo(() => {
+    if (!scopeIndex) return [] as string[];
+    const present = new Set<string>();
+    for (const rows of Object.values(scopeIndex.rowsByGpu))
+      for (const r of rows) present.add(rowParallelism(r));
+    return PARALLELISM_ORDER.filter(p => present.has(p));
+  }, [scopeIndex]);
+  const effParallelism = parallelism === 'all' || availableParallelisms.includes(parallelism)
+    ? parallelism : 'all';
+
   const matrix = useMemo(() => {
     if (!scopeIndex) return null;
     const models = new Set<string>();
@@ -369,7 +388,8 @@ export function PredictionsMatrixPage({
     }
     const modelList = Array.from(models).sort();
     const hardware = scopeIndex.gpuOptions.map(gpuKey => {
-      const rows = scopeIndex.rowsByGpu[gpuKey] ?? [];
+      const rows = (scopeIndex.rowsByGpu[gpuKey] ?? [])
+        .filter(r => effParallelism === 'all' || rowParallelism(r) === effParallelism);
       const byModel: Record<string, CellAgg> = {};
       for (const model of modelList) {
         const modelRows = rows.filter(r => r.model === model);
@@ -378,7 +398,7 @@ export function PredictionsMatrixPage({
       return { gpuKey, parts: hardwareParts(gpuKey, rows), byModel };
     }).filter(h => Object.keys(h.byModel).length > 0);
     return { modelList, hardware };
-  }, [scopeIndex, roofline, llmsim]);
+  }, [scopeIndex, roofline, llmsim, effParallelism]);
 
   if (loading) {
     return <div className="flex h-64 items-center justify-center text-[#a9afba]">Loading predictions…</div>;
@@ -471,6 +491,9 @@ export function PredictionsMatrixPage({
             {availableBackends.length > 1 &&
               toggle(BACKENDS.filter(b => b.key === 'all' || availableBackends.includes(b.key)),
                 effBackend, k => setBackend(k as BackendKey))}
+            {availableParallelisms.length > 1 &&
+              toggle([{ key: 'all', label: 'All' }, ...availableParallelisms.map(p => ({ key: p, label: p }))],
+                effParallelism, setParallelism)}
           </div>
           {toggle(METRICS, metric, k => setMetric(k as MetricKey))}
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -510,7 +533,7 @@ export function PredictionsMatrixPage({
                 <td className="sticky left-0 z-10 whitespace-nowrap border-r border-t border-[#ffffff1f] bg-[#0b0d10] px-2.5 py-0.5 align-middle">
                   <div className="flex items-baseline gap-1.5 leading-none">
                     <span className="font-medium text-[#f3f4f6]">{parts.gpu}</span>
-                    <span className="text-xs text-[#a9afba]">tp{parts.tp} · {parts.backend}</span>
+                    <span className="text-xs text-[#a9afba]">tp{parts.tp} · {parts.backend}{effParallelism !== 'all' ? ` · ${effParallelism}` : ''}</span>
                   </div>
                 </td>
                 {shownModelList.map(model => {
