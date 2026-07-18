@@ -61,10 +61,6 @@ export function normalizeDataScope(value: string | null): DataScope | null {
   return isDataScope(value) ? value : null;
 }
 
-export function hasSyntheticRuntime(scope: DataScope): boolean {
-  return scope === 'synthetic_distributional';
-}
-
 export const CURRENT_PROFILES = [
   'chat-singleturn',
   'coding-singleturn',
@@ -212,11 +208,6 @@ export function profileDisplayName(profile: string): string {
   return PROFILE_META[normalized]?.displayName ?? normalized;
 }
 
-export function isBenchmarkProfile(profile: string): boolean {
-  const normalized = normalizeProfileName(profile);
-  return PROFILE_META[normalized]?.benchmarkVisible !== false;
-}
-
 export function normalizeProfileName(profile: string): string {
   return PROFILE_ALIASES[profile] ?? profile;
 }
@@ -230,8 +221,4 @@ export function isProfileInScope(profile: string, scope: DataScope): boolean {
     return SYNTHETIC_PROFILE_SET.has(normalized);
   }
   return ARCHIVED_PROFILE_SET.has(normalized);
-}
-
-export function scopeLabel(scope: DataScope): string {
-  return DATA_SCOPE_META[scope].label;
 }

@@ -17,7 +17,7 @@ import {
   normalizeProfileName,
   profileDisplayName,
 } from '../profileMeta';
-import { rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl, llama31H100TpotFitJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
+import { rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
 import { buildRooflineLookup, rooflineKey, type RooflineLookup, type RooflineRow } from '../rooflinePredictions';
 import { buildLssLookup, type LssLookup, type LssRow } from '../llmsimPredictions';
 
@@ -228,72 +228,7 @@ interface ServingFocus {
 
 type OptionalMetric = number | null | undefined;
 
-interface FixedTpotFitData {
-  experiment: {
-    name: string;
-    model: string;
-    gpu: string;
-    backend: string;
-    target: string;
-    scope_note: string;
-    dashboard_scope: DataScope;
-  };
-  fit_summary: {
-    rows: number;
-    physics_loo_mape?: number;
-    physics_loo_median_ape?: number;
-    physics_loo_max_ape?: number;
-    interp_loo_mape?: number;
-    interp_loo_median_ape?: number;
-    interp_loo_max_ape?: number;
-    physics_in_sample_mape?: number;
-    kernel_composed_mape?: number;
-    kernel_composed_median_ape?: number;
-    kernel_composed_max_ape?: number;
-    trace_cross_check_mape?: number;
-    trace_cross_check_median_ape?: number;
-    trace_cross_check_max_ape?: number;
-    small_kernel_exact_rows?: number;
-    small_kernel_missing_rows?: number;
-    small_kernel_component_count?: number;
-    attention_scale?: number;
-    dense_by_batch_ms?: Record<string, number>;
-  };
-  dashboard_comparison: FixedTpotDashboardComparison[];
-  page_comparisons?: Partial<Record<PredictionPageKind, FixedTpotDashboardComparison[]>>;
-  sources: Record<string, string>;
-  worst_rows?: {
-    physics_loo?: FixedTpotWorstRow[];
-    interpolation_loo?: FixedTpotWorstRow[];
-  };
-}
-
 type PredictionPageKind = 'serving' | 'simulator';
-
-interface FixedTpotDashboardComparison {
-  backend: string;
-  label?: string;
-  rows: number;
-  ttft_mape?: OptionalMetric;
-  ttft_median_ape?: OptionalMetric;
-  ttft_max_ape?: OptionalMetric;
-  tpot_mape?: OptionalMetric;
-  tpot_median_ape?: OptionalMetric;
-  tpot_max_ape?: OptionalMetric;
-  e2el_mape?: OptionalMetric;
-  e2el_median_ape?: OptionalMetric;
-  e2el_max_ape?: OptionalMetric;
-}
-
-interface FixedTpotWorstRow {
-  batch_size: number;
-  context_len: number;
-  actual_ms: number;
-  physics_loo_pred_ms: number;
-  physics_loo_pct_error: number;
-  interp_loo_pred_ms: number;
-  interp_loo_pct_error: number;
-}
 
 const EMPTY_GPU_OPTIONS: string[] = [];
 
@@ -491,7 +426,6 @@ export function ServingPredictionsPage({
   pageKind?: PredictionPageKind;
 }) {
   const [servingIndex, setServingIndex] = useState<ServingIndex | null>(null);
-  const [fixedTpotFit, setFixedTpotFit] = useState<FixedTpotFitData | null>(null);
   const [gpu, setGpu] = useState('H100');
   const [model, setModel] = useState('');
   const [backend, setBackend] = useState<'all' | 'vllm' | 'sglang'>('vllm');
@@ -515,13 +449,6 @@ export function ServingPredictionsPage({
         setLoading(false);
       });
   }, [predictionsUrl]);
-
-  useEffect(() => {
-    fetch(llama31H100TpotFitJsonUrl)
-      .then(response => response.ok ? response.json() : null)
-      .then((json: FixedTpotFitData | null) => setFixedTpotFit(json))
-      .catch(() => setFixedTpotFit(null));
-  }, []);
 
   // Roofline predictions are optional — absent (404) until build_forward_rows has run.
   useEffect(() => {
@@ -607,24 +534,6 @@ export function ServingPredictionsPage({
   const tableFocus: ServingFocus | undefined = selectorMode && selectedModel
     ? { gpu: selectedGpu, model: selectedModel, title: 'Simulator', description: '' }
     : focus;
-  const showFixedTpotFit = fixedTpotFit
-    && fixedTpotFit.experiment.gpu === selectedGpu
-    && fixedTpotFit.experiment.dashboard_scope === dataScope
-    && (focus
-      ? focus.model === fixedTpotFit.experiment.model
-      : (!selectorMode || selectedModel === fixedTpotFit.experiment.model));
-  const fixedTpotOnly = Boolean(showFixedTpotFit && pageKind === 'simulator');
-  const tableSourceRows = useMemo(
-    () => fixedTpotOnly ? rows.filter(row => !isSingleTurnServingRow(row)) : rows,
-    [fixedTpotOnly, rows],
-  );
-  const fixedTpotRows = fixedTpotOnly && fixedTpotFit
-    ? fixedTpotServingRows(fixedTpotFit, pageKind)
-    : undefined;
-  const useFixedTpotRows = Boolean(fixedTpotRows && tableSourceRows.length === 0);
-  const tableRows = useFixedTpotRows && fixedTpotRows ? fixedTpotRows : tableSourceRows;
-  const tableSummaryRows = fixedTpotRows ?? tableRows;
-  const tableSummaryRowCount = fixedTpotRows ? fixedTpotFit?.fit_summary.rows : undefined;
 
   if (loading) return <div className="p-8 text-[#a9afba]">Loading predictions...</div>;
   if (failed || !scopeIndex) return <div className="p-8 text-[#ff3b30]">Failed to load predictions JSON</div>;
@@ -674,8 +583,6 @@ export function ServingPredictionsPage({
               rows={rows}
               focus={focus}
               dataScope={dataScope}
-              fixedTpotFit={fixedTpotOnly && fixedTpotFit ? fixedTpotFit : undefined}
-              pageKind={pageKind}
             />
           ) : (
             <GpuConfigSelector
@@ -688,13 +595,9 @@ export function ServingPredictionsPage({
       )}
 
       <ServingTable
-        rows={tableRows}
-        summaryRows={tableSummaryRows}
-        summaryRowCount={tableSummaryRowCount}
+        rows={rows}
         dataScope={dataScope}
         focus={tableFocus}
-        tpotOnly={fixedTpotOnly}
-        validationRows={useFixedTpotRows}
         roofline={roofline}
         llmsim={llmsim}
         gpuKey={selectedGpu}
@@ -716,87 +619,22 @@ function applyServingFocus(rows: ServingRow[], focus?: ServingFocus): ServingRow
   });
 }
 
-function isSingleTurnServingRow(row: ServingRow): boolean {
-  const profile = normalizeProfileName(row.profile).replace('_', '-').toLowerCase();
-  return profile.includes('singleturn') || profile.includes('single-turn') || row.mode === 'single-turn';
-}
-
-function fixedTpotServingRows(data: FixedTpotFitData, pageKind: PredictionPageKind): ServingRow[] {
-  const comparisons = data.page_comparisons?.[pageKind] ?? data.dashboard_comparison;
-  const fit = data.fit_summary;
-  if (comparisons.length === 0) {
-    return [{
-      model: data.experiment.model,
-      backend: data.experiment.backend,
-      profile: 'kernel-composed TPOT',
-      concurrency: fit.rows,
-      isl: 0,
-      osl: 1,
-      data_scope: data.experiment.dashboard_scope,
-      // MdAPE headline: the fit's MEDIAN APE (its mean is tail-inflated ~2x here); fall back to MAPE.
-      tpot_err: finiteMetric(fit.kernel_composed_median_ape) ?? finiteMetric(fit.physics_loo_median_ape)
-        ?? finiteMetric(fit.kernel_composed_mape) ?? finiteMetric(fit.physics_loo_mape),
-    }];
-  }
-
-  return comparisons.map(comparison => ({
-    model: data.experiment.model,
-    backend: comparison.backend,
-    profile: comparison.label ?? comparison.backend,
-    concurrency: comparison.rows,
-    isl: 0,
-    osl: 1,
-    data_scope: data.experiment.dashboard_scope,
-    // MdAPE (median), matching the other summary cards; fall back to the mean if absent.
-    tpot_err: finiteMetric(comparison.tpot_median_ape) ?? finiteMetric(comparison.tpot_mape),
-  }));
-}
-
-function finiteMetric(value: OptionalMetric): number | undefined {
-  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
-}
-
 function ServingFocusSummary({
   rows,
   focus,
   dataScope,
-  fixedTpotFit,
-  pageKind,
 }: {
   rows: ServingRow[];
   focus: ServingFocus;
   dataScope: DataScope;
-  fixedTpotFit?: FixedTpotFitData;
-  pageKind?: PredictionPageKind;
 }) {
-  const fixedComparison = fixedTpotFit
-    ? (fixedTpotFit.page_comparisons?.[pageKind ?? 'serving'] ?? fixedTpotFit.dashboard_comparison)[0]
-    : undefined;
-  const summary = fixedComparison
-    ? {
-      gpu: focus.gpu,
-      rows: fixedComparison.rows,
-      models: 1,
-      profiles: 1,
-      backends: 1,
-      concurrencies: 0,
-      meanTtftMape: undefined,
-      meanTpotMape: fixedComparison.tpot_mape ?? undefined,
-      meanE2elMape: undefined,
-    }
-    : summarizeGpuConfig(focus.gpu, rows);
-  const profiles = fixedComparison ? 1 : new Set(rows.map(row => row.profile)).size;
-  const backends = fixedComparison
-    ? [fixedComparison.label ?? fixedComparison.backend]
-    : Array.from(new Set(rows.map(row => row.backend).filter(Boolean))).sort();
-  const concurrencies = fixedComparison
-    ? []
-    : Array.from(new Set(rows.map(row => row.concurrency ?? 1))).sort((a, b) => a - b);
-  const emulatorRows = fixedComparison ? [] : rows.filter(row => row.backend_emulator_status === 'event_loop_enabled');
-  const steadyRows = fixedComparison ? [] : rows.filter(row => isSteadyStateRow(row));
-  const replayedTokens = fixedComparison
-    ? undefined
-    : emulatorRows.reduce((total, row) => total + (row.backend_trace_summary?.replayed_cached_tokens ?? 0), 0);
+  const summary = summarizeGpuConfig(focus.gpu, rows);
+  const profiles = new Set(rows.map(row => row.profile)).size;
+  const backends = Array.from(new Set(rows.map(row => row.backend).filter(Boolean))).sort();
+  const concurrencies = Array.from(new Set(rows.map(row => row.concurrency ?? 1))).sort((a, b) => a - b);
+  const emulatorRows = rows.filter(row => row.backend_emulator_status === 'event_loop_enabled');
+  const steadyRows = rows.filter(row => isSteadyStateRow(row));
+  const replayedTokens = emulatorRows.reduce((total, row) => total + (row.backend_trace_summary?.replayed_cached_tokens ?? 0), 0);
 
   return (
     <section className="glass rounded-[22px] p-5">
@@ -821,13 +659,13 @@ function ServingFocusSummary({
       </div>
 
       <div className="mt-4 grid gap-2 border-t border-white/60 pt-4 text-xs text-[#a9afba] sm:grid-cols-7">
-        <FocusStat label="Rows" value={(fixedComparison?.rows ?? rows.length).toLocaleString()} />
+        <FocusStat label="Rows" value={rows.length.toLocaleString()} />
         <FocusStat label="Profiles" value={profiles.toLocaleString()} />
         <FocusStat label="Backends" value={backends.length ? backends.join(', ') : '-'} />
-        <FocusStat label="Concurrency" value={fixedComparison ? 'B/T grid' : formatConcurrencyRange(concurrencies)} />
-        <FocusStat label="Emulator" value={fixedComparison ? 'N/A' : `${emulatorRows.length}/${rows.length}`} />
-        <FocusStat label="Steady" value={fixedComparison ? 'N/A' : `${steadyRows.length}/${rows.length}`} />
-        <FocusStat label="Replay" value={fixedComparison ? 'N/A' : formatTokenCount(replayedTokens)} />
+        <FocusStat label="Concurrency" value={formatConcurrencyRange(concurrencies)} />
+        <FocusStat label="Emulator" value={`${emulatorRows.length}/${rows.length}`} />
+        <FocusStat label="Steady" value={`${steadyRows.length}/${rows.length}`} />
+        <FocusStat label="Replay" value={formatTokenCount(replayedTokens)} />
       </div>
     </section>
   );
@@ -1212,23 +1050,15 @@ export function buildServingIndex(data: Record<string, ServingRow[]>): ServingIn
 
 function ServingTable({
   rows,
-  summaryRows,
-  summaryRowCount,
   dataScope,
   focus,
-  tpotOnly = false,
-  validationRows = false,
   roofline,
   llmsim,
   gpuKey,
 }: {
   rows: ServingRow[];
-  summaryRows?: ServingRow[];
-  summaryRowCount?: number;
   dataScope: DataScope;
   focus?: ServingFocus;
-  tpotOnly?: boolean;
-  validationRows?: boolean;
   roofline?: RooflineLookup;
   llmsim?: LssLookup;
   gpuKey?: string;
@@ -1264,7 +1094,6 @@ function ServingTable({
   }
 
   const { concurrencies, groupedByModel } = tableData;
-  const metricSummaryRows = summaryRows ?? rows;
 
   return (
     <div className="space-y-5">
@@ -1273,9 +1102,7 @@ function ServingTable({
           <ServingMetricSummary
             key={metric.label}
             metric={metric}
-            rows={metricSummaryRows}
-            rowCount={summaryRowCount}
-            fallbackRows={rows}
+            rows={rows}
           />
         ))}
       </div>
@@ -1291,7 +1118,7 @@ function ServingTable({
               <th rowSpan={2} className="w-[210px] px-3 py-2.5 text-left font-medium">Profile</th>
               <th rowSpan={2} className="w-[72px] px-2 py-2.5 text-left font-medium">Backend</th>
               <th colSpan={concurrencies.length} className="px-1.5 py-1.5 text-left text-[10px] font-semibold uppercase tracking-widest text-[#676c76]">
-                {validationRows ? 'Validation Rows' : 'Concurrency'}
+                Concurrency
               </th>
               <th
                 colSpan={SERVING_METRICS.length}
@@ -1406,9 +1233,7 @@ function ServingTable({
 
       <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#676c76]">
         <span>
-          {tpotOnly ? 'Cells show TPOT-only kernel-composed error; TTFT and E2EL are N/A.' : (
-            <>Cells show % error left-to-right: <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#2dd4bf]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>.</>
-          )}
+          Cells show % error left-to-right: <span className="text-[#ff9f0a]">TTFT</span> / <span className="text-[#2dd4bf]">TPOT</span> / <span className="text-[#a855f7]">E2EL</span>.
         </span>
         <span className="font-medium text-[#a9afba]">Error bands:</span>
         <span className="rounded-full border border-[#34c759]/30 bg-[#34c759]/10 px-2 py-0.5 text-[#34c759]">&lt;10%</span>
@@ -2012,33 +1837,19 @@ function ServingPerTurnBreakdown({
 function ServingMetricSummary({
   metric,
   rows,
-  rowCount,
-  fallbackRows,
 }: {
   metric: ServingMetric;
   rows: ServingRow[];
-  rowCount?: number;
-  fallbackRows?: ServingRow[];
 }) {
   // Aggregate absolute errors for the MdAPE view (median, matching the badges/matrix).
-  const valuesFrom = (rs: ServingRow[]) => rs
+  const values = rows
     .map(row => numericMetric(row, metric.errKey))
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
-  // Primary rows (e.g. the fixed TPOT fit set) only carry tpot_err; for TTFT/E2EL
-  // fall back to the real per-cell rows, which carry ttft_err / e2el_err.
-  let values = valuesFrom(rows);
-  let usedFallback = false;
-  if (!values.length && fallbackRows && fallbackRows !== rows) {
-    values = valuesFrom(fallbackRows);
-    usedFallback = values.length > 0;
-  }
   const headline = values.length ? median(values) : undefined;
   const best = values.length ? Math.min(...values) : undefined;
   const worst = values.length ? Math.max(...values) : undefined;
-  const displayedRowCount = headline !== undefined && rowCount !== undefined && !usedFallback
-    ? rowCount
-    : values.length;
+  const displayedRowCount = values.length;
   const fmt = (value: OptionalMetric) => formatPercent(value);
 
   return (

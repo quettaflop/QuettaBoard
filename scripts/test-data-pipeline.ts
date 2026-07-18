@@ -120,7 +120,7 @@ function testValidateRejectsEmptyCompletedScope(tmp: string) {
   assert.match(result.stderr + result.stdout, /archived/);
 }
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "agentic-serve-data-pipeline-"));
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "quettaboard-data-pipeline-"));
 try {
   testBuildDataKeepsScopesSeparate(tmp);
   testValidateRejectsEmptyCompletedScope(tmp);

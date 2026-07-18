@@ -18,7 +18,7 @@ const allowedHosts = new Set(
     .map((host) => host.trim())
     .filter(Boolean),
 );
-const basePath = normalizeBase(process.env.DASHBOARD_BASE_PATH || '/agentic-serve');
+const basePath = normalizeBase(process.env.DASHBOARD_BASE_PATH || '/quettaboard');
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || '4180');
 

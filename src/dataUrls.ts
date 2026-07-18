@@ -41,16 +41,8 @@ export const sweepStateUrl = withBuildHash(
   import.meta.env.VITE_SWEEP_STATE_URL || joinUrl(jsonBase, 'sweep-state.json'),
 );
 
-export const gemmEvalJsonUrl = withBuildHash(
-  import.meta.env.VITE_GEMM_EVAL_JSON_URL || joinUrl(jsonBase, 'gemm-eval.json'),
-);
-
 export const servingPredictionsJsonUrl = withBuildHash(
   import.meta.env.VITE_SERVING_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'serving-predictions.json'),
-);
-
-export const llama31H100TpotFitJsonUrl = withBuildHash(
-  import.meta.env.VITE_LLAMA31_H100_TPOT_FIT_JSON_URL || joinUrl(jsonBase, 'llama31-8b-h100-tpot-fit.json'),
 );
 
 // Roofline predictor (no-GT path, run over the same cells) — MAPE counterpart to the backtester's
@@ -70,13 +62,6 @@ export const llmsimPredictionsJsonUrl = withBuildHash(
   import.meta.env.VITE_LLMSIM_PREDICTIONS_JSON_URL || joinUrl(jsonBase, 'llmservingsim-predictions.json'),
 );
 
-export const profilingStateJsonUrl = withBuildHash(
-  import.meta.env.VITE_PROFILING_STATE_JSON_URL || joinUrl(jsonBase, 'profiling-state.json'),
-);
-
-export const predictorCoverageJsonUrl = withBuildHash(
-  import.meta.env.VITE_PREDICTOR_COVERAGE_JSON_URL || joinUrl(jsonBase, 'predictor-coverage.json'),
-);
 
 export const gpuStateJsonUrl = withBuildHash(
   import.meta.env.VITE_GPU_STATE_JSON_URL || joinUrl(jsonBase, 'gpu-state.json'),
