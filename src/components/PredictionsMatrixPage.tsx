@@ -167,13 +167,18 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLoo
   };
 }
 
-// Display uses MdAPE (median); MAPE (mean) stays on the CellAgg for the hover tooltip.
+// Display shows MdAPE (median, toned) with MAPE (mean) inline for kernel-composed; both on CellAgg.
 const BT_MDAPE = { ttft: 'ttftMdape', tpot: 'tpotMdape', e2el: 'e2elMdape' } as const;
 const RFL_MDAPE = { ttft: 'rflTtftMdape', tpot: 'rflTpotMdape', e2el: 'rflE2elMdape' } as const;
 const LSS_MDAPE = { ttft: 'lssTtftMdape', tpot: 'lssTpotMdape', e2el: 'lssE2elMdape' } as const;
 
 function btMdape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[BT_MDAPE[metric]];
+}
+// MAPE (mean APE) accessor — kernel-composed only computes both; shown inline next to MdAPE.
+const BT_MAPE = { ttft: 'ttftMape', tpot: 'tpotMape', e2el: 'e2elMape' } as const;
+function btMape(cell: CellAgg, metric: MetricKey): number | null {
+  return cell[BT_MAPE[metric]];
 }
 function rflMdape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[RFL_MDAPE[metric]];
@@ -280,28 +285,35 @@ const NA_HATCH = 'repeating-linear-gradient(45deg, rgba(148,163,184,0.20) 0 1px,
 // explains). Shows "n/a" when this predictor produced no value for a cell that still has
 // GT (e.g. kc on a roofline-fallback model, or lss where it didn't run) -- distinct from
 // the "—" cells, which are not-run. The predicted/measured ms live in the tooltip.
-function PredLine({ label, color, mape, emptyLabel = 'n/a' }: { label: string; color: string; mape: number | null; emptyLabel?: string }) {
-  const tone = mapeTone(mape);
+// Primary value is MdAPE (median APE, toned by accuracy band). When `mape` (mean APE) is
+// given it renders inline next to it, muted — so both read at a glance: "MdAPE·MAPE". The
+// two diverge when a config's per-cell error has a heavy tail (a few blown-up cells), which
+// the median hides and the mean surfaces; showing both makes that visible without a hover.
+function PredLine({ label, color, mdape, mape, emptyLabel = 'n/a' }: { label: string; color: string; mdape: number | null; mape?: number | null; emptyLabel?: string }) {
+  const tone = mapeTone(mdape);
   return (
     <div className="flex items-baseline justify-between gap-2">
       <span className="flex items-baseline gap-1">
         <span className="inline-block h-1.5 w-1.5 shrink-0 self-center rounded-full" style={{ backgroundColor: color }} aria-hidden />
         <span className="text-[9px] uppercase tracking-wide" style={{ color }}>{label}</span>
       </span>
-      {mape != null
-        ? <span className={`tabular-nums text-[10px] ${tone.badge}`}>{mape.toFixed(0)}%</span>
+      {mdape != null
+        ? <span className="tabular-nums text-[10px]">
+            <span className={tone.badge}>{mdape.toFixed(0)}%</span>
+            {mape != null && <span className="text-[#676c76]">·{mape.toFixed(0)}%</span>}
+          </span>
         : <span className="text-[10px] text-[#676c76]">{emptyLabel}</span>}
     </div>
   );
 }
 
-function cellTooltip(gpuKey: string, model: string, cell: CellAgg): string {
+function cellTooltip(gpuKey: string, model: string, cell: CellAgg, par?: string): string {
   const line = (label: string, m: MetricAgg, mdape: number | null, mape: number | null, rflMd: number | null) =>
     `${label} kern ${formatMs(m.pred)}/${formatMs(m.meas)}` +
     (mdape != null ? ` MdAPE ${mdape.toFixed(1)}%` : '') +
     (mape != null ? ` (MAPE ${mape.toFixed(1)}%)` : '') +
     (rflMd != null ? ` · rfl ${rflMd.toFixed(1)}%` : '');
-  const head = `${gpuKey} × ${model} — over ${cell.n} cells (kernel-composed MdAPE=median, MAPE=mean in parens; rfl = roofline MdAPE)`;
+  const head = `${gpuKey} × ${model}${par ? ` · ${par}` : ''} — over ${cell.n} cells (kernel-composed MdAPE=median, MAPE=mean in parens; rfl = roofline MdAPE)`;
   return `${head}\n${line('TTFT', cell.ttft, cell.ttftMdape, cell.ttftMape, cell.rflTtftMdape)}\n${line('TPOT', cell.tpot, cell.tpotMdape, cell.tpotMape, cell.rflTpotMdape)}\n${line('E2EL', cell.e2el, cell.e2elMdape, cell.e2elMape, cell.rflE2elMdape)}`;
 }
 
@@ -406,10 +418,22 @@ export function PredictionsMatrixPage({
     const hardware = scopeIndex.gpuOptions.map(gpuKey => {
       const rows = (scopeIndex.rowsByGpu[gpuKey] ?? [])
         .filter(r => effParallelism === 'all' || rowParallelism(r) === effParallelism);
-      const byModel: Record<string, CellAgg> = {};
+      // Group each model's rows by parallelism so tp and tp+ep never blend into one averaged
+      // cell -- they score against DIFFERENT GT (EP-off vs EP-on). A filtered view (a specific
+      // parallelism) yields a single group; "all" yields one sub-block per strategy present.
+      const byModel: Record<string, Array<{ par: string; cell: CellAgg }>> = {};
       for (const model of modelList) {
         const modelRows = rows.filter(r => r.model === model);
-        if (modelRows.length) byModel[model] = aggregateCell(modelRows, gpuKey, roofline, llmsim);
+        if (!modelRows.length) continue;
+        const byPar = new Map<string, ServingRow[]>();
+        for (const r of modelRows) {
+          const p = rowParallelism(r);
+          if (!byPar.has(p)) byPar.set(p, []);
+          byPar.get(p)!.push(r);
+        }
+        byModel[model] = PARALLELISM_ORDER
+          .filter(p => byPar.has(p))
+          .map(p => ({ par: p, cell: aggregateCell(byPar.get(p)!, gpuKey, roofline, llmsim) }));
       }
       return { gpuKey, parts: hardwareParts(gpuKey, rows), byModel };
     }).filter(h => Object.keys(h.byModel).length > 0);
@@ -480,7 +504,7 @@ export function PredictionsMatrixPage({
             Per hardware config × model, averaged over all profiles and concurrencies
             ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows the {metricLabel} APE per predictor —{' '}
             <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
-            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MdAPE (median APE; mean MAPE on hover). Empty cells are shaded when the config can&apos;t run (won&apos;t fit or declared infeasible), or{' '}
+            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MdAPE; the kc line reads <span className="tabular-nums">MdAPE·MAPE</span> (median·mean APE — they diverge when a few cells blow up, which the median hides). Empty cells are shaded when the config can&apos;t run (won&apos;t fit or declared infeasible), or{' '}
             <span className="text-[#676c76]">—</span> when not run. Hover for details.
           </p>
         </div>
@@ -553,25 +577,30 @@ export function PredictionsMatrixPage({
                   </div>
                 </td>
                 {shownModelList.map(model => {
-                  const cell = byModel[model];
-                  if (!cell) {
+                  const entries = byModel[model];
+                  if (!entries || entries.length === 0) {
                     const reason = cellBlockReason(parts.gpu, parts.tp, parts.backend, model, vramByLabel, weightsByModel, feasRatio, knownOom);
                     return reason
                       ? <td key={model} title={reason} style={{ backgroundImage: NA_HATCH }} className="border-t border-[#ffffff1f] px-2.5 py-1 align-middle"></td>
                       : <td key={model} title="not run yet" className="border-t border-[#ffffff1f] px-2.5 py-1 text-center align-middle text-[#676c76]">—</td>;
                   }
-                  const agg = cell[metric];
-                  const kcMdape = btMdape(cell, metric);
-                  const rflMdapeVal = rflMdape(cell, metric);
-                  const lssMdapeVal = lssMdape(cell, metric);
-                  const tone = mapeTone(kcMdape);
-                  const hasGt = agg.meas != null;
+                  // Tone the cell by the first strategy's kc (usually tp); each sub-block below still
+                  // carries its own per-predictor accuracy colors.
+                  const tone = mapeTone(btMdape(entries[0].cell, metric));
+                  const hasGt = entries.some(e => e.cell[metric].meas != null);
+                  const multi = entries.length > 1;
                   return (
-                    <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-1 align-middle ${hasGt ? tone.cell : 'bg-white/[0.04]'}`} title={cellTooltip(gpuKey, model, cell)}>
-                      <div className="flex flex-col gap-0.5 font-mono text-[11px] leading-tight">
-                        <PredLine label="kc" color={KC_COLOR} mape={kcMdape} />
-                        {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} mape={rflMdapeVal} />}
-                        {hasLss && <PredLine label="lss" color={LSS_COLOR} mape={lssMdapeVal} />}
+                    <td key={model} className={`whitespace-nowrap border-t border-[#ffffff1f] px-2.5 py-1 align-middle ${hasGt ? tone.cell : 'bg-white/[0.04]'}`}
+                        title={entries.map(e => cellTooltip(gpuKey, model, e.cell, multi ? e.par : undefined)).join('\n\n')}>
+                      <div className="flex flex-col gap-1.5 font-mono text-[11px] leading-tight">
+                        {entries.map(({ par, cell }) => (
+                          <div key={par} className={multi ? 'border-l-2 border-[#ffffff1f] pl-1.5' : ''}>
+                            {multi && <div className="text-[8px] font-semibold uppercase tracking-wide text-[#8b93a1]">{par}</div>}
+                            <PredLine label="kc" color={KC_COLOR} mdape={btMdape(cell, metric)} mape={btMape(cell, metric)} />
+                            {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} mdape={rflMdape(cell, metric)} />}
+                            {hasLss && <PredLine label="lss" color={LSS_COLOR} mdape={lssMdape(cell, metric)} />}
+                          </div>
+                        ))}
                       </div>
                     </td>
                   );
