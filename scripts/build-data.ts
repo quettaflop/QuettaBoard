@@ -198,11 +198,16 @@ function normalizeDataScope(scope: string | undefined): 'trace_replay' | 'synthe
 }
 
 function detectDataScope(raw: RawResult, relDir: string): 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep' {
+  // EP-on runs live merged inside synthetic_distributional/ with _ep<N> dir
+  // names (2026-07-22 merge); their scope identity comes from the config so the
+  // shared path cannot reclassify them. Every moe_ep cell records it.
+  const configScope = normalizeDataScope(raw.config.dashboard_scope);
+  if (configScope === 'moe_ep') return 'moe_ep';
+
   const firstDir = relDir.split(/[\\/]/)[0];
   const pathScope = normalizeDataScope(firstDir);
   if (pathScope) return pathScope;
 
-  const configScope = normalizeDataScope(raw.config.dashboard_scope);
   if (configScope) return configScope;
 
   return 'trace_replay';
