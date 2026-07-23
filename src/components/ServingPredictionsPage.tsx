@@ -200,9 +200,12 @@ interface GpuConfigSummary {
   profiles: number;
   backends: number;
   concurrencies: number;
-  meanTtftMape?: number;
+  meanTtftMape?: number;   // MdAPE (median) — the field name predates the metric split
   meanTpotMape?: number;
   meanE2elMape?: number;
+  mapeTtft?: number;       // MAPE (mean) — shown alongside the MdAPE
+  mapeTpot?: number;
+  mapeE2el?: number;
 }
 
 interface ServingScopeIndex {
@@ -351,11 +354,18 @@ const LSS_COLOR = '#fb923c';  // LLMServingSim 2.0 (external simulator)
 // (gpu_key, model, profile, concurrency) — the same join the Predictions matrix uses — and shown
 // ALONGSIDE kernel-composed rather than behind a source toggle: an MdAPE badge in the target bar
 // and a flat reference line in the per-turn chart. Both predictors score against the same measured GT.
+// Aggregate |APE| by MEDIAN (MdAPE, the default) or, passed meanOf, by MEAN (MAPE). Both are
+// surfaced together across the page so the tail the median hides stays visible.
+function meanOf(arr: number[]): number {
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
 function meanRooflineError(
   rows: ServingRow[],
   gpuKey: string,
   roofline: RooflineLookup,
   metric: 'ttft' | 'tpot' | 'e2el',
+  agg: (a: number[]) => number = median,
 ): number | undefined {
   const errs: number[] = [];
   for (const row of rows) {
@@ -373,7 +383,7 @@ function meanRooflineError(
       if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
     }
   }
-  return errs.length ? median(errs) : undefined;  // MdAPE (median), not mean
+  return errs.length ? agg(errs) : undefined;  // MdAPE=median (default) or MAPE=mean(agg)
 }
 
 // The roofline predictor's per-config scalar row for a single serving cell (no per-turn resolution),
@@ -394,6 +404,7 @@ function meanLssError(
   gpuKey: string,
   llmsim: LssLookup,
   metric: 'ttft' | 'tpot' | 'e2el',
+  agg: (a: number[]) => number = median,
 ): number | undefined {
   const errs: number[] = [];
   for (const row of rows) {
@@ -402,7 +413,7 @@ function meanLssError(
     const err = match?.[`${metric}_err` as keyof LssRow];
     if (typeof err === 'number' && Number.isFinite(err)) errs.push(Math.abs(err));
   }
-  return errs.length ? median(errs) : undefined;  // MdAPE (median), not mean
+  return errs.length ? agg(errs) : undefined;  // MdAPE=median (default) or MAPE=mean(agg)
 }
 
 function lssRefFor(
@@ -568,12 +579,21 @@ export function ServingPredictionsPage({
           ttftMape={meanMetricError(rows, 'ttft_err')}
           tpotMape={meanMetricError(rows, 'tpot_err')}
           e2elMape={meanMetricError(rows, 'e2el_err')}
+          ttftMapeMean={mapeMetricError(rows, 'ttft_err')}
+          tpotMapeMean={mapeMetricError(rows, 'tpot_err')}
+          e2elMapeMean={mapeMetricError(rows, 'e2el_err')}
           rflTtftMape={meanRooflineError(rows, selectedGpu, roofline, 'ttft')}
           rflTpotMape={meanRooflineError(rows, selectedGpu, roofline, 'tpot')}
           rflE2elMape={meanRooflineError(rows, selectedGpu, roofline, 'e2el')}
+          rflTtftMapeMean={meanRooflineError(rows, selectedGpu, roofline, 'ttft', meanOf)}
+          rflTpotMapeMean={meanRooflineError(rows, selectedGpu, roofline, 'tpot', meanOf)}
+          rflE2elMapeMean={meanRooflineError(rows, selectedGpu, roofline, 'e2el', meanOf)}
           lssTtftMape={meanLssError(rows, selectedGpu, llmsim, 'ttft')}
           lssTpotMape={meanLssError(rows, selectedGpu, llmsim, 'tpot')}
           lssE2elMape={meanLssError(rows, selectedGpu, llmsim, 'e2el')}
+          lssTtftMapeMean={meanLssError(rows, selectedGpu, llmsim, 'ttft', meanOf)}
+          lssTpotMapeMean={meanLssError(rows, selectedGpu, llmsim, 'tpot', meanOf)}
+          lssE2elMapeMean={meanLssError(rows, selectedGpu, llmsim, 'e2el', meanOf)}
         />
       ) : (
         <>
@@ -583,6 +603,15 @@ export function ServingPredictionsPage({
               <p className="mt-1.5 max-w-3xl text-[13px] text-[#a9afba]">
                 {focus?.description ?? `High-concurrency predictions vs measured benchmark results from ${DATA_SCOPE_META[dataScope].label.toLowerCase()}.`}
                 Multi-turn TTFT reflects cache-aware serving behavior, not cumulative full-prefill latency.
+              </p>
+              <p className="mt-2 max-w-3xl text-[12px] leading-relaxed text-[#8b919c]">
+                <span className="font-medium text-[#c9cfd9]">Prefill-dispatch gap.</span> Decode is
+                CUDA-graphed — its kernels replay with no per-launch overhead, so the NCU-timed decode
+                tables make TPOT near-exact. Prefill runs eager, where every kernel also pays a CPU
+                launch (dispatch) cost that the kernel-composed tables don't yet fully include — so
+                TTFT can under-read on short prompts and at low concurrency. The gap is largest for
+                hybrid models like Qwen3.5, whose GDN layers fire many small eager kernels per layer,
+                and it tightens as prefill compute dominates at higher concurrency.
               </p>
             </div>
           </div>
@@ -661,9 +690,9 @@ function ServingFocusSummary({
           </div>
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <MetricBadge label="TTFT MdAPE" value={summary.meanTtftMape} />
-          <MetricBadge label="TPOT MdAPE" value={summary.meanTpotMape} />
-          <MetricBadge label="E2EL MdAPE" value={summary.meanE2elMape} />
+          <MetricBadge label="TTFT MdAPE·MAPE" value={summary.meanTtftMape} mape={summary.mapeTtft} />
+          <MetricBadge label="TPOT MdAPE·MAPE" value={summary.meanTpotMape} mape={summary.mapeTpot} />
+          <MetricBadge label="E2EL MdAPE·MAPE" value={summary.meanE2elMape} mape={summary.mapeE2el} />
         </div>
       </div>
 
@@ -735,13 +764,22 @@ function SimulatorTargetBar({
   ttftMape,
   tpotMape,
   e2elMape,
+  ttftMapeMean,
+  tpotMapeMean,
+  e2elMapeMean,
   rflTtftMape,
   rflTpotMape,
   rflE2elMape,
+  rflTtftMapeMean,
+  rflTpotMapeMean,
+  rflE2elMapeMean,
   hasLss,
   lssTtftMape,
   lssTpotMape,
   lssE2elMape,
+  lssTtftMapeMean,
+  lssTpotMapeMean,
+  lssE2elMapeMean,
 }: {
   modelOptions: string[];
   selectedModel: string;
@@ -759,13 +797,22 @@ function SimulatorTargetBar({
   ttftMape: OptionalMetric;
   tpotMape: OptionalMetric;
   e2elMape: OptionalMetric;
+  ttftMapeMean: OptionalMetric;
+  tpotMapeMean: OptionalMetric;
+  e2elMapeMean: OptionalMetric;
   rflTtftMape: OptionalMetric;
   rflTpotMape: OptionalMetric;
   rflE2elMape: OptionalMetric;
+  rflTtftMapeMean: OptionalMetric;
+  rflTpotMapeMean: OptionalMetric;
+  rflE2elMapeMean: OptionalMetric;
   hasLss: boolean;
   lssTtftMape: OptionalMetric;
   lssTpotMape: OptionalMetric;
   lssE2elMape: OptionalMetric;
+  lssTtftMapeMean: OptionalMetric;
+  lssTpotMapeMean: OptionalMetric;
+  lssE2elMapeMean: OptionalMetric;
 }) {
   return (
     <section className="glass rounded-[22px] px-5 py-4">
@@ -799,9 +846,9 @@ function SimulatorTargetBar({
               kernel-composed
             </span>
             <div className="grid grow gap-2 sm:grid-cols-3">
-              <MetricBadge label="TTFT MdAPE" value={ttftMape} />
-              <MetricBadge label="TPOT MdAPE" value={tpotMape} />
-              <MetricBadge label="E2EL MdAPE" value={e2elMape} />
+              <MetricBadge label="TTFT MdAPE·MAPE" value={ttftMape} mape={ttftMapeMean} />
+              <MetricBadge label="TPOT MdAPE·MAPE" value={tpotMape} mape={tpotMapeMean} />
+              <MetricBadge label="E2EL MdAPE·MAPE" value={e2elMape} mape={e2elMapeMean} />
             </div>
           </div>
           {hasRoofline && (
@@ -811,9 +858,9 @@ function SimulatorTargetBar({
                 roofline
               </span>
               <div className="grid grow gap-2 sm:grid-cols-3">
-                <MetricBadge label="TTFT MdAPE" value={rflTtftMape} />
-                <MetricBadge label="TPOT MdAPE" value={rflTpotMape} />
-                <MetricBadge label="E2EL MdAPE" value={rflE2elMape} />
+                <MetricBadge label="TTFT MdAPE·MAPE" value={rflTtftMape} mape={rflTtftMapeMean} />
+                <MetricBadge label="TPOT MdAPE·MAPE" value={rflTpotMape} mape={rflTpotMapeMean} />
+                <MetricBadge label="E2EL MdAPE·MAPE" value={rflE2elMape} mape={rflE2elMapeMean} />
               </div>
             </div>
           )}
@@ -824,9 +871,9 @@ function SimulatorTargetBar({
                 LLMServingSim
               </span>
               <div className="grid grow gap-2 sm:grid-cols-3">
-                <MetricBadge label="TTFT MdAPE" value={lssTtftMape} />
-                <MetricBadge label="TPOT MdAPE" value={lssTpotMape} />
-                <MetricBadge label="E2EL MdAPE" value={lssE2elMape} />
+                <MetricBadge label="TTFT MdAPE·MAPE" value={lssTtftMape} mape={lssTtftMapeMean} />
+                <MetricBadge label="TPOT MdAPE·MAPE" value={lssTpotMape} mape={lssTpotMapeMean} />
+                <MetricBadge label="E2EL MdAPE·MAPE" value={lssE2elMape} mape={lssE2elMapeMean} />
               </div>
             </div>
           )}
@@ -863,10 +910,10 @@ function GpuConfigSelector({
                 <span className="text-[#676c76]">{selectedSummary.rows} rows</span>
                 <span className="text-[#676c76]">{selectedSummary.models} models</span>
                 <span className="text-[#676c76]">{selectedSummary.profiles} profiles</span>
-                <MetricBadge label="TTFT MdAPE" value={selectedSummary.meanTtftMape} />
-                <MetricBadge label="TPOT MdAPE" value={selectedSummary.meanTpotMape} />
+                <MetricBadge label="TTFT MdAPE·MAPE" value={selectedSummary.meanTtftMape} mape={selectedSummary.mapeTtft} />
+                <MetricBadge label="TPOT MdAPE·MAPE" value={selectedSummary.meanTpotMape} mape={selectedSummary.mapeTpot} />
                 <span className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(selectedSummary.meanE2elMape).className}`}>
-                  E2EL MdAPE {formatCompactPercent(selectedSummary.meanE2elMape)}
+                  E2EL MdAPE·MAPE {formatCompactPercent(selectedSummary.meanE2elMape)}<span className="opacity-60">·{formatCompactPercent(selectedSummary.mapeE2el)}</span>
                 </span>
               </>
             )}
@@ -919,21 +966,21 @@ function GpuConfigButton({
           ? 'border-[#2dd4bf] bg-[#2dd4bf]/[0.06] shadow-[inset_0_0_0_1px_rgba(45,212,191,0.35)]'
           : 'border-[#ffffff14] bg-white/[0.02] hover:border-[#ffffff2e] hover:bg-white/[0.05]'
       }`}
-      title={`${summary.gpu}: TTFT MdAPE ${formatPercent(summary.meanTtftMape)}, TPOT MdAPE ${formatPercent(summary.meanTpotMape)}, E2EL MdAPE ${formatPercent(summary.meanE2elMape)}`}
+      title={`${summary.gpu} (MdAPE·MAPE): TTFT ${formatPercent(summary.meanTtftMape)}·${formatPercent(summary.mapeTtft)}, TPOT ${formatPercent(summary.meanTpotMape)}·${formatPercent(summary.mapeTpot)}, E2EL ${formatPercent(summary.meanE2elMape)}·${formatPercent(summary.mapeE2el)}`}
     >
       <div className="min-w-0">
         <div className="flex items-center justify-between gap-2">
           <div className="font-mono text-xs font-semibold text-[#f3f4f6]">{summary.gpu}</div>
           <span className={`shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[10px] ${servingErrorTone(summary.meanE2elMape).className}`}>
-            E2EL {formatCompactPercent(summary.meanE2elMape)}
+            E2EL {formatCompactPercent(summary.meanE2elMape)}<span className="opacity-60">·{formatCompactPercent(summary.mapeE2el)}</span>
           </span>
         </div>
         <div className="mt-0.5 text-[9px] uppercase tracking-wide text-[#676c76]">
           {acceleratorCount === 1 ? '1 GPU' : `${acceleratorCount} GPUs`} · {summary.models} models
         </div>
         <div className="mt-1.5 grid grid-cols-2 gap-1">
-          <MetricBadge label="TTFT MdAPE" value={summary.meanTtftMape} compact />
-          <MetricBadge label="TPOT MdAPE" value={summary.meanTpotMape} compact />
+          <MetricBadge label="TTFT" value={summary.meanTtftMape} mape={summary.mapeTtft} compact />
+          <MetricBadge label="TPOT" value={summary.meanTpotMape} mape={summary.mapeTpot} compact />
         </div>
       </div>
     </button>
@@ -951,22 +998,30 @@ function summarizeGpuConfig(gpu: string, rows: ServingRow[]): GpuConfigSummary {
     meanTtftMape: meanMetricError(rows, 'ttft_err'),
     meanTpotMape: meanMetricError(rows, 'tpot_err'),
     meanE2elMape: meanMetricError(rows, 'e2el_err'),
+    mapeTtft: mapeMetricError(rows, 'ttft_err'),
+    mapeTpot: mapeMetricError(rows, 'tpot_err'),
+    mapeE2el: mapeMetricError(rows, 'e2el_err'),
   };
 }
 
 function MetricBadge({
   label,
   value,
+  mape,
   compact = false,
 }: {
   label: string;
   value: OptionalMetric;
+  mape?: OptionalMetric;   // when given, the MAPE (mean) is shown muted next to the MdAPE (median)
   compact?: boolean;
 }) {
   return (
     <span className={`inline-flex items-center justify-between gap-1 rounded-full px-1.5 py-0.5 font-mono ${compact ? 'text-[9px]' : 'text-[10px]'} ${toneFor(value).className}`}>
       <span className="font-sans font-semibold uppercase tracking-wide">{label}</span>
-      <span>{compactValueFor(value)}</span>
+      <span className="tabular-nums">
+        {compactValueFor(value)}
+        {mape != null && <span className="opacity-60">·{compactValueFor(mape)}</span>}
+      </span>
     </span>
   );
 }
@@ -985,6 +1040,18 @@ function meanMetricError(rows: ServingRow[], errKey: ServingMetricKey): number |
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
   return errors.length ? median(errors) : undefined;  // MdAPE (median), not mean
+}
+
+// True MAPE (mean of |APE|) over kernel-composed rows, shown ALONGSIDE meanMetricError's
+// median (MdAPE). They diverge when a few cells blow up -- the median hides the tail, the mean
+// surfaces it -- so seeing both at once is the honest read. (meanMetricError is misnamed: median.)
+function mapeMetricError(rows: ServingRow[], errKey: ServingMetricKey): number | undefined {
+  const errors = rows
+    .filter(isKernelComposedRow)
+    .map(row => numericMetric(row, errKey))
+    .filter((value): value is number => value !== undefined)
+    .map(value => Math.abs(value));
+  return errors.length ? errors.reduce((a, b) => a + b, 0) / errors.length : undefined;
 }
 
 function groupGpuSummaries(summaries: GpuConfigSummary[]): Record<string, GpuConfigSummary[]> {
@@ -1143,7 +1210,7 @@ function ServingTable({
                 style={{ right: 0, width: `${SERVING_MAPE_RAIL_WIDTH}px` }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a9afba]">Row MdAPE</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a9afba]">Row MdAPE·MAPE</span>
                   <span className="text-[9px] font-normal text-[#676c76]">median abs error</span>
                 </div>
               </th>
@@ -1257,7 +1324,7 @@ function ServingTable({
         <span className="rounded-full border border-[#2dd4bf]/30 bg-[#2dd4bf]/10 px-2 py-0.5 text-[#2dd4bf]">10-25%</span>
         <span className="rounded-full border border-[#ff9f0a]/30 bg-[#ff9f0a]/10 px-2 py-0.5 text-[#ff9f0a]">25-50%</span>
         <span className="rounded-full border border-[#ff3b30]/30 bg-[#ff3b30]/10 px-2 py-0.5 text-[#ff3b30]">&gt;=50%</span>
-        <span>Rightmost MdAPE columns are median absolute row errors across concurrency cells.</span>
+        <span>Rightmost columns are per-row MdAPE·MAPE (median·mean absolute error) across concurrency cells.</span>
       </div>
     </div>
   );
@@ -1864,6 +1931,7 @@ function ServingMetricSummary({
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
   const headline = values.length ? median(values) : undefined;
+  const headlineMape = values.length ? meanOf(values) : undefined;
   const best = values.length ? Math.min(...values) : undefined;
   const worst = values.length ? Math.max(...values) : undefined;
   const displayedRowCount = values.length;
@@ -1878,7 +1946,7 @@ function ServingMetricSummary({
         </div>
         <div className="text-right">
           <div className="text-[28px] font-semibold leading-none tracking-tight tabular-nums text-[#f3f4f6]">{fmt(headline)}</div>
-          <div className="mt-1 text-[10px] text-[#676c76]">MdAPE</div>
+          <div className="mt-1 text-[10px] text-[#676c76]">MdAPE · MAPE {fmt(headlineMape)}</div>
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2.5 text-[10px] text-[#676c76]">
@@ -2001,6 +2069,7 @@ function ServingRowMeanCell({
   metricIndex: number;
 }) {
   const value = medianMatrixRowMetricError(matrixRow, metric.errKey);
+  const mape = medianMatrixRowMetricError(matrixRow, metric.errKey, meanOf);
   const tone = toneFor(value);
   const rows = Object.values(matrixRow.cells).length;
 
@@ -2010,21 +2079,21 @@ function ServingRowMeanCell({
         metricIndex === 0 ? 'serving-mape-rail-start' : 'border-l border-[#ffffff1f]'
       }`}
       style={{ right: `${(SERVING_METRICS.length - metricIndex - 1) * SERVING_MAPE_COLUMN_WIDTH}px` }}
-      title={`${matrixRow.profile} ${matrixRow.backend ?? ''}: mean absolute ${metric.label} error across ${rows} concurrency cells`}
+      title={`${matrixRow.profile} ${matrixRow.backend ?? ''}: ${metric.label} MdAPE·MAPE (median·mean absolute error) across ${rows} concurrency cells`}
     >
       <span className={`block rounded px-1 py-0.5 text-center font-mono text-[10px] leading-none ${tone.className}`}>
-        {compactValueFor(value)}
+        {compactValueFor(value)}{mape != null && <span className="opacity-60">·{compactValueFor(mape)}</span>}
       </span>
     </td>
   );
 }
 
-function medianMatrixRowMetricError(matrixRow: ServingMatrixRow, errKey: ServingMetricKey): number | undefined {
+function medianMatrixRowMetricError(matrixRow: ServingMatrixRow, errKey: ServingMetricKey, agg: (a: number[]) => number = median): number | undefined {
   const values = Object.values(matrixRow.cells)
     .map(row => numericMetric(row, errKey))
     .filter((value): value is number => value !== undefined)
     .map(value => Math.abs(value));
-  return values.length ? median(values) : undefined;  // MdAPE (median), matching the cells/badges
+  return values.length ? agg(values) : undefined;  // MdAPE=median (default) or MAPE=mean(agg)
 }
 
 function representativeMatrixRowCell(matrixRow: ServingMatrixRow): ServingRow | undefined {

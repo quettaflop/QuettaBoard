@@ -31,3 +31,6 @@ test-results
 *.sln
 *.sw?
 .omc/
+
+# Local design/scratch, not for upstream
+concept/
