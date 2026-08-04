@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DATA_SCOPES, normalizeDataScope, type DataScope } from './data-scopes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 interface DataRow {
-  dataScope?: 'trace_replay' | 'synthetic_distributional' | 'archived' | 'synthetic' | 'latest' | 'current' | 'archive' | 'fixed' | 'mse';
+  dataScope?: 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep' | 'synthetic' | 'latest' | 'current' | 'archive' | 'fixed' | 'mse';
   config?: {
     profile?: string;
   };
@@ -28,14 +29,13 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-type ValidScope = 'trace_replay' | 'synthetic_distributional' | 'archived';
-const DATA_SCOPES: ValidScope[] = ['trace_replay', 'synthetic_distributional', 'archived'];
+// Scope list + canonicalization are shared with build-data.ts (see
+// ./data-scopes) so the producer and this validator can never disagree about
+// which scopes exist — that disagreement is exactly what froze the R2 mirror.
+type ValidScope = DataScope;
 
 function normalizeScope(scope: string | undefined): ValidScope {
-  if (scope === 'synthetic_distributional' || scope === 'synthetic' || scope === 'latest') return 'synthetic_distributional';
-  if (scope === 'trace_replay' || scope === 'archive') return 'trace_replay';
-  if (scope === 'archived' || scope === 'current' || scope === 'canonical' || scope === 'fixed' || scope === 'fixed-grid' || scope === 'mse') return 'archived';
-  return 'trace_replay';
+  return normalizeDataScope(scope) ?? 'trace_replay';
 }
 
 function scopedDataPath(dataPath: string, scope: ValidScope): string {
@@ -86,7 +86,7 @@ function readExpectedScopes(dataPath: string): Set<ValidScope> {
 const dataPath = path.resolve(process.argv[2] ?? path.join(__dirname, '../public/data.json'));
 
 const rows = readRows(dataPath);
-const scopeCounts: Record<ValidScope, number> = { trace_replay: 0, synthetic_distributional: 0, archived: 0 };
+const scopeCounts: Record<ValidScope, number> = { trace_replay: 0, synthetic_distributional: 0, archived: 0, moe_ep: 0 };
 const expectedScopes = readExpectedScopes(dataPath);
 
 for (const row of rows) {

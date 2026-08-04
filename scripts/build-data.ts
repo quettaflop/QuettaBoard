@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { DATA_SCOPES, normalizeDataScope, type DataScope } from './data-scopes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,14 +57,10 @@ interface EnrichedResult {
   seriesKey: string;
   filename: string;
   engineVersion?: string;  // e.g. "0.19.0" — from _engine_version.txt sidecar or fallback
-  dataScope: 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep';
+  dataScope: DataScope;
   perTurn?: PerTurnEntry[];
   scatterData?: ScatterPoint[];
 }
-
-type DataScope = EnrichedResult['dataScope'];
-
-const DATA_SCOPES: DataScope[] = ['trace_replay', 'synthetic_distributional', 'archived', 'moe_ep'];
 
 // Fallback engine versions applied to historical runs without an
 // `_engine_version.txt` sidecar. Update when hosts upgrade or when
@@ -187,17 +184,7 @@ function normalizeProfile(profile: string): string {
   return HISTORICAL_PROFILE_ALIASES[normalized] ?? normalized;
 }
 
-function normalizeDataScope(scope: string | undefined): 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep' | undefined {
-  if (scope === 'moe_ep') return 'moe_ep';
-  if (scope === 'synthetic_distributional' || scope === 'synthetic' || scope === 'latest') return 'synthetic_distributional';
-  if (scope === 'trace_replay' || scope === 'archive') return 'trace_replay';
-  if (scope === 'archived' || scope === 'current' || scope === 'canonical' || scope === 'fixed' || scope === 'fixed-grid' || scope === 'mse') {
-    return 'archived';
-  }
-  return undefined;
-}
-
-function detectDataScope(raw: RawResult, relDir: string): 'trace_replay' | 'synthetic_distributional' | 'archived' | 'moe_ep' {
+function detectDataScope(raw: RawResult, relDir: string): DataScope {
   // EP-on runs live merged inside synthetic_distributional/ with _ep<N> dir
   // names (2026-07-22 merge); their scope identity comes from the config so the
   // shared path cannot reclassify them. Every moe_ep cell records it.
