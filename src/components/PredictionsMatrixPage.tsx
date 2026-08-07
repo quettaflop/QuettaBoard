@@ -33,31 +33,35 @@ interface CellAgg {
   ttft: MetricAgg;
   tpot: MetricAgg;
   e2el: MetricAgg;
-  // MAPE = mean APE (the acronym's literal meaning); MdAPE = median APE — the robust
-  // headline the matrix displays, since the mean is outlier-fragile on herd/queue cells.
-  ttftMape: number | null;
-  tpotMape: number | null;
-  e2elMape: number | null;
+  // MdAPE = median APE — the robust headline the matrix displays (mean is outlier-fragile
+  // on herd/queue cells). P90/P99 = 90th/99th percentile APE, surfacing the tail the
+  // median hides. P90 shows inline next to MdAPE; P99 is tooltip-only (kc line only).
+  ttftP90: number | null;
+  tpotP90: number | null;
+  e2elP90: number | null;
+  ttftP99: number | null;
+  tpotP99: number | null;
+  e2elP99: number | null;
   ttftMdape: number | null;
   tpotMdape: number | null;
   e2elMdape: number | null;
-  // Roofline predictor: cohort-mean pred + MAPE/MdAPE vs the same measured GT (null if no roofline row).
+  // Roofline predictor: cohort-mean pred + P90/MdAPE vs the same measured GT (null if no roofline row).
   rflTtftPred: number | null;
   rflTpotPred: number | null;
   rflE2elPred: number | null;
-  rflTtftMape: number | null;
-  rflTpotMape: number | null;
-  rflE2elMape: number | null;
+  rflTtftP90: number | null;
+  rflTpotP90: number | null;
+  rflE2elP90: number | null;
   rflTtftMdape: number | null;
   rflTpotMdape: number | null;
   rflE2elMdape: number | null;
-  // LLMServingSim 2.0 predictor: cohort-mean pred + MAPE/MdAPE vs the same measured GT (null if no row).
+  // LLMServingSim 2.0 predictor: cohort-mean pred + P90/MdAPE vs the same measured GT (null if no row).
   lssTtftPred: number | null;
   lssTpotPred: number | null;
   lssE2elPred: number | null;
-  lssTtftMape: number | null;
-  lssTpotMape: number | null;
-  lssE2elMape: number | null;
+  lssTtftP90: number | null;
+  lssTpotP90: number | null;
+  lssE2elP90: number | null;
   lssTtftMdape: number | null;
   lssTpotMdape: number | null;
   lssE2elMdape: number | null;
@@ -69,14 +73,25 @@ function average(values: number[]): number | null {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-// Cell MAPE is aggregated by MEDIAN, not mean: the per-turn/per-cell APE has a heavy
+// Cell APE is aggregated by MEDIAN, not mean: the per-turn/per-cell APE has a heavy
 // tail on the herd/queue-collapse cells, so the mean is outlier-fragile (e.g. a model
-// with median 15% can show a 141% mean). Median is the robust headline.
+// with median 15% can show a 141% mean). Median is the robust headline; P90/P99 (below)
+// surface the tail explicitly instead of hiding it behind a mean.
 function median(values: number[]): number | null {
   if (!values.length) return null;
   const s = [...values].sort((a, b) => a - b);
   const mid = Math.floor(s.length / 2);
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+
+function percentile(values: number[], p: number): number | null {
+  if (!values.length) return null;
+  const s = [...values].sort((a, b) => a - b);
+  const idx = (p / 100) * (s.length - 1);
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  if (lo === hi) return s[lo];
+  return s[lo] + (s[hi] - s[lo]) * (idx - lo);
 }
 
 function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLookup, llmsim: LssLookup): CellAgg {
@@ -139,27 +154,30 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLoo
     ttft: metric('ttft'),
     tpot: metric('tpot'),
     e2el: metric('e2el'),
-    ttftMape: average(collectFrom(kcRows, 'ttft_err')),
-    tpotMape: average(collectFrom(kcRows, 'tpot_err')),
-    e2elMape: average(collectFrom(kcRows, 'e2el_err')),
+    ttftP90: percentile(collectFrom(kcRows, 'ttft_err'), 90),
+    tpotP90: percentile(collectFrom(kcRows, 'tpot_err'), 90),
+    e2elP90: percentile(collectFrom(kcRows, 'e2el_err'), 90),
+    ttftP99: percentile(collectFrom(kcRows, 'ttft_err'), 99),
+    tpotP99: percentile(collectFrom(kcRows, 'tpot_err'), 99),
+    e2elP99: percentile(collectFrom(kcRows, 'e2el_err'), 99),
     ttftMdape: median(collectFrom(kcRows, 'ttft_err')),
     tpotMdape: median(collectFrom(kcRows, 'tpot_err')),
     e2elMdape: median(collectFrom(kcRows, 'e2el_err')),
     rflTtftPred: average(rflPred.ttft),
     rflTpotPred: average(rflPred.tpot),
     rflE2elPred: average(rflPred.e2el),
-    rflTtftMape: average(rflErr.ttft),
-    rflTpotMape: average(rflErr.tpot),
-    rflE2elMape: average(rflErr.e2el),
+    rflTtftP90: percentile(rflErr.ttft, 90),
+    rflTpotP90: percentile(rflErr.tpot, 90),
+    rflE2elP90: percentile(rflErr.e2el, 90),
     rflTtftMdape: median(rflErr.ttft),
     rflTpotMdape: median(rflErr.tpot),
     rflE2elMdape: median(rflErr.e2el),
     lssTtftPred: average(lssPred.ttft),
     lssTpotPred: average(lssPred.tpot),
     lssE2elPred: average(lssPred.e2el),
-    lssTtftMape: average(lssErr.ttft),
-    lssTpotMape: average(lssErr.tpot),
-    lssE2elMape: average(lssErr.e2el),
+    lssTtftP90: percentile(lssErr.ttft, 90),
+    lssTpotP90: percentile(lssErr.tpot, 90),
+    lssE2elP90: percentile(lssErr.e2el, 90),
     lssTtftMdape: median(lssErr.ttft),
     lssTpotMdape: median(lssErr.tpot),
     lssE2elMdape: median(lssErr.e2el),
@@ -167,7 +185,8 @@ function aggregateCell(rows: ServingRow[], gpuKey: string, roofline: RooflineLoo
   };
 }
 
-// Display shows MdAPE (median, toned) with MAPE (mean) inline for kernel-composed; both on CellAgg.
+// Display shows MdAPE (median, toned) with P90 inline for kernel-composed; P99 is
+// tooltip-only. All three live on CellAgg.
 const BT_MDAPE = { ttft: 'ttftMdape', tpot: 'tpotMdape', e2el: 'e2elMdape' } as const;
 const RFL_MDAPE = { ttft: 'rflTtftMdape', tpot: 'rflTpotMdape', e2el: 'rflE2elMdape' } as const;
 const LSS_MDAPE = { ttft: 'lssTtftMdape', tpot: 'lssTpotMdape', e2el: 'lssE2elMdape' } as const;
@@ -175,10 +194,12 @@ const LSS_MDAPE = { ttft: 'lssTtftMdape', tpot: 'lssTpotMdape', e2el: 'lssE2elMd
 function btMdape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[BT_MDAPE[metric]];
 }
-// MAPE (mean APE) accessor — kernel-composed only computes both; shown inline next to MdAPE.
-const BT_MAPE = { ttft: 'ttftMape', tpot: 'tpotMape', e2el: 'e2elMape' } as const;
-function btMape(cell: CellAgg, metric: MetricKey): number | null {
-  return cell[BT_MAPE[metric]];
+// P90 accessor — kernel-composed only computes both; shown inline next to MdAPE. (P99 is
+// tooltip-only and cellTooltip always renders all three metrics, so it has no need for a
+// "currently selected metric" accessor the way MdAPE/P90 do here.)
+const BT_P90 = { ttft: 'ttftP90', tpot: 'tpotP90', e2el: 'e2elP90' } as const;
+function btP90(cell: CellAgg, metric: MetricKey): number | null {
+  return cell[BT_P90[metric]];
 }
 function rflMdape(cell: CellAgg, metric: MetricKey): number | null {
   return cell[RFL_MDAPE[metric]];
@@ -285,11 +306,12 @@ const NA_HATCH = 'repeating-linear-gradient(45deg, rgba(148,163,184,0.20) 0 1px,
 // explains). Shows "n/a" when this predictor produced no value for a cell that still has
 // GT (e.g. kc on a roofline-fallback model, or lss where it didn't run) -- distinct from
 // the "—" cells, which are not-run. The predicted/measured ms live in the tooltip.
-// Primary value is MdAPE (median APE, toned by accuracy band). When `mape` (mean APE) is
-// given it renders inline next to it, muted — so both read at a glance: "MdAPE·MAPE". The
-// two diverge when a config's per-cell error has a heavy tail (a few blown-up cells), which
-// the median hides and the mean surfaces; showing both makes that visible without a hover.
-function PredLine({ label, color, mdape, mape, emptyLabel = 'n/a' }: { label: string; color: string; mdape: number | null; mape?: number | null; emptyLabel?: string }) {
+// Primary value is MdAPE (median APE, toned by accuracy band). When `p90` (90th-percentile
+// APE) is given it renders inline next to it, muted — so both read at a glance: "MdAPE·P90".
+// The two diverge when a config's per-cell error has a heavy tail (a few blown-up cells),
+// which the median hides and P90 surfaces; showing both makes that visible without a hover.
+// P99 (the extreme tail) is available in the cell's tooltip rather than inline here.
+function PredLine({ label, color, mdape, p90, emptyLabel = 'n/a' }: { label: string; color: string; mdape: number | null; p90?: number | null; emptyLabel?: string }) {
   const tone = mapeTone(mdape);
   return (
     <div className="flex items-baseline justify-between gap-2">
@@ -300,7 +322,7 @@ function PredLine({ label, color, mdape, mape, emptyLabel = 'n/a' }: { label: st
       {mdape != null
         ? <span className="tabular-nums text-[10px]">
             <span className={tone.badge}>{mdape.toFixed(0)}%</span>
-            {mape != null && <span className="text-[#676c76]">·{mape.toFixed(0)}%</span>}
+            {p90 != null && <span className="text-[#676c76]">·{p90.toFixed(0)}%</span>}
           </span>
         : <span className="text-[10px] text-[#676c76]">{emptyLabel}</span>}
     </div>
@@ -308,13 +330,13 @@ function PredLine({ label, color, mdape, mape, emptyLabel = 'n/a' }: { label: st
 }
 
 function cellTooltip(gpuKey: string, model: string, cell: CellAgg, par?: string): string {
-  const line = (label: string, m: MetricAgg, mdape: number | null, mape: number | null, rflMd: number | null) =>
+  const line = (label: string, m: MetricAgg, mdape: number | null, p90: number | null, p99: number | null, rflMd: number | null) =>
     `${label} kern ${formatMs(m.pred)}/${formatMs(m.meas)}` +
     (mdape != null ? ` MdAPE ${mdape.toFixed(1)}%` : '') +
-    (mape != null ? ` (MAPE ${mape.toFixed(1)}%)` : '') +
+    (p90 != null ? ` (P90 ${p90.toFixed(1)}%${p99 != null ? `, P99 ${p99.toFixed(1)}%` : ''})` : '') +
     (rflMd != null ? ` · rfl ${rflMd.toFixed(1)}%` : '');
-  const head = `${gpuKey} × ${model}${par ? ` · ${par}` : ''} — over ${cell.n} cells (kernel-composed MdAPE=median, MAPE=mean in parens; rfl = roofline MdAPE)`;
-  return `${head}\n${line('TTFT', cell.ttft, cell.ttftMdape, cell.ttftMape, cell.rflTtftMdape)}\n${line('TPOT', cell.tpot, cell.tpotMdape, cell.tpotMape, cell.rflTpotMdape)}\n${line('E2EL', cell.e2el, cell.e2elMdape, cell.e2elMape, cell.rflE2elMdape)}`;
+  const head = `${gpuKey} × ${model}${par ? ` · ${par}` : ''} — over ${cell.n} cells (kernel-composed MdAPE=median, P90/P99 in parens; rfl = roofline MdAPE)`;
+  return `${head}\n${line('TTFT', cell.ttft, cell.ttftMdape, cell.ttftP90, cell.ttftP99, cell.rflTtftMdape)}\n${line('TPOT', cell.tpot, cell.tpotMdape, cell.tpotP90, cell.tpotP99, cell.rflTpotMdape)}\n${line('E2EL', cell.e2el, cell.e2elMdape, cell.e2elP90, cell.e2elP99, cell.rflE2elMdape)}`;
 }
 
 export function PredictionsMatrixPage({
@@ -504,7 +526,7 @@ export function PredictionsMatrixPage({
             Per hardware config × model, averaged over all profiles and concurrencies
             ({DATA_SCOPE_META[dataScope].label.toLowerCase()}). Each cell shows the {metricLabel} APE per predictor —{' '}
             <span style={{ color: KC_COLOR }}>kernel-composed</span> and{' '}
-            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MdAPE; the kc line reads <span className="tabular-nums">MdAPE·MAPE</span> (median·mean APE — they diverge when a few cells blow up, which the median hides). Empty cells are shaded when the config can&apos;t run (won&apos;t fit or declared infeasible), or{' '}
+            <span style={{ color: RFL_COLOR }}>roofline</span>; background tone = kernel-composed MdAPE; the kc line reads <span className="tabular-nums">MdAPE·P90</span> (median·90th-percentile APE — they diverge when a few cells blow up, which the median hides; hover for P99). Empty cells are shaded when the config can&apos;t run (won&apos;t fit or declared infeasible), or{' '}
             <span className="text-[#676c76]">—</span> when not run. Hover for details.
           </p>
         </div>
@@ -596,7 +618,7 @@ export function PredictionsMatrixPage({
                         {entries.map(({ par, cell }) => (
                           <div key={par} className={multi ? 'border-l-2 border-[#ffffff1f] pl-1.5' : ''}>
                             {multi && <div className="text-[8px] font-semibold uppercase tracking-wide text-[#8b93a1]">{par}</div>}
-                            <PredLine label="kc" color={KC_COLOR} mdape={btMdape(cell, metric)} mape={btMape(cell, metric)} />
+                            <PredLine label="kc" color={KC_COLOR} mdape={btMdape(cell, metric)} p90={btP90(cell, metric)} />
                             {hasRoofline && <PredLine label="rfl" color={RFL_COLOR} mdape={rflMdape(cell, metric)} />}
                             {hasLss && <PredLine label="lss" color={LSS_COLOR} mdape={lssMdape(cell, metric)} />}
                           </div>
