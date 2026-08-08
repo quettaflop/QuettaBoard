@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { servingPredictionsJsonUrl, rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl } from '../dataUrls';
 import { useSweepState } from '../hooks/useSweepState';
+import { COMPARE_ONLY } from '../env';
 import type { DataScope } from '../profileMeta';
 import { DATA_SCOPE_META } from '../profileMeta';
+import { CsvCompareUpload } from './CsvCompareUpload';
 import {
   buildRooflineLookup,
   rooflineKey,
@@ -497,6 +499,9 @@ export function PredictionsMatrixPage({
 
   return (
     <div className="space-y-4">
+      {COMPARE_ONLY && (
+        <CsvCompareUpload servingIndex={servingIndex} roofline={roofline} llmsim={llmsim} dataScope={dataScope} />
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-[#f3f4f6]">Predictions matrix</h2>
