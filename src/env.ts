@@ -1,3 +1,9 @@
+// A build that serves ONLY the Matrix (CSV-upload comparison) and Simulator v2
+// pages — a standalone deployment for external collaborators, with none of the
+// benchmark/GPU/coverage internal tooling. Implies INTERNAL below, so a
+// deployer only needs to set this one flag.
+export const COMPARE_ONLY = import.meta.env.VITE_COMPARE_ONLY === '1';
+
 // Single source of truth for the public/internal build split.
 //
 // `VITE_INTERNAL=1` at build time flips this to `true`, which (a) surfaces the
@@ -5,4 +11,4 @@
 // API wiring. In a public build the flag is unset, `INTERNAL` folds to a
 // compile-time `false`, and every internal branch is dead-code-eliminated so
 // the emitted bundle never references the internal page code or control API.
-export const INTERNAL = import.meta.env.VITE_INTERNAL === '1';
+export const INTERNAL = import.meta.env.VITE_INTERNAL === '1' || COMPARE_ONLY;
