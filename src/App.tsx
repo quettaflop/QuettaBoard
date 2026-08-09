@@ -11,7 +11,7 @@ import { ComparisonChart } from './components/charts/ComparisonChart';
 import { PerTurnChart } from './components/charts/PerTurnChart';
 import { DataTable } from './components/DataTable';
 import { simulatorV2SimPredictionsJsonUrl } from './dataUrls';
-import { COMPARE_ONLY, INTERNAL } from './env';
+import { COMPARE_ONLY, GPU_ONLY, INTERNAL } from './env';
 import type { TabId } from './types';
 import { normalizeDataScope, type DataScope } from './profileMeta';
 import './index.css';
@@ -56,11 +56,13 @@ const CoveragePage = INTERNAL
   : null;
 
 type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
-const PAGE_IDS: PageId[] = COMPARE_ONLY
-  ? ['matrix', 'simulator_v2']
-  : INTERNAL
-    ? ['benchmark', 'matrix', 'simulator_v2', 'gpu', 'coverage']
-    : ['benchmark'];
+const PAGE_IDS: PageId[] = GPU_ONLY
+  ? ['gpu']
+  : COMPARE_ONLY
+    ? ['matrix', 'simulator_v2']
+    : INTERNAL
+      ? ['benchmark', 'matrix', 'simulator_v2', 'gpu', 'coverage']
+      : ['benchmark'];
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
 function initialDataScope(): DataScope {
@@ -77,6 +79,7 @@ function hashPage(): PageId | null {
 }
 
 function initialPage(): PageId {
+  if (GPU_ONLY) return 'gpu';
   if (COMPARE_ONLY) return hashPage() ?? 'matrix';
   return hashPage() ?? 'benchmark';
 }
@@ -92,13 +95,16 @@ function App() {
   const [activePage, setActivePageState] = useState<PageId>(initialPage);
   const [activeTab, setActiveTab] = useState<TabId>('latency');
   const [scopePending, startScopeTransition] = useTransition();
-  // The authoritative page shown: in a COMPARE_ONLY build this is always one of
-  // the two pages that build ships (matrix/simulator_v2, defaulting to matrix),
-  // regardless of hash, nav clicks, or any other activePage state change — the
-  // single lockdown point so nothing else can ever render on this deployment.
-  const effectivePage: PageId = COMPARE_ONLY
-    ? (activePage === 'simulator_v2' ? 'simulator_v2' : 'matrix')
-    : activePage;
+  // The authoritative page shown: in a GPU_ONLY build this is always 'gpu'; in a
+  // COMPARE_ONLY build it's always one of the two pages that build ships
+  // (matrix/simulator_v2, defaulting to matrix) — regardless of hash, nav
+  // clicks, or any other activePage state change. The single lockdown point
+  // so nothing else can ever render on either of these deployments.
+  const effectivePage: PageId = GPU_ONLY
+    ? 'gpu'
+    : COMPARE_ONLY
+      ? (activePage === 'simulator_v2' ? 'simulator_v2' : 'matrix')
+      : activePage;
   // The coverage page on the synthetic scope is driven by the compact coverage
   // artifact + sweep-state and does NOT need the (large) benchmark data.json;
   // other scopes fall back to benchmark rows. Only the benchmark page derives
@@ -133,7 +139,7 @@ function App() {
         setActivePageState(nextPage);
         return;
       }
-      const fallback: PageId = COMPARE_ONLY ? 'matrix' : 'benchmark';
+      const fallback: PageId = GPU_ONLY ? 'gpu' : COMPARE_ONLY ? 'matrix' : 'benchmark';
       setActivePageState(fallback);
       window.history.replaceState(null, '', pageUrl(fallback));
     };

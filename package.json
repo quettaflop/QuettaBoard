@@ -24,6 +24,7 @@
     "deploy": "bash scripts/deploy-dashboard.sh",
     "deploy:tailscale": "bash scripts/deploy-dashboard.sh",
     "deploy:compare": "VITE_COMPARE_ONLY=1 bash scripts/deploy-dashboard.sh",
+    "deploy:gpu-only": "VITE_GPU_ONLY=1 bash scripts/deploy-dashboard.sh",
     "lint": "eslint .",
     "preview": "vite preview"
   },

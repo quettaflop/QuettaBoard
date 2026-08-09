@@ -4,7 +4,7 @@ import {
   DATA_SCOPE_OPTIONS,
   type DataScope,
 } from '../profileMeta';
-import { COMPARE_ONLY, INTERNAL } from '../env';
+import { COMPARE_ONLY, GPU_ONLY, INTERNAL } from '../env';
 import brandMark from '../assets/quettaflop-icon-white.png';
 
 type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
@@ -20,6 +20,25 @@ interface LayoutProps {
   onDataScopeChange: (scope: DataScope) => void;
   scopePending?: boolean;
 }
+
+const GPU_NAV_PAGE: NavPage = {
+  id: 'gpu',
+  label: 'GPU',
+  icon: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <rect x="9" y="9" width="6" height="6" />
+      <path d="M9 2v2" />
+      <path d="M15 2v2" />
+      <path d="M9 20v2" />
+      <path d="M15 20v2" />
+      <path d="M2 9h2" />
+      <path d="M2 15h2" />
+      <path d="M20 9h2" />
+      <path d="M20 15h2" />
+    </svg>
+  ),
+};
 
 const MATRIX_NAV_PAGE: NavPage = {
   id: 'matrix',
@@ -47,61 +66,46 @@ const SIMULATOR_NAV_PAGE: NavPage = {
   ),
 };
 
-// COMPARE_ONLY deployments show ONLY Matrix + Simulator v2 — no Home, no GPU,
-// no Coverage — since this build has nothing else to show (see App.tsx's
-// effectivePage lockdown, which this backs up so no nav link even suggests
-// otherwise).
-const NAV_PAGES: NavPage[] = COMPARE_ONLY
-  ? [MATRIX_NAV_PAGE, SIMULATOR_NAV_PAGE]
-  : [
-      {
-        id: 'benchmark',
-        label: 'Home',
-        icon: (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        ),
-      },
-      // Internal-only nav entries. In a public build `INTERNAL` folds to a
-      // compile-time `false`, so these are dropped and the site shows no dead links.
-      ...(INTERNAL
-        ? ([
-            MATRIX_NAV_PAGE,
-            SIMULATOR_NAV_PAGE,
-            {
-              id: 'gpu',
-              label: 'GPU',
-              icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="4" width="16" height="16" rx="2" />
-                  <rect x="9" y="9" width="6" height="6" />
-                  <path d="M9 2v2" />
-                  <path d="M15 2v2" />
-                  <path d="M9 20v2" />
-                  <path d="M15 20v2" />
-                  <path d="M2 9h2" />
-                  <path d="M2 15h2" />
-                  <path d="M20 9h2" />
-                  <path d="M20 15h2" />
-                </svg>
-              ),
-            },
-            {
-              id: 'coverage',
-              label: 'Coverage',
-              icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" />
-                  <path d="m14 16 2 2 4-4" />
-                </svg>
-              ),
-            },
-          ] satisfies NavPage[])
-        : []),
-    ];
+// GPU_ONLY / COMPARE_ONLY deployments show ONLY their own page(s) — no Home,
+// no other internal pages — since those builds have nothing else to show
+// (see App.tsx's effectivePage lockdown, which this backs up so no nav link
+// even suggests otherwise).
+const NAV_PAGES: NavPage[] = GPU_ONLY
+  ? [GPU_NAV_PAGE]
+  : COMPARE_ONLY
+    ? [MATRIX_NAV_PAGE, SIMULATOR_NAV_PAGE]
+    : [
+        {
+          id: 'benchmark',
+          label: 'Home',
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          ),
+        },
+        // Internal-only nav entries. In a public build `INTERNAL` folds to a
+        // compile-time `false`, so these are dropped and the site shows no dead links.
+        ...(INTERNAL
+          ? ([
+              MATRIX_NAV_PAGE,
+              SIMULATOR_NAV_PAGE,
+              GPU_NAV_PAGE,
+              {
+                id: 'coverage',
+                label: 'Coverage',
+                icon: (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <path d="m14 16 2 2 4-4" />
+                  </svg>
+                ),
+              },
+            ] satisfies NavPage[])
+          : []),
+      ];
 
 export function Layout({
   children,

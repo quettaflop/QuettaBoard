@@ -16,6 +16,7 @@
 #   npm run deploy                          # from the QuettaBoard dir
 #   DASHBOARD_BASE_PATH=/foo npm run deploy # override the served base path (default /quettaboard)
 #   npm run deploy:compare                  # Matrix (CSV-upload) + Simulator v2 only, no other pages/nav (see src/env.ts)
+#   npm run deploy:gpu-only                 # GPU-fleet-state page only, no other pages/nav (see src/env.ts)
 #
 # Rollback (printed on success too):
 #   rm -rf dist && mv dist.bak dist
@@ -36,6 +37,7 @@ echo "==> building internal dashboard (base=${BASE_PATH}/)"
 rm -rf "$TMP"
 VITE_INTERNAL=1 \
 VITE_COMPARE_ONLY="${VITE_COMPARE_ONLY:-}" \
+VITE_GPU_ONLY="${VITE_GPU_ONLY:-}" \
 VITE_DASHBOARD_API_BASE="${BASE_PATH}" \
 VITE_GPU_STATE_JSON_URL="${BASE_PATH}/gpu-state.json" \
 VITE_COVERAGE_BLOCKERS_JSON_URL="${BASE_PATH}/coverage-blockers.synthetic_distributional.json" \
