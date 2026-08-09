@@ -21,6 +21,11 @@ const allowedHosts = new Set(
 const basePath = normalizeBase(process.env.DASHBOARD_BASE_PATH || '/quettaboard');
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || '4180');
+// Opt-in, defaults off — the existing internal deployment (quettaboard-dashboard.service)
+// is unaffected. Set for deployments that must not be able to touch real GPU-fleet
+// dispatch state (e.g. a public/community-facing build): the two mutating endpoints
+// below fall through to serveStatic and 404, same as any other nonexistent path.
+const controlApiDisabled = process.env.DISABLE_CONTROL_API === '1';
 
 function normalizeBase(value) {
   const trimmed = value.trim();
@@ -307,6 +312,16 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (controlApiDisabled && (reqPath === '/api/host-drain' || reqPath === '/api/gpu-block')) {
+    // Explicit 404, not a fall-through to serveStatic: these paths have no file
+    // extension, so serveStatic's SPA fallback would otherwise silently serve
+    // index.html with a 200 (the mutation is still blocked either way, since
+    // that path never reaches handleDrainApi/handleGpuBlockApi, but a real 404
+    // is the honest response, not "looks like it worked").
+    sendText(res, 404, 'not found\n');
+    return;
+  }
+
   if (reqPath === '/api/host-drain') {
     handleDrainApi(req, res).catch((error) => {
       sendJson(res, 500, { error: error.message || 'internal error' });
@@ -328,6 +343,10 @@ const server = createServer((req, res) => {
 
 server.listen(port, host, () => {
   console.log(`dashboard listening on http://${host}:${port}${basePath || '/'}`);
-  console.log(`host drain file: ${drainedHostsFile}`);
-  console.log(`gpu block file: ${blockedGpusFile}`);
+  if (controlApiDisabled) {
+    console.log('control API disabled (DISABLE_CONTROL_API=1) — /api/host-drain and /api/gpu-block will 404');
+  } else {
+    console.log(`host drain file: ${drainedHostsFile}`);
+    console.log(`gpu block file: ${blockedGpusFile}`);
+  }
 });

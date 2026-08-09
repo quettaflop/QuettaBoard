@@ -18,6 +18,7 @@ import {
   profileDisplayName,
 } from '../profileMeta';
 import { rooflinePredictionsJsonUrl, llmsimPredictionsJsonUrl, servingPredictionsJsonUrl } from '../dataUrls';
+import { COMPARE_ONLY } from '../env';
 import { buildRooflineLookup, rooflineKey, type RooflineLookup, type RooflineRow } from '../rooflinePredictions';
 import { buildLssLookup, type LssLookup, type LssRow } from '../llmsimPredictions';
 
@@ -468,6 +469,10 @@ export function ServingPredictionsPage({
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    // COMPARE_ONLY starts fresh — no baseline data from the internal team's
+    // accumulated R2 datasets. servingIndex/roofline/llmsim stay at their
+    // empty initial values (see useState above).
+    if (COMPARE_ONLY) { setLoading(false); return; }
     setLoading(true);
     setFailed(false);
     fetch(predictionsUrl)
@@ -484,6 +489,7 @@ export function ServingPredictionsPage({
 
   // Roofline predictions are optional — absent (404) until build_forward_rows has run.
   useEffect(() => {
+    if (COMPARE_ONLY) return;
     fetch(rooflinePredictionsJsonUrl)
       .then(response => (response.ok ? response.json() : null))
       .then(json => setRoofline(buildRooflineLookup(json)))
@@ -492,6 +498,7 @@ export function ServingPredictionsPage({
 
   // LLMServingSim 2.0 predictions are optional — absent (404) until the sweep has been built.
   useEffect(() => {
+    if (COMPARE_ONLY) return;
     fetch(llmsimPredictionsJsonUrl)
       .then(response => (response.ok ? response.json() : null))
       .then(json => setLlmsim(buildLssLookup(json)))
@@ -568,6 +575,9 @@ export function ServingPredictionsPage({
     : focus;
 
   if (loading) return <div className="p-8 text-[#a9afba]">Loading predictions...</div>;
+  // COMPARE_ONLY has no baseline data by design (see the fetch-skip above) —
+  // that's not a failure, just an empty starting point for this deployment.
+  if (COMPARE_ONLY) return <div className="p-8 text-[#a9afba]">No baseline data loaded for this deployment yet.</div>;
   if (failed || !scopeIndex) return <div className="p-8 text-[#ff3b30]">Failed to load predictions JSON</div>;
 
   return (

@@ -349,6 +349,11 @@ export function PredictionsMatrixPage({
   }, [sweepState]);
 
   useEffect(() => {
+    // COMPARE_ONLY starts fresh — no baseline data from the internal team's
+    // accumulated R2 datasets, only whatever's been uploaded/persisted for
+    // this deployment. servingIndex/roofline/llmsim stay at their empty
+    // initial values (see useState above), matching pages elsewhere.
+    if (COMPARE_ONLY) { setLoading(false); return; }
     setLoading(true);
     setFailed(false);
     fetch(predictionsUrl)
@@ -365,6 +370,7 @@ export function PredictionsMatrixPage({
 
   // Roofline predictions are optional — absent (404) until build_forward_rows has run.
   useEffect(() => {
+    if (COMPARE_ONLY) return;
     fetch(rooflinePredictionsJsonUrl)
       .then(r => (r.ok ? r.json() : null))
       .then((json: Record<string, RooflineRow[]> | null) => setRoofline(buildRooflineLookup(json)))
@@ -373,6 +379,7 @@ export function PredictionsMatrixPage({
 
   // LLMServingSim 2.0 predictions are optional — absent (404) until the sweep has been built.
   useEffect(() => {
+    if (COMPARE_ONLY) return;
     fetch(llmsimPredictionsJsonUrl)
       .then(r => (r.ok ? r.json() : null))
       .then((json: Record<string, LssRow[]> | null) => setLlmsim(buildLssLookup(json)))
@@ -428,6 +435,17 @@ export function PredictionsMatrixPage({
   if (loading) {
     return <div className="flex h-64 items-center justify-center text-[#a9afba]">Loading predictions…</div>;
   }
+  // COMPARE_ONLY has no baseline data by design (see the fetch-skip above) —
+  // that's not a failure, so it never reaches the "failed to load"/"no rows"
+  // states below. The drop-zone works fine with nothing loaded yet; matches
+  // just show "n/a" until something's been uploaded.
+  if (COMPARE_ONLY) {
+    return (
+      <div className="space-y-4">
+        <CsvCompareUpload servingIndex={servingIndex} roofline={roofline} llmsim={llmsim} dataScope={dataScope} />
+      </div>
+    );
+  }
   if (failed || !matrix) {
     return (
       <div className="flex h-64 items-center justify-center rounded-lg border border-[#f97583]/30 bg-[#f97583]/10 text-[#f97583]">
@@ -482,9 +500,6 @@ export function PredictionsMatrixPage({
 
   return (
     <div className="space-y-4">
-      {COMPARE_ONLY && (
-        <CsvCompareUpload servingIndex={servingIndex} roofline={roofline} llmsim={llmsim} dataScope={dataScope} />
-      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-[#f3f4f6]">Predictions matrix</h2>
