@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* The marketing site (src/site/) is a separate entry with its own stylesheet
+   and its own copy of these surface classes. Excluding it here keeps utilities
+   that only the landing page uses out of the dashboard's CSS. */
+@source not "./site";
+
 /* ============================================================
    QuettaBoard — dark / technical design system
    Ported from concept/home.html. Shared surface classes

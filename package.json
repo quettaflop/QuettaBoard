@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:internal": "VITE_INTERNAL=1 vite",
+    "dev:site": "vite --config vite.site.config.ts --open /site.html",
     "build:data": "tsx scripts/build-data.ts",
     "validate:data": "tsx scripts/validate-data.ts",
     "test:data-pipeline": "tsx scripts/test-data-pipeline.ts",
@@ -18,11 +19,16 @@
     "build": "tsc -b && vite build",
     "build:public": "tsc -b && vite build",
     "build:internal": "VITE_INTERNAL=1 tsc -b && VITE_INTERNAL=1 vite build",
+    "build:site": "tsc -b && vite build --config vite.site.config.ts && mv dist-site/site.html dist-site/index.html && node scripts/check-site-bundle.mjs dist-site",
+    "build:web": "npm run build:site && rm -rf dist-web && cp -r dist-site dist-web && vite build --base=/board/ --outDir=dist-web/board --emptyOutDir && node scripts/check-site-bundle.mjs dist-web",
+    "build:site-single": "npm run build:site && node scripts/inline-site-single-file.mjs dist-site",
+    "check:site-bundle": "node scripts/check-site-bundle.mjs dist-site",
     "postbuild:internal": "[ -n \"$LOCAL_ARTIFACTS_DIR\" ] && for f in gpu-state.json coverage-blockers.synthetic_distributional.json coverage-blockers.moe_ep.json; do [ -e \"$LOCAL_ARTIFACTS_DIR/$f\" ] && ln -sfn \"$LOCAL_ARTIFACTS_DIR/$f\" \"dist/$f\"; done; true",
     "deploy": "bash scripts/deploy-dashboard.sh",
     "deploy:tailscale": "bash scripts/deploy-dashboard.sh",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:site-visual": "node scripts/check-site-visual.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
@@ -40,6 +46,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "playwright": "^1.50.1",
     "tsx": "^4.21.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",

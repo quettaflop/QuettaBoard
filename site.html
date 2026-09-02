@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quettaflop AI</title>
+    <meta
+      name="description"
+      content="Benchmarks, a latency simulator, a results dashboard and a serving stack for LLM inference on agent workloads. 5,756 measured runs across 14 hardware configurations."
+    />
+    <meta name="theme-color" content="#07080a" />
+    <!-- Type pairing taken from scalinginference.org, including its inversion:
+         Bricolage Grotesque (a quirky variable grotesque) carries BODY text and
+         UI, while DM Sans (clean, geometric) carries the headings. Most sites do
+         the opposite; theirs reads better for it. JetBrains Mono stays for
+         figures and eyebrows — the tabular data wants a mono face.
+         Variable weight ranges rather than enumerated weights: one file each. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..600&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:title" content="Quettaflop AI" />
+    <meta
+      property="og:description"
+      content="5,756 measured benchmark runs across 14 hardware configurations, and a simulator scored against them."
+    />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- The marketing entry. It reaches ONLY into src/site/ — never src/App.tsx,
+         src/dataUrls.ts or src/env.ts — so no dashboard code or R2 endpoint can
+         reach this bundle. scripts/check-site-bundle.mjs enforces that. -->
+    <script type="module" src="/src/site/main.tsx"></script>
+  </body>
+</html>

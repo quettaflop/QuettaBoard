@@ -17,9 +17,19 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
+
+      # Builds the marketing site to the root of dist-web/ and the PUBLIC
+      # dashboard to dist-web/board/, so one Pages project serves
+      # quettaflop.ai and quettaflop.ai/board with no routing rule.
+      # build:web runs scripts/check-site-bundle.mjs itself; the explicit step
+      # below re-runs it so a failure is legible as its own red check rather
+      # than buried in build output.
+      - run: npm run build:web
+      - name: Verify bundle boundaries
+        run: node scripts/check-site-bundle.mjs dist-web
+
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: b33fe7347f25479b27ec9680eff19b78
-          command: pages deploy dist --project-name=quettaboard --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy dist-web --project-name=quettaboard --branch=${{ github.head_ref || github.ref_name }}
