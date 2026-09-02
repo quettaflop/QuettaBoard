@@ -1,16 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * A soft light that trails the cursor through the background layer.
+ * Hex reticle that trails the pointer under the glass.
  *
- * It sits at negative z-index — beneath every panel — so the glass above it
- * blurs and refracts the light as it passes underneath, which is what sells it
- * as illumination rather than a decal stuck to the pointer. The trailing lerp
- * is the same idea in time: a light source drifts after the hand, it does not
- * snap.
- *
- * DOM is driven directly from a rAF loop (no React state), and the loop parks
- * itself whenever the glow has settled, so an idle page spends nothing.
+ * Same parked-rAF loop as before. Snappier lerp, smaller, one brass channel —
+ * a scope probe rather than a teal wash.
  */
 export function CursorGlow() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -18,7 +12,6 @@ export function CursorGlow() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // A moving light is motion; a coarse pointer has no cursor to follow.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
@@ -30,9 +23,9 @@ export function CursorGlow() {
     let running = false;
 
     const tick = () => {
-      pos.x += (target.x - pos.x) * 0.09;
-      pos.y += (target.y - pos.y) * 0.09;
-      opacity += (targetOpacity - opacity) * 0.08;
+      pos.x += (target.x - pos.x) * 0.18;
+      pos.y += (target.y - pos.y) * 0.18;
+      opacity += (targetOpacity - opacity) * 0.14;
       el.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
       el.style.opacity = opacity.toFixed(3);
 
@@ -42,7 +35,7 @@ export function CursorGlow() {
         Math.abs(targetOpacity - opacity) < 0.004;
       if (settled) {
         running = false;
-        return; // park; the next mousemove wakes the loop
+        return;
       }
       raf = requestAnimationFrame(tick);
     };

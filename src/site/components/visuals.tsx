@@ -9,7 +9,7 @@ const VB = { w: 560, h: 360 };
 
 function Frame({ children, accent }: { children: React.ReactNode; accent: string }) {
   return (
-    <div className="glass min-w-0 overflow-hidden rounded-[22px]">
+    <div className="glass min-w-0 overflow-hidden rounded-[8px]">
       <div
         className="h-[3px] w-full"
         style={{ background: `linear-gradient(90deg, ${accent}00, ${accent}aa 45%, ${accent}00)` }}
@@ -25,7 +25,7 @@ function Frame({ children, accent }: { children: React.ReactNode; accent: string
   );
 }
 
-const GRID_STROKE = 'rgba(255,255,255,0.06)';
+const GRID_STROKE = 'var(--grid)';
 
 function Grid({ x0 = 46, y0 = 28, x1 = 520, y1 = 300, rows = 4, cols = 6 }) {
   const lines = [];
@@ -53,16 +53,16 @@ export function BenchVisual() {
     // labelDy nudges the end-of-line label off its neighbour: swebench and
     // osworld converge at high concurrency and would otherwise sit on top of
     // each other.
-    { name: 'chat 1-turn', color: '#2dd4bf', labelDy: 3.5,  pts: [0.06, 0.09, 0.12, 0.18, 0.28, 0.44, 0.58] },
-    { name: 'chat n-turn', color: '#5eead4', labelDy: 3.5,  pts: [0.10, 0.15, 0.21, 0.31, 0.47, 0.68, 0.83] },
-    { name: 'swebench',    color: '#a78bfa', labelDy: 9,    pts: [0.14, 0.22, 0.31, 0.45, 0.63, 0.84, 0.95] },
-    { name: 'osworld',     color: '#f7b955', labelDy: -5,   pts: [0.19, 0.29, 0.40, 0.56, 0.74, 0.90, 0.98] },
+    { name: 'chat 1-turn', color: 'var(--plot-1)', labelDy: 3.5,  pts: [0.06, 0.09, 0.12, 0.18, 0.28, 0.44, 0.58] },
+    { name: 'chat n-turn', color: 'var(--plot-2)', labelDy: 3.5,  pts: [0.10, 0.15, 0.21, 0.31, 0.47, 0.68, 0.83] },
+    { name: 'swebench',    color: 'var(--plot-3)', labelDy: 9,    pts: [0.14, 0.22, 0.31, 0.45, 0.63, 0.84, 0.95] },
+    { name: 'osworld',     color: 'var(--plot-4)', labelDy: -5,   pts: [0.19, 0.29, 0.40, 0.56, 0.74, 0.90, 0.98] },
   ];
   const px = (i: number) => x0 + ((x1 - x0) / (conc.length - 1)) * i;
   const py = (v: number) => y1 - v * (y1 - y0);
 
   return (
-    <Frame accent="#2dd4bf">
+    <Frame accent="var(--accent)">
       <Grid x0={x0} y0={y0} x1={x1} y1={y1} />
       {series.map((s) => {
         const d = s.pts.map((v, i) => `${i === 0 ? 'M' : 'L'}${px(i)},${py(v)}`).join(' ');
@@ -70,14 +70,14 @@ export function BenchVisual() {
           <g key={s.name}>
             <path d={d} fill="none" stroke={s.color} strokeWidth="2.2" strokeLinecap="round" opacity="0.95" />
             {s.pts.map((v, i) => (
-              <circle key={i} cx={px(i)} cy={py(v)} r="2.9" fill="#07080a" stroke={s.color} strokeWidth="1.6" />
+              <circle key={i} cx={px(i)} cy={py(v)} r="2.9" fill="var(--plot-dot)" stroke={s.color} strokeWidth="1.6" />
             ))}
             <text
               x={px(conc.length - 1) + 10}
               y={py(s.pts[s.pts.length - 1]) + s.labelDy}
               fontSize="9.5"
               fill={s.color}
-              fontFamily="ui-monospace, monospace"
+              fontFamily="IBM Plex Mono, ui-monospace, monospace"
               opacity="0.9"
             >
               {s.name}
@@ -86,14 +86,14 @@ export function BenchVisual() {
         );
       })}
       {conc.map((c, i) => (
-        <text key={c} x={px(i)} y={y1 + 18} textAnchor="middle" fontSize="9.5" fill="#676c76" fontFamily="ui-monospace, monospace">
+        <text key={c} x={px(i)} y={y1 + 18} textAnchor="middle" fontSize="9.5" fill="var(--ink-3)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
           {c}
         </text>
       ))}
-      <text x={x0} y={y1 + 36} fontSize="9.5" fill="#4f545d" fontFamily="ui-monospace, monospace">
+      <text x={x0} y={y1 + 36} fontSize="9.5" fill="var(--ink-3)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
         CONCURRENCY →
       </text>
-      <text x={16} y={y1} fontSize="9.5" fill="#4f545d" fontFamily="ui-monospace, monospace" transform={`rotate(-90 16 ${y1})`}>
+      <text x={16} y={y1} fontSize="9.5" fill="var(--ink-3)" fontFamily="IBM Plex Mono, ui-monospace, monospace" transform={`rotate(-90 16 ${y1})`}>
         p99 TTFT →
       </text>
     </Frame>
@@ -118,24 +118,24 @@ export function SimVisual() {
   const band = 0.14;
 
   return (
-    <Frame accent="#a78bfa">
+    <Frame accent="var(--accent)">
       <Grid x0={x0} y0={y0} x1={x1} y1={y1} rows={5} cols={5} />
       {/* ±band tolerance envelope around parity */}
       <path
         d={`M${px(0)},${py(band)} L${px(1 - band)},${py(1)} L${px(1)},${py(1)} L${px(1)},${py(1 - band)} L${px(band)},${py(0)} L${px(0)},${py(0)} Z`}
-        fill="rgba(167,139,250,0.13)"
+        fill="rgba(201,163,106,0.12)"
       />
-      <line x1={px(0)} y1={py(0)} x2={px(1)} y2={py(1)} stroke="rgba(167,139,250,0.55)" strokeWidth="1.6" strokeDasharray="5 4" />
+      <line x1={px(0)} y1={py(0)} x2={px(1)} y2={py(1)} stroke="rgba(201,163,106,0.55)" strokeWidth="1.6" strokeDasharray="5 4" />
       {pts.map(([m, p], i) => (
-        <circle key={i} cx={px(m)} cy={py(p)} r="4.2" fill="rgba(45,212,191,0.5)" stroke="#2dd4bf" strokeWidth="1.3" />
+        <circle key={i} cx={px(m)} cy={py(p)} r="4.2" fill="rgba(201,163,106,0.45)" stroke="var(--accent)" strokeWidth="1.3" />
       ))}
-      <text x={px(0.52)} y={py(0.62)} fontSize="9.5" fill="#c9b8ff" fontFamily="ui-monospace, monospace" transform={`rotate(-31 ${px(0.52)} ${py(0.62)})`}>
+      <text x={px(0.52)} y={py(0.62)} fontSize="9.5" fill="var(--accent)" fontFamily="IBM Plex Mono, ui-monospace, monospace" transform={`rotate(-31 ${px(0.52)} ${py(0.62)})`}>
         perfect prediction
       </text>
-      <text x={x0} y={y1 + 22} fontSize="9.5" fill="#4f545d" fontFamily="ui-monospace, monospace">
+      <text x={x0} y={y1 + 22} fontSize="9.5" fill="var(--ink-3)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
         MEASURED →
       </text>
-      <text x={22} y={y1} fontSize="9.5" fill="#4f545d" fontFamily="ui-monospace, monospace" transform={`rotate(-90 22 ${y1})`}>
+      <text x={22} y={y1} fontSize="9.5" fill="var(--ink-3)" fontFamily="IBM Plex Mono, ui-monospace, monospace" transform={`rotate(-90 22 ${y1})`}>
         PREDICTED →
       </text>
     </Frame>
@@ -147,20 +147,20 @@ export function SimVisual() {
 export function BoardVisual() {
   const bars = [0.34, 0.52, 0.41, 0.68, 0.58, 0.79, 0.71, 0.9, 0.83, 0.96];
   return (
-    <Frame accent="#34d399">
+    <Frame accent="var(--accent)">
       {/* window chrome */}
-      <rect x="26" y="22" width="508" height="316" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.09)" />
-      <line x1="26" y1="52" x2="534" y2="52" stroke="rgba(255,255,255,0.09)" />
-      <rect x="40" y="33" width="18" height="12" rx="4" fill="rgba(52,211,153,0.35)" />
+      <rect x="26" y="22" width="508" height="316" rx="12" fill="var(--cell)" stroke="var(--line)" />
+      <line x1="26" y1="52" x2="534" y2="52" stroke="var(--line)" />
+      <rect x="40" y="33" width="18" height="12" rx="4" fill="rgba(201,163,106,0.45)" />
       <rect x="64" y="35" width="62" height="8" rx="4" fill="rgba(255,255,255,0.16)" />
       {[0, 1, 2, 3].map((i) => (
         <rect key={i} x={150 + i * 46} y="35" width="36" height="8" rx="4" fill="rgba(255,255,255,0.08)" />
       ))}
-      <circle cx="502" cy="39" r="3.5" fill="#34d399" />
+      <circle cx="502" cy="39" r="3.5" fill="var(--accent)" />
       <rect x="470" y="35" width="22" height="8" rx="4" fill="rgba(255,255,255,0.1)" />
 
       {/* scope rail */}
-      <rect x="40" y="64" width="150" height="16" rx="8" fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.08)" />
+      <rect x="40" y="64" width="150" height="16" rx="8" fill="rgba(255,255,255,0.045)" stroke="var(--line)" />
       <rect x="43" y="67" width="52" height="10" rx="5" fill="rgba(255,255,255,0.12)" />
 
       {/* KPI tiles */}
@@ -170,16 +170,16 @@ export function BoardVisual() {
         { label: '9', w: 152 },
       ].map((t, i) => (
         <g key={i}>
-          <rect x={40 + i * 156} y="92" width={t.w} height="56" rx="10" fill="rgba(255,255,255,0.028)" stroke="rgba(255,255,255,0.08)" />
+          <rect x={40 + i * 156} y="92" width={t.w} height="56" rx="10" fill="rgba(255,255,255,0.028)" stroke="var(--line)" />
           <rect x={52 + i * 156} y="104" width="54" height="6" rx="3" fill="rgba(255,255,255,0.14)" />
-          <text x={52 + i * 156} y="136" fontSize="19" fill="#e6e8ec" fontFamily="ui-monospace, monospace">
+          <text x={52 + i * 156} y="136" fontSize="19" fill="var(--ink)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
             {t.label}
           </text>
         </g>
       ))}
 
       {/* chart panel */}
-      <rect x="40" y="160" width="454" height="160" rx="10" fill="rgba(255,255,255,0.022)" stroke="rgba(255,255,255,0.08)" />
+      <rect x="40" y="160" width="454" height="160" rx="10" fill="rgba(255,255,255,0.022)" stroke="var(--line)" />
       {[0.25, 0.5, 0.75].map((f) => (
         <line key={f} x1="56" y1={176 + (1 - f) * 122} x2="478" y2={176 + (1 - f) * 122} stroke="rgba(255,255,255,0.055)" />
       ))}
@@ -189,8 +189,8 @@ export function BoardVisual() {
         const h = v * 116;
         return (
           <g key={i}>
-            <rect x={x} y={298 - h} width={bw} height={h} rx="4" fill="rgba(52,211,153,0.22)" stroke="rgba(52,211,153,0.5)" />
-            <rect x={x} y={298 - h * 0.62} width={bw} height={h * 0.62} rx="4" fill="rgba(45,212,191,0.4)" />
+            <rect x={x} y={298 - h} width={bw} height={h} rx="4" fill="rgba(201,163,106,0.18)" stroke="rgba(201,163,106,0.45)" />
+            <rect x={x} y={298 - h * 0.62} width={bw} height={h * 0.62} rx="4" fill="rgba(201,163,106,0.4)" />
           </g>
         );
       })}
@@ -208,22 +208,22 @@ export function ServeVisual() {
     { x: 320, state: 'drain' },
     { x: 432, state: 'live' },
   ] as const;
-  const color = (s: string) => (s === 'drain' ? '#f7b955' : '#2dd4bf');
+  const color = (s: string) => (s === 'drain' ? 'var(--ink-3)' : 'var(--accent)');
 
   return (
-    <Frame accent="#f7b955">
+    <Frame accent="var(--accent)">
       {/* ingress */}
-      <rect x="196" y="34" width="168" height="34" rx="10" fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.14)" />
-      <text x="280" y="56" textAnchor="middle" fontSize="11.5" fill="#e6e8ec" fontFamily="ui-monospace, monospace">
+      <rect x="196" y="34" width="168" height="34" rx="10" fill="var(--cell)" stroke="var(--line-2)" />
+      <text x="280" y="56" textAnchor="middle" fontSize="11.5" fill="var(--ink)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
         api-proxy
       </text>
 
       {/* scheduler */}
-      <rect x="164" y="112" width="232" height="38" rx="10" fill="rgba(247,185,85,0.09)" stroke="rgba(247,185,85,0.32)" />
-      <text x="280" y="136" textAnchor="middle" fontSize="11.5" fill="#f7b955" fontFamily="ui-monospace, monospace">
+      <rect x="164" y="112" width="232" height="38" rx="10" fill="rgba(201,163,106,0.09)" stroke="rgba(201,163,106,0.32)" />
+      <text x="280" y="136" textAnchor="middle" fontSize="11.5" fill="var(--accent)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
         k8s-operator · placement
       </text>
-      <line x1="280" y1="68" x2="280" y2="112" stroke="rgba(255,255,255,0.2)" strokeWidth="1.4" />
+      <line x1="280" y1="68" x2="280" y2="112" stroke="var(--line-2)" strokeWidth="1.4" />
 
       {/* fan-out to replicas */}
       {gpus.map((g) => (
@@ -231,7 +231,7 @@ export function ServeVisual() {
           key={g.x}
           d={`M280,150 C280,182 ${g.x + 32},182 ${g.x + 32},214`}
           fill="none"
-          stroke={g.state === 'drain' ? 'rgba(247,185,85,0.45)' : 'rgba(45,212,191,0.35)'}
+          stroke={g.state === 'drain' ? 'rgba(125,119,106,0.5)' : 'rgba(201,163,106,0.4)'}
           strokeWidth="1.6"
           strokeDasharray={g.state === 'drain' ? '4 4' : undefined}
         />
@@ -246,19 +246,19 @@ export function ServeVisual() {
             width="64"
             height="72"
             rx="10"
-            fill="rgba(255,255,255,0.03)"
-            stroke={g.state === 'drain' ? 'rgba(247,185,85,0.4)' : 'rgba(45,212,191,0.3)'}
+            fill="var(--cell)"
+            stroke={g.state === 'drain' ? 'rgba(125,119,106,0.45)' : 'rgba(201,163,106,0.35)'}
           />
           {/* die */}
-          <rect x={g.x + 18} y={230} width="28" height="28" rx="4" fill="rgba(255,255,255,0.05)" stroke={color(g.state)} strokeOpacity="0.6" />
+          <rect x={g.x + 18} y={230} width="28" height="28" rx="4" fill="var(--cell)" stroke={color(g.state)} strokeOpacity="0.6" />
           {[0, 1, 2].map((k) => (
             <line key={k} x1={g.x + 24 + k * 8} y1={230} x2={g.x + 24 + k * 8} y2={224} stroke={color(g.state)} strokeOpacity="0.45" strokeWidth="1.4" />
           ))}
           <circle cx={g.x + 32} cy={270} r="3" fill={color(g.state)} />
-          <text x={g.x + 32} y={302} textAnchor="middle" fontSize="9.5" fill="#a9afba" fontFamily="ui-monospace, monospace">
+          <text x={g.x + 32} y={302} textAnchor="middle" fontSize="9.5" fill="var(--ink-2)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
             gpu-{i}
           </text>
-          <text x={g.x + 32} y={316} textAnchor="middle" fontSize="8.5" fill={color(g.state)} fontFamily="ui-monospace, monospace">
+          <text x={g.x + 32} y={316} textAnchor="middle" fontSize="8.5" fill={color(g.state)} fontFamily="IBM Plex Mono, ui-monospace, monospace">
             {g.state}
           </text>
         </g>

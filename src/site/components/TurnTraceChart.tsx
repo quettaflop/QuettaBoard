@@ -3,7 +3,7 @@ import { TURN_TRACE } from '../siteData';
 /**
  * The hero's instrument panel: one real multi-turn trace.
  *
- * Bars are context size per turn (it grows ~18× across six turns); the teal
+ * Bars are context size per turn (it grows ~18× across six turns); the brass
  * line is prefix-cache hit rate over the same turns. Together they are the
  * whole argument for the site — context explodes, but most of it stops being
  * paid for, so latency grows far slower than tokens do.
@@ -28,22 +28,22 @@ export function TurnTraceChart() {
   const hitPath = TURN_TRACE.map((d, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${yHit(d.cacheHit)}`).join(' ');
 
   return (
-    <figure className="glass min-w-0 overflow-hidden rounded-[24px]">
+    <figure className="glass min-w-0 overflow-hidden rounded-[8px]">
       {/* Panel chrome, borrowed from the dashboard so this reads as the product */}
-      <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/10 px-5 py-3.5 sm:px-6">
+      <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--line)] px-5 py-3.5 sm:px-6">
         <div className="min-w-0">
           <div className="eyebrow">Multi-turn trace · measured</div>
-          <div className="mt-1 truncate text-[13.5px] font-medium text-[#e6e8ec]">
+          <div className="mt-1 truncate text-[13.5px] font-medium text-[var(--ink)]">
             Llama-3.3-70B · 4×H100 · vLLM · swebench-multiturn · concurrency 20
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-4 text-[11px] text-[#a9afba]">
+        <div className="ml-auto flex items-center gap-4 text-[11px] text-[var(--ink-2)]">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block h-2 w-2 rounded-[2px] bg-[#a78bfa]/70" />
+            <span className="inline-block h-2 w-2 rounded-[2px] bg-[var(--ink)]/70" />
             context tokens
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block h-2 w-2 rounded-full bg-[#2dd4bf]" />
+            <span className="inline-block h-2 w-2 rounded-full bg-[var(--accent)]" />
             cache hit rate
           </span>
         </div>
@@ -60,12 +60,12 @@ export function TurnTraceChart() {
         >
           <defs>
             <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.55" />
-              <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.08" />
+              <stop offset="0%" stopColor="var(--plot-1)" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="var(--plot-1)" stopOpacity="0.06" />
             </linearGradient>
             <linearGradient id="hitGlow" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0" />
+              <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
             </linearGradient>
           </defs>
 
@@ -74,11 +74,11 @@ export function TurnTraceChart() {
             const y = PAD.t + IH - f * IH;
             return (
               <g key={f}>
-                <line x1={PAD.l} y1={y} x2={PAD.l + IW} y2={y} stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
-                <text x={PAD.l - 10} y={y + 3.5} textAnchor="end" className="mono" fontSize="10" fill="#676c76">
+                <line x1={PAD.l} y1={y} x2={PAD.l + IW} y2={y} stroke="var(--grid)" strokeWidth="1" />
+                <text x={PAD.l - 10} y={y + 3.5} textAnchor="end" className="mono" fontSize="10" fill="var(--ink-3)">
                   {f === 0 ? '0' : `${Math.round((MAX_CTX * f) / 1000)}k`}
                 </text>
-                <text x={PAD.l + IW + 10} y={y + 3.5} className="mono" fontSize="10" fill="#676c76">
+                <text x={PAD.l + IW + 10} y={y + 3.5} className="mono" fontSize="10" fill="var(--ink-3)">
                   {Math.round(f * 100)}%
                 </text>
               </g>
@@ -97,7 +97,7 @@ export function TurnTraceChart() {
                 height={PAD.t + IH - y}
                 rx="4"
                 fill="url(#barFill)"
-                stroke="rgba(167,139,250,0.35)"
+                stroke="var(--line-2)"
                 strokeWidth="1"
               />
             );
@@ -105,9 +105,9 @@ export function TurnTraceChart() {
 
           {/* cache-hit area + line */}
           <path d={`${hitPath} L${x(n - 1)},${PAD.t + IH} L${x(0)},${PAD.t + IH} Z`} fill="url(#hitGlow)" />
-          <path d={hitPath} fill="none" stroke="#2dd4bf" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={hitPath} fill="none" stroke="var(--accent)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
           {TURN_TRACE.map((d, i) => (
-            <circle key={d.turn} cx={x(i)} cy={yHit(d.cacheHit)} r="4" fill="#07080a" stroke="#2dd4bf" strokeWidth="2" />
+            <circle key={d.turn} cx={x(i)} cy={yHit(d.cacheHit)} r="4" fill="var(--plot-dot)" stroke="var(--accent)" strokeWidth="2" />
           ))}
 
           {/* Bar value labels are drawn LAST, with a dark halo, because the
@@ -121,8 +121,8 @@ export function TurnTraceChart() {
               textAnchor="middle"
               className="mono"
               fontSize="10.5"
-              fill="#c9b8ff"
-              stroke="#07080a"
+              fill="var(--accent)"
+              stroke="var(--plot-dot)"
               strokeWidth="3.5"
               strokeLinejoin="round"
               paintOrder="stroke"
@@ -132,25 +132,25 @@ export function TurnTraceChart() {
           ))}
 
           {/* baseline */}
-          <line x1={PAD.l} y1={PAD.t + IH} x2={PAD.l + IW} y2={PAD.t + IH} stroke="rgba(255,255,255,0.16)" strokeWidth="1" />
+          <line x1={PAD.l} y1={PAD.t + IH} x2={PAD.l + IW} y2={PAD.t + IH} stroke="var(--line-2)" strokeWidth="1" />
 
           {/* per-turn footer: turn index + measured TTFT */}
           {TURN_TRACE.map((d, i) => (
             <g key={d.turn}>
-              <text x={x(i)} y={PAD.t + IH + 20} textAnchor="middle" className="mono" fontSize="10.5" fill="#a9afba">
+              <text x={x(i)} y={PAD.t + IH + 20} textAnchor="middle" className="mono" fontSize="10.5" fill="var(--ink-2)">
                 turn {d.turn}
               </text>
-              <text x={x(i)} y={PAD.t + IH + 38} textAnchor="middle" className="mono" fontSize="11.5" fill="#f3f4f6">
+              <text x={x(i)} y={PAD.t + IH + 38} textAnchor="middle" className="mono" fontSize="11.5" fill="var(--ink)">
                 {d.ttft.toFixed(0)}
-                <tspan fontSize="9" fill="#676c76"> ms</tspan>
+                <tspan fontSize="9" fill="var(--ink-3)"> ms</tspan>
               </text>
             </g>
           ))}
         </svg>
       </div>
 
-      <figcaption className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-white/10 bg-white/[0.025] px-5 py-3 text-[12px] text-[#a9afba] sm:px-6">
-        <span className="text-[#f3f4f6]">25× the context, 1.3× the latency.</span>
+      <figcaption className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line)] bg-[var(--cell)] px-5 py-3 text-[12px] text-[var(--ink-2)] sm:px-6">
+        <span className="text-[var(--ink)]">25× the context, 1.3× the latency.</span>
         <span>
           Six turns sampled from an 88-turn SWE-bench trajectory; by the end, 97% of the 32k-token
           context is already resident. Bottom row is measured TTFT.

@@ -134,11 +134,10 @@ change the numbers.
 ### Design
 
 `src/site/site.css` is a deliberate copy of the dashboard's palette, glass
-surfaces, dot-grid canvas and grain, so site and product read as one thing. It is
-a copy rather than a shared import because the site loads Archivo + JetBrains
-Mono and the dashboard does not — a shared `--mono` would change the dashboard's
-figures on any machine with JetBrains Mono installed. **Restyle a surface in one
-file and you must restyle it in the other.**
+surfaces, dot-grid canvas and grain, so site and product read as one thing. Type
+is not shared: the site loads IBM Plex Sans and IBM Plex Mono.
+A shared `--mono` would change the dashboard's figures. **Restyle a surface in
+one file and you must restyle it in the other.**
 
 ## Data pipeline
 

@@ -67,7 +67,7 @@ export const CARDS: Card[] = [
     name: 'QuettaBench',
     summary:
       'Serving benchmarks on agentic workloads, with latency recorded per turn. vLLM and SGLang.',
-    accent: '#2dd4bf',
+    accent: '#c9a36a',
     figure: 'trace',
     detail: {
       lead:
@@ -96,7 +96,7 @@ export const CARDS: Card[] = [
     name: 'QuettaSim',
     summary:
       'Predicts TTFT, TPOT and end-to-end latency from a device spec and a workload. No GPU required.',
-    accent: '#a78bfa',
+    accent: '#c9a36a',
     figure: 'sim',
     detail: {
       lead:
@@ -123,7 +123,7 @@ export const CARDS: Card[] = [
     name: 'QuettaServe',
     summary:
       'Rust inference engine optimised for pipeline-parallel serving of SOTA models.',
-    accent: '#f7b955',
+    accent: '#c9a36a',
     figure: 'serve',
     detail: {
       lead:
@@ -204,8 +204,8 @@ export const FOOTER_LINKS = [{ label: 'Contact', href: '#contact' }];
    ARIA funds the work, CommonAI provides compute, and those are different claims.
 
    Logo files are the official assets as published on scalinginference.org. Both
-   are dark marks on a light ground, so they render on light chips rather than
-   being colour-inverted, which would wreck CommonAI's purple.
+   are dark marks on an opaque white ground, so they sit on white chips rather
+   than being colour-inverted, which would wreck CommonAI's purple.
    -------------------------------------------------------------------------- */
 
 export interface PartnerGroup {
