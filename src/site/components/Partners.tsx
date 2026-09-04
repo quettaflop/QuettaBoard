@@ -4,7 +4,7 @@ import commonaiLogo from '../assets/partners/commonai.png';
 
 const GROUPS: PartnerGroup[] = [
   {
-    label: 'Funded by',
+    label: 'Trusted by',
     members: [{ name: 'Advanced Research + Invention Agency', logo: ariaLogo, h: 28 }],
   },
   {

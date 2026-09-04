@@ -200,7 +200,7 @@ export const FOOTER_LINKS = [{ label: 'Contact', href: '#contact' }];
 
 /* ------------------------------------------------------------------ partners
    Grouped by relationship, the way scalinginference.org does it ("Delivered by"
-   / "Funded by" / "Technology partners") rather than one vague "Backed by" row —
+   / "Trusted by" / "Technology partners") rather than one vague "Backed by" row —
    ARIA funds the work, CommonAI provides compute, and those are different claims.
 
    Logo files are the official assets as published on scalinginference.org. Both
