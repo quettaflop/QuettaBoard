@@ -13,6 +13,14 @@ export function SiteNav({ page }: { page: SitePage }) {
           <span className="text-[14px] tracking-tight text-[var(--ink)]">Quettaflop AI</span>
         </a>
         <span className="flex items-center gap-5">
+          {page === 'efficiency' && (
+            <a
+              href={sitePageHref('home')}
+              className="mono text-[12px] text-[var(--ink-2)] transition-colors hover:text-[var(--accent)]"
+            >
+              Home
+            </a>
+          )}
           <a
             href={sitePageHref('efficiency')}
             aria-current={page === 'efficiency' ? 'page' : undefined}
