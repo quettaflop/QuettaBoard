@@ -196,7 +196,10 @@ export const TURN_TRACE = [
 
 /* ------------------------------------------------------------------- footer */
 
-export const FOOTER_LINKS = [{ label: 'Contact', href: '#contact' }];
+export const FOOTER_LINKS = [
+  { label: 'Index', href: '/efficiency/' },
+  { label: 'Contact', href: '#contact' },
+];
 
 /* ------------------------------------------------------------------ partners
    Grouped by relationship, the way scalinginference.org does it ("Delivered by"

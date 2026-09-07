@@ -1,7 +1,6 @@
-import brandMark from '../assets/brand-mark.png';
 import { ContactCard } from './ContactCard';
 import { Partners } from './Partners';
-import { ThemeToggle } from './ThemeToggle';
+import { SiteNav } from './SiteNav';
 import { ToolStack } from './ToolStack';
 
 /**
@@ -10,24 +9,7 @@ import { ToolStack } from './ToolStack';
 export function Masthead() {
   return (
     <header>
-      <div className="site-nav">
-        <div className="shell flex items-center justify-between gap-4 py-3.5">
-          <span className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-[4px] bg-[var(--mark)] ring-1 ring-inset ring-[var(--line)]">
-              <img src={brandMark} alt="" className="h-4 w-4" draggable={false} />
-            </span>
-            <span className="text-[14px] tracking-tight text-[var(--ink)]">
-              Quettaflop AI
-            </span>
-          </span>
-          <span className="flex items-center gap-5">
-            <ThemeToggle />
-            <a href="#contact" className="mono text-[12px] text-[var(--ink-2)] transition-colors hover:text-[var(--accent)]">
-              Contact
-            </a>
-          </span>
-        </div>
-      </div>
+      <SiteNav page="home" />
 
       <div className="shell pb-16 pt-14 sm:pb-20 sm:pt-16">
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_16.75rem] lg:gap-x-10">
