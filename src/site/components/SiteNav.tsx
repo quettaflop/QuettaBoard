@@ -12,31 +12,27 @@ export function SiteNav({ page }: { page: SitePage }) {
           </span>
           <span className="text-[14px] tracking-tight text-[var(--ink)]">Quettaflop AI</span>
         </a>
-        <span className="flex items-center gap-5">
-          {page === 'efficiency' && (
-            <a
-              href={sitePageHref('home')}
-              className="mono text-[12px] text-[var(--ink-2)] transition-colors hover:text-[var(--accent)]"
-            >
-              Home
-            </a>
-          )}
+        <span className="flex items-center gap-1.5">
+          <a
+            href={sitePageHref('home')}
+            aria-current={page === 'home' ? 'page' : undefined}
+            className="nav-link"
+          >
+            Home
+          </a>
           <a
             href={sitePageHref('efficiency')}
             aria-current={page === 'efficiency' ? 'page' : undefined}
-            className={`mono text-[12px] transition-colors hover:text-[var(--accent)] ${
-              page === 'efficiency' ? 'text-[var(--accent)]' : 'text-[var(--ink-2)]'
-            }`}
+            className="nav-link"
           >
             Index
           </a>
-          <ThemeToggle />
-          <a
-            href={siteContactHref(page)}
-            className="mono text-[12px] text-[var(--ink-2)] transition-colors hover:text-[var(--accent)]"
-          >
-            Contact
-          </a>
+          <span className="ml-1 flex items-center gap-3">
+            <ThemeToggle />
+            <a href={siteContactHref(page)} className="nav-link">
+              Contact
+            </a>
+          </span>
         </span>
       </div>
     </div>

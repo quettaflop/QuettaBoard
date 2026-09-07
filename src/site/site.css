@@ -133,6 +133,20 @@ body::before {
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
 }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color .16s ease, background-color .16s ease;
+}
+.nav-link:hover { color: var(--accent); }
+.nav-link[aria-current="page"] {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
 
 /* Dark: original clipped hex. Light overrides below. */
 .cursor-glow {
