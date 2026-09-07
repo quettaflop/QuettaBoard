@@ -454,7 +454,7 @@ h1, h2, h3, h4 {
 .idx-head,
 .idx-row {
   display: grid;
-  grid-template-columns: 2.25rem minmax(11rem, 1.4fr) 6.5rem repeat(4, minmax(4.5rem, 1fr)) 5.25rem;
+  grid-template-columns: 2.25rem minmax(11rem, 1.4fr) 6.5rem repeat(4, minmax(4.5rem, 1fr));
   gap: 0.75rem;
   align-items: center;
   padding: 0.7rem 0.9rem;
@@ -502,25 +502,6 @@ h1, h2, h3, h4 {
   display: block;
   height: 100%;
   background: var(--accent);
-}
-
-.idx-tag {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.45rem;
-  border-radius: 3px;
-  border: 1px solid var(--line);
-  color: var(--ink-3);
-}
-.idx-tag-verified {
-  color: var(--accent);
-  border-color: rgba(201, 163, 106, 0.35);
-  background: rgba(201, 163, 106, 0.1);
-}
-.idx-tag-estimated {
-  color: var(--ink-2);
 }
 
 .idx-detail {

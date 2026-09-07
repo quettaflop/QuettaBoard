@@ -6,7 +6,6 @@ import {
   LOAD_WEIGHTS,
   type Domain,
   type HardwareFamily,
-  type Provenance,
 } from '../efficiency/score';
 import { EFFICIENCY_SNAPSHOT } from '../efficiency/snapshot';
 import { SiteNav } from './SiteNav';
@@ -49,14 +48,6 @@ function ScoreCell({ value }: { value: number | null }) {
       <span className="idx-score-track" aria-hidden>
         <span className="idx-score-fill" style={{ width: `${value}%` }} />
       </span>
-    </span>
-  );
-}
-
-function ProvenanceTag({ provenance }: { provenance: Provenance }) {
-  return (
-    <span className={`idx-tag ${provenance === 'verified' ? 'idx-tag-verified' : 'idx-tag-estimated'}`}>
-      {provenance === 'verified' ? 'Verified' : 'Estimated'}
     </span>
   );
 }
@@ -176,7 +167,6 @@ export function EfficiencyIndex() {
                   {DOMAIN_LABEL[d]}
                 </span>
               ))}
-              <span className="idx-hide-sm">Run</span>
             </li>
             {rows.map((r, i) => {
               const expanded = open === r.id;
@@ -201,9 +191,6 @@ export function EfficiencyIndex() {
                         <ScoreCell value={r.domains[d]} />
                       </span>
                     ))}
-                    <span className="idx-hide-sm">
-                      <ProvenanceTag provenance={r.provenance} />
-                    </span>
                   </button>
                   <div className="expand" data-open={expanded ? 'true' : 'false'}>
                     <div>
@@ -247,7 +234,6 @@ export function EfficiencyIndex() {
                               <ScoreCell value={r.domains[d]} />
                             </div>
                           ))}
-                          <ProvenanceTag provenance={r.provenance} />
                         </div>
                       </div>
                     </div>
