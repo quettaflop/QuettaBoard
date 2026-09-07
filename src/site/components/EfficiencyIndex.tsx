@@ -248,14 +248,14 @@ export function EfficiencyIndex() {
           <h2 className="text-[1.35rem] leading-tight">How the score is built</h2>
           <p className="mt-4">
             Each configuration is a model, a hardware width, and an engine. The
-            five canonical QuettaBench synthetic profiles are folded into four
-            subdomains. A configuration needs at least three subdomains to appear.
+            four workload families are folded into four subdomains. A
+            configuration needs at least three subdomains to appear.
           </p>
           <ul className="mt-4 list-disc space-y-1 pl-5 text-[15px]">
-            <li>Chat — chat-singleturn-synth, chat-multiturn-synth</li>
-            <li>Coding — swebench-multiturn-synth</li>
-            <li>Terminal — terminalbench-multiturn-synth</li>
-            <li>Computer-use — osworld-multiturn-synth</li>
+            <li>Chat — ShareGPT</li>
+            <li>Coding — SWE-bench</li>
+            <li>Terminal — TerminalBench</li>
+            <li>Computer-use — OSWorld</li>
           </ul>
           <p className="mt-4">
             At each load (concurrency 1, 40, 160 — weights{' '}
