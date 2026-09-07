@@ -3,9 +3,10 @@
  *
  * Modelled on Artificial Analysis's composite index: one 0–100 score,
  * equal-weight subdomains, equation published. Raw serving metrics are
- * not already 0–100, so each subdomain is log-scaled from the 10th
- * percentile of the published corpus up to the corpus max. The best
- * published row scores 100; a faster run later will rebase the scale.
+ * not already 0–100, so each subdomain is log-scaled from the corpus
+ * min to the corpus max, then mapped onto 1–100. The slowest published
+ * row is 1, the fastest is 100 — same shape as AA, without a zero that
+ * reads as a fail. A faster run later rebases the scale.
  *
  * Efficiency (equal 25%):
  *   chat, coding, terminal, computer-use
@@ -24,7 +25,7 @@
  * rows that have not been executed.
  */
 
-export const INDEX_VERSION = '1.0';
+export const INDEX_VERSION = '1.1';
 
 export const CANONICAL_PROFILES = [
   'chat-singleturn-synth',
@@ -94,8 +95,7 @@ export interface ParsedHardware {
 }
 
 export interface Scale {
-  p10: number;
-  p90: number;
+  min: number;
   max: number;
 }
 
@@ -189,22 +189,14 @@ export function weightedGeoMean(values: Array<{ value: number; weight: number }>
   return Math.exp(log / wsum);
 }
 
-export function percentile(sorted: number[], p: number): number {
-  if (sorted.length === 0) return NaN;
-  if (sorted.length === 1) return sorted[0];
-  const i = (sorted.length - 1) * p;
-  const lo = Math.floor(i);
-  const hi = Math.ceil(i);
-  if (lo === hi) return sorted[lo];
-  return sorted[lo] * (hi - i) + sorted[hi] * (i - lo);
-}
-
-/** 0–100 log scale between p10 and the corpus max. The best row is 100. */
+/** 1–100 log scale between the corpus min and max. The worst row is 1. */
 export function scaledScore(raw: number, scale: Scale): number {
+  const lo = scale.min;
   const hi = scale.max;
-  if (!(raw > 0) || !(scale.p10 > 0) || !(hi > scale.p10)) return NaN;
-  const t = (Math.log(raw) - Math.log(scale.p10)) / (Math.log(hi) - Math.log(scale.p10));
-  return clamp100(100 * t);
+  if (!(raw > 0) || !(lo > 0) || !(hi > lo)) return NaN;
+  const t = (Math.log(raw) - Math.log(lo)) / (Math.log(hi) - Math.log(lo));
+  const u = Math.min(1, Math.max(0, t));
+  return clamp100(1 + 99 * u);
 }
 
 export function clamp100(n: number): number {
@@ -406,7 +398,7 @@ function prepare(acc: ConfigAccum): PreparedConfig | null {
 export function buildScales(prepared: PreparedConfig[]): DomainScales {
   const collect = (xs: number[]): Scale => {
     const s = xs.filter((n) => n > 0).sort((a, b) => a - b);
-    return { p10: percentile(s, 0.1), p90: percentile(s, 0.9), max: s[s.length - 1] };
+    return { min: s[0], max: s[s.length - 1] };
   };
   const of = (d: Domain) =>
     prepared.map((p) => p.domainRaw[d]).filter((n): n is number => n != null && n > 0);
@@ -490,6 +482,11 @@ export function assertIndexInvariants(rows: IndexRow[]): string[] {
       if (v != null && !(v >= 0 && v <= 100)) failures.push(`${r.id}: ${d} ${v} out of range`);
     }
     if (r.raw.domainCount < MIN_DOMAINS) failures.push(`${r.id}: only ${r.raw.domainCount} domains`);
+    if (r.efficiency === 0) failures.push(`${r.id}: efficiency is 0 — scale should start at 1`);
+    for (const d of DOMAINS) {
+      if (r.domains[d] === 0) failures.push(`${r.id}: ${d} is 0 — scale should start at 1`);
+    }
+    if (r.cost === 0) failures.push(`${r.id}: cost is 0 — scale should start at 1`);
     if (r.raw.tpotMs == null || r.raw.ttftMs == null || r.raw.tokPerSec == null) {
       failures.push(`${r.id}: missing serving-point raw metrics`);
     }

@@ -14,7 +14,7 @@ export interface EfficiencySnapshot {
 }
 
 export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
-  "version": "1.0",
+  "version": "1.1",
   "generatedAt": "2026-09-07",
   "source": "json/current/data.synthetic_distributional.json",
   "sourceModified": "2026-08-30",
@@ -23,28 +23,23 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
   "estimated": 0,
   "scales": {
     "chat": {
-      "p10": 0.10493498539270033,
-      "p90": 1.2136112754524355,
+      "min": 0.03094570137744231,
       "max": 1.7235984375142104
     },
     "coding": {
-      "p10": 0.022792812917790967,
-      "p90": 0.5698452429660519,
+      "min": 0.010228947625713183,
       "max": 0.684986521183474
     },
     "terminal": {
-      "p10": 0.028817397938153962,
-      "p90": 0.5628149835295955,
+      "min": 0.007829023155155167,
       "max": 0.7670495525684725
     },
     "computerUse": {
-      "p10": 0.04535043267303935,
-      "p90": 0.7081157998000549,
+      "min": 0.022736923640110568,
       "max": 0.9430401499153881
     },
     "cost": {
-      "p10": 86427.17138935933,
-      "p90": 2529788.5685262154,
+      "min": 22355.773486982725,
       "max": 8582549.192720909
     }
   },
@@ -58,11 +53,11 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 99,
-      "cost": 35.3,
+      "efficiency": 99.2,
+      "cost": 50.5,
       "domains": {
         "chat": 100,
-        "coding": 95.9,
+        "coding": 96.7,
         "terminal": 100,
         "computerUse": 100
       },
@@ -89,13 +84,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 96.7,
-      "cost": 47,
+      "efficiency": 97.6,
+      "cost": 59.5,
       "domains": {
-        "chat": 94.9,
-        "coding": 98.1,
-        "terminal": 94.5,
-        "computerUse": 99.1
+        "chat": 96.5,
+        "coding": 98.5,
+        "terminal": 96.1,
+        "computerUse": 99.3
       },
       "raw": {
         "tpotMs": 7.2,
@@ -120,13 +115,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 95.7,
-      "cost": 45.9,
+      "efficiency": 97,
+      "cost": 58.6,
       "domains": {
-        "chat": 90.5,
+        "chat": 93.4,
         "coding": 99.9,
-        "terminal": 94.7,
-        "computerUse": 97.7
+        "terminal": 96.3,
+        "computerUse": 98.2
       },
       "raw": {
         "tpotMs": 6.1,
@@ -151,13 +146,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 94.7,
-      "cost": 29.2,
+      "efficiency": 96.1,
+      "cost": 45.8,
       "domains": {
-        "chat": 88.8,
+        "chat": 92.3,
         "coding": 100,
-        "terminal": 94.5,
-        "computerUse": 95.3
+        "terminal": 96.1,
+        "computerUse": 96.2
       },
       "raw": {
         "tpotMs": 7.8,
@@ -182,13 +177,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 93.1,
-      "cost": 58.9,
+      "efficiency": 95,
+      "cost": 68.5,
       "domains": {
-        "chat": 87,
-        "coding": 98.7,
-        "terminal": 92.9,
-        "computerUse": 93.8
+        "chat": 91,
+        "coding": 99,
+        "terminal": 95,
+        "computerUse": 95
       },
       "raw": {
         "tpotMs": 6.8,
@@ -213,50 +208,19 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 92.2,
-      "cost": 34.1,
+      "efficiency": 94.2,
+      "cost": 49.6,
       "domains": {
-        "chat": 90.5,
-        "coding": 98.5,
-        "terminal": 91.3,
-        "computerUse": 88.3
+        "chat": 93.5,
+        "coding": 98.8,
+        "terminal": 93.8,
+        "computerUse": 90.6
       },
       "raw": {
         "tpotMs": 5,
         "ttftMs": 405.1,
         "tokPerSec": 1836.7,
         "usdPerMTok": 2.41,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 55
-      }
-    },
-    {
-      "id": "Llama-3.1-8B|H100x4|sglang|BF16",
-      "model": "Llama-3.1-8B",
-      "hardware": "H100x4",
-      "hardwareFamily": "H100",
-      "gpus": 4,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 91.2,
-      "cost": 33.4,
-      "domains": {
-        "chat": 97.1,
-        "coding": 83.9,
-        "terminal": 88.1,
-        "computerUse": 95.5
-      },
-      "raw": {
-        "tpotMs": 6.1,
-        "ttftMs": 544.7,
-        "tokPerSec": 1780.5,
-        "usdPerMTok": 2.49,
         "loadsUsed": [
           1,
           40,
@@ -275,19 +239,50 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 90.7,
-      "cost": 58.4,
+      "efficiency": 93.3,
+      "cost": 68.2,
       "domains": {
-        "chat": 79.1,
-        "coding": 97,
-        "terminal": 94.5,
-        "computerUse": 92.3
+        "chat": 85.6,
+        "coding": 97.6,
+        "terminal": 96.1,
+        "computerUse": 93.8
       },
       "raw": {
         "tpotMs": 7.4,
         "ttftMs": 425.6,
         "tokPerSec": 1404.2,
         "usdPerMTok": 0.79,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 55
+      }
+    },
+    {
+      "id": "Llama-3.1-8B|H100x4|sglang|BF16",
+      "model": "Llama-3.1-8B",
+      "hardware": "H100x4",
+      "hardwareFamily": "H100",
+      "gpus": 4,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 93.3,
+      "cost": 49.1,
+      "domains": {
+        "chat": 98,
+        "coding": 87.1,
+        "terminal": 91.6,
+        "computerUse": 96.3
+      },
+      "raw": {
+        "tpotMs": 6.1,
+        "ttftMs": 544.7,
+        "tokPerSec": 1780.5,
+        "usdPerMTok": 2.49,
         "loadsUsed": [
           1,
           40,
@@ -306,13 +301,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 90.6,
-      "cost": 56.9,
+      "efficiency": 93.1,
+      "cost": 67,
       "domains": {
-        "chat": 88,
-        "coding": 94.6,
-        "terminal": 87.9,
-        "computerUse": 91.8
+        "chat": 91.7,
+        "coding": 95.7,
+        "terminal": 91.4,
+        "computerUse": 93.4
       },
       "raw": {
         "tpotMs": 10.7,
@@ -337,50 +332,19 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 90.5,
-      "cost": 34.1,
+      "efficiency": 92.9,
+      "cost": 49.6,
       "domains": {
-        "chat": 89.6,
-        "coding": 89.7,
-        "terminal": 86.9,
-        "computerUse": 95.7
+        "chat": 92.8,
+        "coding": 91.7,
+        "terminal": 90.7,
+        "computerUse": 96.5
       },
       "raw": {
         "tpotMs": 7.6,
         "ttftMs": 396.5,
         "tokPerSec": 1836.7,
         "usdPerMTok": 2.41,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 55
-      }
-    },
-    {
-      "id": "gpt-oss-20b|H100x2|sglang|BF16",
-      "model": "gpt-oss-20b",
-      "hardware": "H100x2",
-      "hardwareFamily": "H100",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 89.8,
-      "cost": 46.7,
-      "domains": {
-        "chat": 87.5,
-        "coding": 95.9,
-        "terminal": 90.7,
-        "computerUse": 85.2
-      },
-      "raw": {
-        "tpotMs": 5.9,
-        "ttftMs": 406.7,
-        "tokPerSec": 1641.5,
-        "usdPerMTok": 1.35,
         "loadsUsed": [
           1,
           40,
@@ -399,19 +363,50 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 89.8,
-      "cost": 39.6,
+      "efficiency": 92.5,
+      "cost": 53.8,
       "domains": {
-        "chat": 83.6,
-        "coding": 94.6,
-        "terminal": 90.6,
-        "computerUse": 90.5
+        "chat": 88.7,
+        "coding": 95.7,
+        "terminal": 93.3,
+        "computerUse": 92.3
       },
       "raw": {
         "tpotMs": 10.2,
         "ttftMs": 279.5,
         "tokPerSec": 1184.7,
         "usdPerMTok": 1.87,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 55
+      }
+    },
+    {
+      "id": "gpt-oss-20b|H100x2|sglang|BF16",
+      "model": "gpt-oss-20b",
+      "hardware": "H100x2",
+      "hardwareFamily": "H100",
+      "gpus": 2,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 92.4,
+      "cost": 59.2,
+      "domains": {
+        "chat": 91.4,
+        "coding": 96.7,
+        "terminal": 93.4,
+        "computerUse": 88.1
+      },
+      "raw": {
+        "tpotMs": 5.9,
+        "ttftMs": 406.7,
+        "tokPerSec": 1641.5,
+        "usdPerMTok": 1.35,
         "loadsUsed": [
           1,
           40,
@@ -430,13 +425,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 89.7,
-      "cost": 22.6,
+      "efficiency": 92.4,
+      "cost": 40.8,
       "domains": {
-        "chat": 82.9,
-        "coding": 94.5,
-        "terminal": 91.3,
-        "computerUse": 90.1
+        "chat": 88.2,
+        "coding": 95.6,
+        "terminal": 93.8,
+        "computerUse": 92
       },
       "raw": {
         "tpotMs": 10.5,
@@ -461,13 +456,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 88.8,
-      "cost": 45.6,
+      "efficiency": 91.4,
+      "cost": 58.3,
       "domains": {
-        "chat": 94.7,
-        "coding": 78.7,
-        "terminal": 90.3,
-        "computerUse": 91.5
+        "chat": 96.4,
+        "coding": 82.9,
+        "terminal": 93.1,
+        "computerUse": 93.1
       },
       "raw": {
         "tpotMs": 7.7,
@@ -492,13 +487,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 88.2,
-      "cost": 39.7,
+      "efficiency": 91.3,
+      "cost": 53.9,
       "domains": {
-        "chat": 75.7,
-        "coding": 95.6,
-        "terminal": 94.2,
-        "computerUse": 87.2
+        "chat": 83.2,
+        "coding": 96.5,
+        "terminal": 95.9,
+        "computerUse": 89.7
       },
       "raw": {
         "tpotMs": 9.8,
@@ -523,13 +518,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 85.8,
-      "cost": 44.9,
+      "efficiency": 89.4,
+      "cost": 57.8,
       "domains": {
-        "chat": 84.4,
-        "coding": 84.5,
-        "terminal": 84,
-        "computerUse": 90.2
+        "chat": 89.3,
+        "coding": 87.6,
+        "terminal": 88.7,
+        "computerUse": 92.1
       },
       "raw": {
         "tpotMs": 8.9,
@@ -554,50 +549,19 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 85.5,
-      "cost": 38.2,
+      "efficiency": 89.3,
+      "cost": 52.8,
       "domains": {
-        "chat": 80.4,
-        "coding": 88.8,
-        "terminal": 84.9,
-        "computerUse": 87.8
+        "chat": 86.5,
+        "coding": 91,
+        "terminal": 89.3,
+        "computerUse": 90.2
       },
       "raw": {
         "tpotMs": 12.7,
         "ttftMs": 294,
         "tokPerSec": 1108.8,
         "usdPerMTok": 1.99,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 55
-      }
-    },
-    {
-      "id": "Qwen3-30B-A3B|H100x4|sglang|BF16",
-      "model": "Qwen3-30B-A3B",
-      "hardware": "H100x4",
-      "hardwareFamily": "H100",
-      "gpus": 4,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 83.1,
-      "cost": 24,
-      "domains": {
-        "chat": 80.6,
-        "coding": 88,
-        "terminal": 87.2,
-        "computerUse": 76.4
-      },
-      "raw": {
-        "tpotMs": 10,
-        "ttftMs": 511.5,
-        "tokPerSec": 1153.6,
-        "usdPerMTok": 3.84,
         "loadsUsed": [
           1,
           40,
@@ -616,19 +580,50 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 82.9,
-      "cost": 35.5,
+      "efficiency": 87.3,
+      "cost": 50.6,
       "domains": {
-        "chat": 77.2,
-        "coding": 87.6,
-        "terminal": 83.7,
-        "computerUse": 83.1
+        "chat": 84.3,
+        "coding": 90.1,
+        "terminal": 88.5,
+        "computerUse": 86.4
       },
       "raw": {
         "tpotMs": 13.8,
         "ttftMs": 320.7,
         "tokPerSec": 975.8,
         "usdPerMTok": 2.27,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 55
+      }
+    },
+    {
+      "id": "Qwen3-30B-A3B|H100x4|sglang|BF16",
+      "model": "Qwen3-30B-A3B",
+      "hardware": "H100x4",
+      "hardwareFamily": "H100",
+      "gpus": 4,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 87.2,
+      "cost": 41.8,
+      "domains": {
+        "chat": 86.6,
+        "coding": 90.4,
+        "terminal": 90.9,
+        "computerUse": 81
+      },
+      "raw": {
+        "tpotMs": 10,
+        "ttftMs": 511.5,
+        "tokPerSec": 1153.6,
+        "usdPerMTok": 3.84,
         "loadsUsed": [
           1,
           40,
@@ -647,13 +642,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 82.4,
-      "cost": 45,
+      "efficiency": 86.6,
+      "cost": 57.9,
       "domains": {
-        "chat": 91.9,
-        "coding": 69.1,
-        "terminal": 80.9,
-        "computerUse": 87.8
+        "chat": 94.4,
+        "coding": 75.2,
+        "terminal": 86.5,
+        "computerUse": 90.2
       },
       "raw": {
         "tpotMs": 8.4,
@@ -678,13 +673,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 81,
-      "cost": 17.1,
+      "efficiency": 86,
+      "cost": 36.6,
       "domains": {
-        "chat": 66.2,
-        "coding": 91.7,
-        "terminal": 85,
-        "computerUse": 81
+        "chat": 76.7,
+        "coding": 93.3,
+        "terminal": 89.4,
+        "computerUse": 84.7
       },
       "raw": {
         "tpotMs": 14.4,
@@ -709,13 +704,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 80.2,
-      "cost": 41.3,
+      "efficiency": 85,
+      "cost": 55.1,
       "domains": {
-        "chat": 87.2,
-        "coding": 69.5,
-        "terminal": 78.2,
-        "computerUse": 86
+        "chat": 91.1,
+        "coding": 75.6,
+        "terminal": 84.5,
+        "computerUse": 88.7
       },
       "raw": {
         "tpotMs": 11.6,
@@ -740,50 +735,19 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 78,
-      "cost": 40.4,
+      "efficiency": 83.6,
+      "cost": 54.4,
       "domains": {
-        "chat": 77.8,
-        "coding": 75.3,
-        "terminal": 75.5,
-        "computerUse": 83.5
+        "chat": 84.7,
+        "coding": 80.2,
+        "terminal": 82.7,
+        "computerUse": 86.7
       },
       "raw": {
         "tpotMs": 11.4,
         "ttftMs": 534.5,
         "tokPerSec": 1224.2,
         "usdPerMTok": 1.81,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 55
-      }
-    },
-    {
-      "id": "Llama-3.1-8B|H100|sglang|BF16",
-      "model": "Llama-3.1-8B",
-      "hardware": "H100",
-      "hardwareFamily": "H100",
-      "gpus": 1,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 75.7,
-      "cost": 54.7,
-      "domains": {
-        "chat": 86.8,
-        "coding": 63.4,
-        "terminal": 73.4,
-        "computerUse": 79.3
-      },
-      "raw": {
-        "tpotMs": 12.3,
-        "ttftMs": 424.2,
-        "tokPerSec": 1183,
-        "usdPerMTok": 0.94,
         "loadsUsed": [
           1,
           40,
@@ -802,19 +766,50 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 75.5,
-      "cost": 28.6,
+      "efficiency": 81.7,
+      "cost": 45.4,
       "domains": {
-        "chat": 71.2,
-        "coding": 79.8,
-        "terminal": 76.4,
-        "computerUse": 74.7
+        "chat": 80.2,
+        "coding": 83.8,
+        "terminal": 83.3,
+        "computerUse": 79.6
       },
       "raw": {
         "tpotMs": 18.1,
         "ttftMs": 373.8,
         "tokPerSec": 713.7,
         "usdPerMTok": 3.11,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 55
+      }
+    },
+    {
+      "id": "Llama-3.1-8B|H100|sglang|BF16",
+      "model": "Llama-3.1-8B",
+      "hardware": "H100",
+      "hardwareFamily": "H100",
+      "gpus": 1,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 81.5,
+      "cost": 65.3,
+      "domains": {
+        "chat": 90.9,
+        "coding": 70.7,
+        "terminal": 81.2,
+        "computerUse": 83.3
+      },
+      "raw": {
+        "tpotMs": 12.3,
+        "ttftMs": 424.2,
+        "tokPerSec": 1183,
+        "usdPerMTok": 0.94,
         "loadsUsed": [
           1,
           40,
@@ -833,13 +828,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 73.9,
-      "cost": 28.2,
+      "efficiency": 80.4,
+      "cost": 45.1,
       "domains": {
-        "chat": 69,
-        "coding": 78.6,
-        "terminal": 76.5,
-        "computerUse": 71.3
+        "chat": 78.6,
+        "coding": 82.8,
+        "terminal": 83.4,
+        "computerUse": 76.9
       },
       "raw": {
         "tpotMs": 18.2,
@@ -864,13 +859,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 72.9,
-      "cost": 53.1,
+      "efficiency": 79.4,
+      "cost": 64.1,
       "domains": {
-        "chat": 82.1,
-        "coding": 62.2,
-        "terminal": 70.7,
-        "computerUse": 76.6
+        "chat": 87.6,
+        "coding": 69.7,
+        "terminal": 79.2,
+        "computerUse": 81.1
       },
       "raw": {
         "tpotMs": 11.8,
@@ -895,13 +890,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 71.1,
-      "cost": 30.2,
+      "efficiency": 78.3,
+      "cost": 46.6,
       "domains": {
-        "chat": 65.9,
-        "coding": 74.7,
-        "terminal": 73.8,
-        "computerUse": 69.8
+        "chat": 76.5,
+        "coding": 79.7,
+        "terminal": 81.4,
+        "computerUse": 75.6
       },
       "raw": {
         "tpotMs": 14.2,
@@ -926,13 +921,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 70.5,
-      "cost": 53,
+      "efficiency": 77.9,
+      "cost": 64,
       "domains": {
-        "chat": 71.1,
-        "coding": 62.7,
-        "terminal": 67.7,
-        "computerUse": 80.6
+        "chat": 80.1,
+        "coding": 70.1,
+        "terminal": 77.1,
+        "computerUse": 84.4
       },
       "raw": {
         "tpotMs": 13.5,
@@ -957,13 +952,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 69.9,
-      "cost": 19.8,
+      "efficiency": 77.5,
+      "cost": 38.6,
       "domains": {
-        "chat": 67.5,
-        "coding": 68.2,
-        "terminal": 68.5,
-        "computerUse": 75.3
+        "chat": 77.6,
+        "coding": 74.5,
+        "terminal": 77.7,
+        "computerUse": 80.1
       },
       "raw": {
         "tpotMs": 16.6,
@@ -988,13 +983,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 66.9,
-      "cost": 74.4,
+      "efficiency": 75.3,
+      "cost": 80.4,
       "domains": {
-        "chat": 63.1,
-        "coding": 71.5,
-        "terminal": 65,
-        "computerUse": 68.1
+        "chat": 74.6,
+        "coding": 77.2,
+        "terminal": 75.2,
+        "computerUse": 74.3
       },
       "raw": {
         "tpotMs": 26.4,
@@ -1019,13 +1014,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 65.1,
-      "cost": 64,
+      "efficiency": 73.6,
+      "cost": 72.5,
       "domains": {
-        "chat": 74.6,
-        "coding": 53.5,
-        "terminal": 63,
-        "computerUse": 69.3
+        "chat": 82.5,
+        "coding": 62.7,
+        "terminal": 73.8,
+        "computerUse": 75.2
       },
       "raw": {
         "tpotMs": 22.2,
@@ -1050,13 +1045,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 64.5,
-      "cost": 48.4,
+      "efficiency": 73,
+      "cost": 60.5,
       "domains": {
-        "chat": 77.3,
-        "coding": 51.1,
-        "terminal": 64.1,
-        "computerUse": 65.6
+        "chat": 84.3,
+        "coding": 60.8,
+        "terminal": 74.6,
+        "computerUse": 72.2
       },
       "raw": {
         "tpotMs": 20.4,
@@ -1081,13 +1076,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 62.4,
-      "cost": 89.2,
+      "efficiency": 71.8,
+      "cost": 91.8,
       "domains": {
-        "chat": 62.3,
-        "coding": 67.4,
-        "terminal": 59.5,
-        "computerUse": 60.3
+        "chat": 74,
+        "coding": 73.9,
+        "terminal": 71.3,
+        "computerUse": 68
       },
       "raw": {
         "tpotMs": 25.6,
@@ -1112,13 +1107,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 60.9,
-      "cost": 30.5,
+      "efficiency": 70.6,
+      "cost": 46.8,
       "domains": {
-        "chat": 74.2,
-        "coding": 59.4,
-        "terminal": 43.7,
-        "computerUse": 66.1
+        "chat": 82.2,
+        "coding": 67.4,
+        "terminal": 60.1,
+        "computerUse": 72.7
       },
       "raw": {
         "tpotMs": 27.2,
@@ -1143,13 +1138,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 59.7,
-      "cost": 20.5,
+      "efficiency": 69.6,
+      "cost": 39.2,
       "domains": {
-        "chat": 70.1,
-        "coding": 54.8,
-        "terminal": 50.2,
-        "computerUse": 63.5
+        "chat": 79.4,
+        "coding": 63.8,
+        "terminal": 64.7,
+        "computerUse": 70.5
       },
       "raw": {
         "tpotMs": 26.8,
@@ -1174,13 +1169,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 59.2,
-      "cost": 41.3,
+      "efficiency": 69.5,
+      "cost": 55.1,
       "domains": {
-        "chat": 64.5,
-        "coding": 59.5,
-        "terminal": 44.5,
-        "computerUse": 68.1
+        "chat": 75.5,
+        "coding": 67.6,
+        "terminal": 60.7,
+        "computerUse": 74.3
       },
       "raw": {
         "tpotMs": 27.2,
@@ -1205,13 +1200,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 57.4,
-      "cost": 23.3,
+      "efficiency": 67.7,
+      "cost": 41.3,
       "domains": {
-        "chat": 66.4,
-        "coding": 46,
-        "terminal": 59.2,
-        "computerUse": 57.8
+        "chat": 76.8,
+        "coding": 56.8,
+        "terminal": 71.1,
+        "computerUse": 66
       },
       "raw": {
         "tpotMs": 30.7,
@@ -1236,13 +1231,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 56.3,
-      "cost": 46.6,
+      "efficiency": 67.1,
+      "cost": 59.2,
       "domains": {
-        "chat": 62.2,
-        "coding": 45.8,
-        "terminal": 51.2,
-        "computerUse": 65.8
+        "chat": 74,
+        "coding": 56.6,
+        "terminal": 65.4,
+        "computerUse": 72.4
       },
       "raw": {
         "tpotMs": 28.2,
@@ -1267,13 +1262,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 55,
-      "cost": 42.8,
+      "efficiency": 66,
+      "cost": 56.2,
       "domains": {
-        "chat": 66.9,
-        "coding": 45.5,
-        "terminal": 49.5,
-        "computerUse": 58.1
+        "chat": 77.2,
+        "coding": 56.4,
+        "terminal": 64.2,
+        "computerUse": 66.2
       },
       "raw": {
         "tpotMs": 38.9,
@@ -1298,13 +1293,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 54.7,
-      "cost": 10.3,
+      "efficiency": 65.8,
+      "cost": 31.4,
       "domains": {
-        "chat": 63,
-        "coding": 41.8,
-        "terminal": 53.5,
-        "computerUse": 60.6
+        "chat": 74.5,
+        "coding": 53.4,
+        "terminal": 67.1,
+        "computerUse": 68.3
       },
       "raw": {
         "tpotMs": 25.4,
@@ -1329,13 +1324,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 54.2,
-      "cost": 9.2,
+      "efficiency": 65.5,
+      "cost": 30.5,
       "domains": {
-        "chat": 60,
-        "coding": 42.8,
-        "terminal": 53.4,
-        "computerUse": 60.5
+        "chat": 72.4,
+        "coding": 54.2,
+        "terminal": 67,
+        "computerUse": 68.2
       },
       "raw": {
         "tpotMs": 25.5,
@@ -1360,13 +1355,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 53.4,
-      "cost": 27.1,
+      "efficiency": 65,
+      "cost": 44.2,
       "domains": {
-        "chat": 56.5,
-        "coding": 47.8,
-        "terminal": 47.4,
-        "computerUse": 61.8
+        "chat": 70,
+        "coding": 58.1,
+        "terminal": 62.7,
+        "computerUse": 69.2
       },
       "raw": {
         "tpotMs": 24.5,
@@ -1391,13 +1386,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 53.1,
-      "cost": 9.5,
+      "efficiency": 64.5,
+      "cost": 30.8,
       "domains": {
-        "chat": 62.7,
-        "coding": 39.8,
-        "terminal": 51.2,
-        "computerUse": 58.6
+        "chat": 74.3,
+        "coding": 51.8,
+        "terminal": 65.4,
+        "computerUse": 66.6
       },
       "raw": {
         "tpotMs": 26.8,
@@ -1422,13 +1417,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 51.7,
-      "cost": 54.2,
+      "efficiency": 63.8,
+      "cost": 65,
       "domains": {
-        "chat": 47.4,
-        "coding": 57,
-        "terminal": 53.3,
-        "computerUse": 49.2
+        "chat": 63.8,
+        "coding": 65.6,
+        "terminal": 66.9,
+        "computerUse": 59
       },
       "raw": {
         "tpotMs": 24.9,
@@ -1453,13 +1448,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 51.6,
+      "efficiency": 63.6,
       "cost": 100,
       "domains": {
-        "chat": 54.6,
-        "coding": 51.8,
-        "terminal": 46.5,
-        "computerUse": 53.3
+        "chat": 68.7,
+        "coding": 61.4,
+        "terminal": 62.1,
+        "computerUse": 62.3
       },
       "raw": {
         "tpotMs": 26.6,
@@ -1484,13 +1479,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 49.3,
-      "cost": 34.8,
+      "efficiency": 62,
+      "cost": 50.1,
       "domains": {
-        "chat": 46.6,
-        "coding": 50.8,
-        "terminal": 48.3,
-        "computerUse": 51.4
+        "chat": 63.2,
+        "coding": 60.6,
+        "terminal": 63.4,
+        "computerUse": 60.8
       },
       "raw": {
         "tpotMs": 37.6,
@@ -1515,13 +1510,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 47.8,
-      "cost": 46.6,
+      "efficiency": 60.2,
+      "cost": 59.1,
       "domains": {
-        "chat": 69.1,
-        "coding": 56.5,
-        "terminal": 45.5,
-        "computerUse": 19.9
+        "chat": 78.7,
+        "coding": 65.2,
+        "terminal": 61.4,
+        "computerUse": 35.4
       },
       "raw": {
         "tpotMs": 22.9,
@@ -1546,13 +1541,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 46.4,
-      "cost": 49.7,
+      "efficiency": 59.9,
+      "cost": 61.5,
       "domains": {
-        "chat": 38.6,
-        "coding": 49.4,
-        "terminal": 49,
-        "computerUse": 48.6
+        "chat": 57.7,
+        "coding": 59.5,
+        "terminal": 63.9,
+        "computerUse": 58.5
       },
       "raw": {
         "tpotMs": 36.3,
@@ -1569,27 +1564,27 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Llama-3.3-70B|H100x4|sglang|BF16",
-      "model": "Llama-3.3-70B",
+      "id": "Llama-3.1-70B|H100x4|sglang|BF16",
+      "model": "Llama-3.1-70B",
       "hardware": "H100x4",
       "hardwareFamily": "H100",
       "gpus": 4,
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 45.2,
-      "cost": 5.4,
+      "efficiency": 58.8,
+      "cost": 28,
       "domains": {
-        "chat": 52.9,
-        "coding": 47.8,
-        "terminal": 36.9,
-        "computerUse": 43.1
+        "chat": 67.8,
+        "coding": 58.6,
+        "terminal": 53.9,
+        "computerUse": 54.7
       },
       "raw": {
-        "tpotMs": 27.4,
-        "ttftMs": 1956.3,
-        "tokPerSec": 490.8,
-        "usdPerMTok": 9.03,
+        "tpotMs": 26.5,
+        "ttftMs": 2138.4,
+        "tokPerSec": 501.1,
+        "usdPerMTok": 8.85,
         "loadsUsed": [
           1,
           40,
@@ -1601,27 +1596,27 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Llama-3.1-70B|H100x4|sglang|BF16",
-      "model": "Llama-3.1-70B",
+      "id": "Llama-3.3-70B|H100x4|sglang|BF16",
+      "model": "Llama-3.3-70B",
       "hardware": "H100x4",
       "hardwareFamily": "H100",
       "gpus": 4,
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 45.1,
-      "cost": 5.8,
+      "efficiency": 58.8,
+      "cost": 27.6,
       "domains": {
-        "chat": 53.3,
-        "coding": 48.3,
-        "terminal": 34.9,
-        "computerUse": 43.8
+        "chat": 67.6,
+        "coding": 58.2,
+        "terminal": 55.3,
+        "computerUse": 54.1
       },
       "raw": {
-        "tpotMs": 26.5,
-        "ttftMs": 2138.4,
-        "tokPerSec": 501.1,
-        "usdPerMTok": 8.85,
+        "tpotMs": 27.4,
+        "ttftMs": 1956.3,
+        "tokPerSec": 490.8,
+        "usdPerMTok": 9.03,
         "loadsUsed": [
           1,
           40,
@@ -1641,13 +1636,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 44.5,
-      "cost": 4.2,
+      "efficiency": 58.3,
+      "cost": 26.7,
       "domains": {
-        "chat": 50.5,
-        "coding": 48,
-        "terminal": 35.9,
-        "computerUse": 43.4
+        "chat": 65.9,
+        "coding": 58.3,
+        "terminal": 54.5,
+        "computerUse": 54.3
       },
       "raw": {
         "tpotMs": 27.8,
@@ -1673,13 +1668,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 43.8,
-      "cost": 19.2,
+      "efficiency": 57.6,
+      "cost": 38.2,
       "domains": {
-        "chat": 54.4,
-        "coding": 42.1,
-        "terminal": 39.6,
-        "computerUse": 39.3
+        "chat": 68.6,
+        "coding": 53.6,
+        "terminal": 57.2,
+        "computerUse": 51
       },
       "raw": {
         "tpotMs": 28.4,
@@ -1704,13 +1699,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 41.3,
-      "cost": 16.1,
+      "efficiency": 55.6,
+      "cost": 35.8,
       "domains": {
-        "chat": 54.9,
-        "coding": 38.5,
-        "terminal": 38.7,
-        "computerUse": 33.2
+        "chat": 68.9,
+        "coding": 50.7,
+        "terminal": 56.5,
+        "computerUse": 46.1
       },
       "raw": {
         "tpotMs": 33.2,
@@ -1727,27 +1722,27 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Llama-3.1-8B|A100-40GB|sglang|BF16",
-      "model": "Llama-3.1-8B",
-      "hardware": "A100-40GB",
-      "hardwareFamily": "A100",
-      "gpus": 1,
-      "engine": "sglang",
+      "id": "Qwen3-30B-A3B|3090x4|vllm|BF16",
+      "model": "Qwen3-30B-A3B",
+      "hardware": "3090x4",
+      "hardwareFamily": "3090",
+      "gpus": 4,
+      "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 40.5,
-      "cost": 52.4,
+      "efficiency": 55.4,
+      "cost": 69.8,
       "domains": {
-        "chat": 61.6,
-        "coding": 20.6,
-        "terminal": 41.7,
-        "computerUse": 38.1
+        "chat": 58.6,
+        "coding": 55,
+        "terminal": 54.5,
+        "computerUse": 53.3
       },
       "raw": {
-        "tpotMs": 69.1,
-        "ttftMs": 1936.5,
-        "tokPerSec": 531.8,
-        "usdPerMTok": 1.04,
+        "tpotMs": 50.3,
+        "ttftMs": 1064,
+        "tokPerSec": 341.4,
+        "usdPerMTok": 0.72,
         "loadsUsed": [
           1,
           40,
@@ -1758,27 +1753,27 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen3-30B-A3B|3090x4|vllm|BF16",
-      "model": "Qwen3-30B-A3B",
-      "hardware": "3090x4",
-      "hardwareFamily": "3090",
-      "gpus": 4,
-      "engine": "vllm",
+      "id": "Llama-3.1-8B|A100-40GB|sglang|BF16",
+      "model": "Llama-3.1-8B",
+      "hardware": "A100-40GB",
+      "hardwareFamily": "A100",
+      "gpus": 1,
+      "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 40.4,
-      "cost": 60.5,
+      "efficiency": 54.7,
+      "cost": 63.6,
       "domains": {
-        "chat": 39.9,
-        "coding": 43.9,
-        "terminal": 35.7,
-        "computerUse": 42
+        "chat": 73.6,
+        "coding": 36.4,
+        "terminal": 58.7,
+        "computerUse": 50.1
       },
       "raw": {
-        "tpotMs": 50.3,
-        "ttftMs": 1064,
-        "tokPerSec": 341.4,
-        "usdPerMTok": 0.72,
+        "tpotMs": 69.1,
+        "ttftMs": 1936.5,
+        "tokPerSec": 531.8,
+        "usdPerMTok": 1.04,
         "loadsUsed": [
           1,
           40,
@@ -1797,13 +1792,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 39.9,
-      "cost": 51.4,
+      "efficiency": 54.4,
+      "cost": 62.8,
       "domains": {
-        "chat": 58.2,
-        "coding": 22.5,
-        "terminal": 38.1,
-        "computerUse": 40.8
+        "chat": 71.2,
+        "coding": 37.9,
+        "terminal": 56.1,
+        "computerUse": 52.2
       },
       "raw": {
         "tpotMs": 63,
@@ -1828,13 +1823,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 39.5,
-      "cost": 65.5,
+      "efficiency": 54.3,
+      "cost": 73.6,
       "domains": {
-        "chat": 51.4,
-        "coding": 26.7,
-        "terminal": 36.8,
-        "computerUse": 43.1
+        "chat": 66.5,
+        "coding": 41.3,
+        "terminal": 55.2,
+        "computerUse": 54.1
       },
       "raw": {
         "tpotMs": 51.2,
@@ -1852,37 +1847,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "gpt-oss-20b|A100-40GBx2|sglang|BF16",
-      "model": "gpt-oss-20b",
-      "hardware": "A100-40GBx2",
-      "hardwareFamily": "A100",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 36.4,
-      "cost": 26.7,
-      "domains": {
-        "chat": 45.4,
-        "coding": 37.1,
-        "terminal": 32.3,
-        "computerUse": 30.6
-      },
-      "raw": {
-        "tpotMs": 53.3,
-        "ttftMs": 3491.8,
-        "tokPerSec": 325.8,
-        "usdPerMTok": 3.39,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 52
-      }
-    },
-    {
       "id": "gpt-oss-120b|3090x4|vllm|BF16",
       "model": "gpt-oss-120b",
       "hardware": "3090x4",
@@ -1891,13 +1855,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 35.9,
-      "cost": 61.4,
+      "efficiency": 52,
+      "cost": 70.5,
       "domains": {
-        "chat": 35.7,
-        "coding": 40.2,
-        "terminal": 30.4,
-        "computerUse": 37.4
+        "chat": 55.7,
+        "coding": 52,
+        "terminal": 50.7,
+        "computerUse": 49.5
       },
       "raw": {
         "tpotMs": 50.9,
@@ -1914,6 +1878,37 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
+      "id": "gpt-oss-20b|A100-40GBx2|sglang|BF16",
+      "model": "gpt-oss-20b",
+      "hardware": "A100-40GBx2",
+      "hardwareFamily": "A100",
+      "gpus": 2,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 52,
+      "cost": 43.9,
+      "domains": {
+        "chat": 62.4,
+        "coding": 49.6,
+        "terminal": 52,
+        "computerUse": 44
+      },
+      "raw": {
+        "tpotMs": 53.3,
+        "ttftMs": 3491.8,
+        "tokPerSec": 325.8,
+        "usdPerMTok": 3.39,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 52
+      }
+    },
+    {
       "id": "Qwen3.5-27B|H100x2|sglang|BF16",
       "model": "Qwen3.5-27B",
       "hardware": "H100x2",
@@ -1922,13 +1917,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 34.9,
-      "cost": 15,
+      "efficiency": 51.2,
+      "cost": 35,
       "domains": {
-        "chat": 35.7,
-        "coding": 34.3,
-        "terminal": 29.1,
-        "computerUse": 40.4
+        "chat": 55.7,
+        "coding": 47.3,
+        "terminal": 49.8,
+        "computerUse": 52
       },
       "raw": {
         "tpotMs": 48,
@@ -1953,13 +1948,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 32.4,
-      "cost": 0,
+      "efficiency": 49.4,
+      "cost": 16.7,
       "domains": {
-        "chat": 28.9,
-        "coding": 32.5,
-        "terminal": 27.7,
-        "computerUse": 40.6
+        "chat": 51,
+        "coding": 45.9,
+        "terminal": 48.8,
+        "computerUse": 52.1
       },
       "raw": {
         "tpotMs": 62,
@@ -1976,37 +1971,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen3.5-9B|A100-40GBx4|sglang|BF16",
-      "model": "Qwen3.5-9B",
-      "hardware": "A100-40GBx4",
-      "hardwareFamily": "A100",
-      "gpus": 4,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 31.1,
-      "cost": 18.5,
-      "domains": {
-        "chat": 41.9,
-        "coding": 13.9,
-        "terminal": 21.2,
-        "computerUse": 47.4
-      },
-      "raw": {
-        "tpotMs": 100.3,
-        "ttftMs": 3065,
-        "tokPerSec": 447.2,
-        "usdPerMTok": 4.94,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 53
-      }
-    },
-    {
       "id": "Llama-3.1-8B|3090x4|sglang|BF16",
       "model": "Llama-3.1-8B",
       "hardware": "3090x4",
@@ -2015,13 +1979,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 31,
-      "cost": 52,
+      "efficiency": 48.3,
+      "cost": 63.2,
       "domains": {
-        "chat": 27.1,
-        "coding": 37.9,
-        "terminal": 29.6,
-        "computerUse": 29.2
+        "chat": 49.7,
+        "coding": 50.3,
+        "terminal": 50.1,
+        "computerUse": 42.9
       },
       "raw": {
         "tpotMs": 80.4,
@@ -2038,6 +2002,69 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
+      "id": "Qwen3.5-9B|A100-40GBx4|sglang|BF16",
+      "model": "Qwen3.5-9B",
+      "hardware": "A100-40GBx4",
+      "hardwareFamily": "A100",
+      "gpus": 4,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 48.2,
+      "cost": 37.6,
+      "domains": {
+        "chat": 59.9,
+        "coding": 31,
+        "terminal": 44.2,
+        "computerUse": 57.6
+      },
+      "raw": {
+        "tpotMs": 100.3,
+        "ttftMs": 3065,
+        "tokPerSec": 447.2,
+        "usdPerMTok": 4.94,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 53
+      }
+    },
+    {
+      "id": "Qwen2.5-72B|H100x2|sglang|BF16",
+      "model": "Qwen2.5-72B",
+      "hardware": "H100x2",
+      "hardwareFamily": "H100",
+      "gpus": 2,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 47.8,
+      "cost": 30.5,
+      "domains": {
+        "chat": 44.9,
+        "coding": 69.3,
+        "terminal": 29.1,
+        "computerUse": null
+      },
+      "raw": {
+        "tpotMs": 115.7,
+        "ttftMs": 2478.7,
+        "tokPerSec": 292.2,
+        "usdPerMTok": 7.59,
+        "loadsUsed": [
+          1,
+          40,
+          80,
+          160
+        ],
+        "domainCount": 3,
+        "runCount": 27
+      }
+    },
+    {
       "id": "Qwen3.5-9B|3090x4|vllm|BF16",
       "model": "Qwen3.5-9B",
       "hardware": "3090x4",
@@ -2046,13 +2073,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 29.9,
-      "cost": 57.5,
+      "efficiency": 47.2,
+      "cost": 67.5,
       "domains": {
-        "chat": 35.6,
-        "coding": 36.4,
-        "terminal": 29.4,
-        "computerUse": 18.2
+        "chat": 55.6,
+        "coding": 49,
+        "terminal": 50,
+        "computerUse": 34.1
       },
       "raw": {
         "tpotMs": 80.3,
@@ -2077,13 +2104,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 29.2,
-      "cost": 0,
+      "efficiency": 46.9,
+      "cost": 6.5,
       "domains": {
-        "chat": 26.4,
-        "coding": 28.2,
-        "terminal": 28.6,
-        "computerUse": 33.8
+        "chat": 49.3,
+        "coding": 42.5,
+        "terminal": 49.4,
+        "computerUse": 46.6
       },
       "raw": {
         "tpotMs": 54,
@@ -2109,13 +2136,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 28.8,
-      "cost": 59.8,
+      "efficiency": 46.7,
+      "cost": 69.2,
       "domains": {
-        "chat": 15.6,
-        "coding": 39.5,
-        "terminal": 35.4,
-        "computerUse": 24.6
+        "chat": 41.8,
+        "coding": 51.5,
+        "terminal": 54.2,
+        "computerUse": 39.2
       },
       "raw": {
         "tpotMs": 128,
@@ -2132,38 +2159,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen2.5-72B|H100x2|sglang|BF16",
-      "model": "Qwen2.5-72B",
-      "hardware": "H100x2",
-      "hardwareFamily": "H100",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 27.3,
-      "cost": 9.2,
-      "domains": {
-        "chat": 20.1,
-        "coding": 61.7,
-        "terminal": 0,
-        "computerUse": null
-      },
-      "raw": {
-        "tpotMs": 115.7,
-        "ttftMs": 2478.7,
-        "tokPerSec": 292.2,
-        "usdPerMTok": 7.59,
-        "loadsUsed": [
-          1,
-          40,
-          80,
-          160
-        ],
-        "domainCount": 3,
-        "runCount": 27
-      }
-    },
-    {
       "id": "gpt-oss-20b|3090x4|sglang|BF16",
       "model": "gpt-oss-20b",
       "hardware": "3090x4",
@@ -2172,13 +2167,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 26.5,
-      "cost": 51.9,
+      "efficiency": 44.6,
+      "cost": 63.2,
       "domains": {
-        "chat": 31.6,
-        "coding": 31.5,
-        "terminal": 25.1,
-        "computerUse": 17.7
+        "chat": 52.8,
+        "coding": 45.1,
+        "terminal": 47,
+        "computerUse": 33.6
       },
       "raw": {
         "tpotMs": 90.8,
@@ -2203,13 +2198,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 25.7,
-      "cost": 73.4,
+      "efficiency": 44.4,
+      "cost": 79.7,
       "domains": {
-        "chat": 24.5,
-        "coding": 32.5,
-        "terminal": 15.3,
-        "computerUse": 30.4
+        "chat": 47.9,
+        "coding": 45.9,
+        "terminal": 40,
+        "computerUse": 43.8
       },
       "raw": {
         "tpotMs": 107.7,
@@ -2235,13 +2230,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 25.1,
-      "cost": 21.6,
+      "efficiency": 44.1,
+      "cost": 40.1,
       "domains": {
-        "chat": 12.1,
-        "coding": 29.9,
-        "terminal": 24.9,
-        "computerUse": 33.5
+        "chat": 39.4,
+        "coding": 43.8,
+        "terminal": 46.8,
+        "computerUse": 46.4
       },
       "raw": {
         "tpotMs": 63.4,
@@ -2266,13 +2261,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 22.4,
-      "cost": 77.2,
+      "efficiency": 41.8,
+      "cost": 82.6,
       "domains": {
-        "chat": 18.6,
-        "coding": 26.8,
-        "terminal": 20.1,
-        "computerUse": 23.9
+        "chat": 43.9,
+        "coding": 41.4,
+        "terminal": 43.4,
+        "computerUse": 38.6
       },
       "raw": {
         "tpotMs": 117.2,
@@ -2297,13 +2292,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 22.4,
-      "cost": 74.4,
+      "efficiency": 40.7,
+      "cost": 80.4,
       "domains": {
-        "chat": 44.1,
-        "coding": 0,
-        "terminal": 19.5,
-        "computerUse": 25.8
+        "chat": 61.5,
+        "coding": 18.2,
+        "terminal": 43,
+        "computerUse": 40.2
       },
       "raw": {
         "tpotMs": 146.5,
@@ -2329,13 +2324,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 20,
-      "cost": 26.1,
+      "efficiency": 39.7,
+      "cost": 43.4,
       "domains": {
-        "chat": 28.6,
-        "coding": 10.3,
-        "terminal": 17.6,
-        "computerUse": 23.3
+        "chat": 50.8,
+        "coding": 28.1,
+        "terminal": 41.6,
+        "computerUse": 38.1
       },
       "raw": {
         "tpotMs": 121.2,
@@ -2360,13 +2355,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 19.7,
-      "cost": 37.5,
+      "efficiency": 39.5,
+      "cost": 52.2,
       "domains": {
-        "chat": 36.4,
-        "coding": 23,
-        "terminal": 7.4,
-        "computerUse": 11.9
+        "chat": 56.1,
+        "coding": 38.3,
+        "terminal": 34.4,
+        "computerUse": 29
       },
       "raw": {
         "tpotMs": 67.9,
@@ -2384,6 +2379,37 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
+      "id": "Llama-3.3-70B|A100-40GBx4|vllm|BF16",
+      "model": "Llama-3.3-70B",
+      "hardware": "A100-40GBx4",
+      "hardwareFamily": "A100",
+      "gpus": 4,
+      "engine": "vllm",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 38,
+      "cost": 21.6,
+      "domains": {
+        "chat": 38,
+        "coding": 37.5,
+        "terminal": 41.5,
+        "computerUse": 35.1
+      },
+      "raw": {
+        "tpotMs": 59.7,
+        "ttftMs": 5922.6,
+        "tokPerSec": 170.4,
+        "usdPerMTok": 12.97,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 55
+      }
+    },
+    {
       "id": "Qwen3.5-9B|3090x2|vllm|BF16",
       "model": "Qwen3.5-9B",
       "hardware": "3090x2",
@@ -2392,13 +2418,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 18,
-      "cost": 73.1,
+      "efficiency": 38,
+      "cost": 79.4,
       "domains": {
-        "chat": 31.9,
-        "coding": 1.3,
-        "terminal": 17.3,
-        "computerUse": 21.3
+        "chat": 53.1,
+        "coding": 20.9,
+        "terminal": 41.4,
+        "computerUse": 36.5
       },
       "raw": {
         "tpotMs": 129.1,
@@ -2416,37 +2442,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Llama-3.3-70B|A100-40GBx4|vllm|BF16",
-      "model": "Llama-3.3-70B",
-      "hardware": "A100-40GBx4",
-      "hardwareFamily": "A100",
-      "gpus": 4,
-      "engine": "vllm",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 17.3,
-      "cost": 0,
-      "domains": {
-        "chat": 10.1,
-        "coding": 22,
-        "terminal": 17.4,
-        "computerUse": 19.5
-      },
-      "raw": {
-        "tpotMs": 59.7,
-        "ttftMs": 5922.6,
-        "tokPerSec": 170.4,
-        "usdPerMTok": 12.97,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 55
-      }
-    },
-    {
       "id": "Llama-3.1-70B|A100-40GBx4|vllm|BF16",
       "model": "Llama-3.1-70B",
       "hardware": "A100-40GBx4",
@@ -2455,13 +2450,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 17.1,
-      "cost": 0,
+      "efficiency": 37.9,
+      "cost": 21.5,
       "domains": {
-        "chat": 11.8,
-        "coding": 21.4,
-        "terminal": 16.3,
-        "computerUse": 19
+        "chat": 39.2,
+        "coding": 37,
+        "terminal": 40.7,
+        "computerUse": 34.7
       },
       "raw": {
         "tpotMs": 62.8,
@@ -2478,38 +2473,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "gpt-oss-120b|A100-40GBx2|sglang|BF16",
-      "model": "gpt-oss-120b",
-      "hardware": "A100-40GBx2",
-      "hardwareFamily": "A100",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 16.7,
-      "cost": 15,
-      "domains": {
-        "chat": 28.5,
-        "coding": 19.8,
-        "terminal": 13,
-        "computerUse": 5.4
-      },
-      "raw": {
-        "tpotMs": 74.6,
-        "ttftMs": 6226.3,
-        "tokPerSec": 190.2,
-        "usdPerMTok": 5.81,
-        "loadsUsed": [
-          1,
-          40,
-          120,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 35
-      }
-    },
-    {
       "id": "gpt-oss-120b|3090x4|sglang|BF16",
       "model": "gpt-oss-120b",
       "hardware": "3090x4",
@@ -2518,13 +2481,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 16.1,
-      "cost": 45.1,
+      "efficiency": 37.1,
+      "cost": 58,
       "domains": {
-        "chat": 10,
-        "coding": 22.4,
-        "terminal": 15.4,
-        "computerUse": 16.5
+        "chat": 38,
+        "coding": 37.8,
+        "terminal": 40.1,
+        "computerUse": 32.6
       },
       "raw": {
         "tpotMs": 90.5,
@@ -2542,34 +2505,35 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen2.5-72B|A100-40GBx4|vllm|BF16",
-      "model": "Qwen2.5-72B",
-      "hardware": "A100-40GBx4",
+      "id": "gpt-oss-120b|A100-40GBx2|sglang|BF16",
+      "model": "gpt-oss-120b",
+      "hardware": "A100-40GBx2",
       "hardwareFamily": "A100",
-      "gpus": 4,
-      "engine": "vllm",
+      "gpus": 2,
+      "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 16.1,
-      "cost": 0,
+      "efficiency": 37.1,
+      "cost": 34.9,
       "domains": {
-        "chat": 0,
-        "coding": 29.7,
-        "terminal": 28.1,
-        "computerUse": 6.4
+        "chat": 50.7,
+        "coding": 35.7,
+        "terminal": 38.4,
+        "computerUse": 23.7
       },
       "raw": {
-        "tpotMs": 37.4,
-        "ttftMs": 23872,
-        "tokPerSec": 70.5,
-        "usdPerMTok": 31.36,
+        "tpotMs": 74.6,
+        "ttftMs": 6226.3,
+        "tokPerSec": 190.2,
+        "usdPerMTok": 5.81,
         "loadsUsed": [
           1,
           40,
+          120,
           160
         ],
         "domainCount": 4,
-        "runCount": 44
+        "runCount": 35
       }
     },
     {
@@ -2581,13 +2545,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 16.1,
-      "cost": 69.9,
+      "efficiency": 35.6,
+      "cost": 76.9,
       "domains": {
-        "chat": 0,
-        "coding": 25.3,
-        "terminal": 22.7,
-        "computerUse": 16.5
+        "chat": 24.2,
+        "coding": 40.1,
+        "terminal": 45.2,
+        "computerUse": 32.7
       },
       "raw": {
         "tpotMs": 54.1,
@@ -2605,6 +2569,68 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
+      "id": "Llama-3.1-8B|2080Tix2|vllm|BF16",
+      "model": "Llama-3.1-8B",
+      "hardware": "2080Tix2",
+      "hardwareFamily": "2080 Ti",
+      "gpus": 2,
+      "engine": "vllm",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 34.4,
+      "cost": 91,
+      "domains": {
+        "chat": 56.2,
+        "coding": 21.7,
+        "terminal": 33.7,
+        "computerUse": 25.8
+      },
+      "raw": {
+        "tpotMs": 221.9,
+        "ttftMs": 8737.9,
+        "tokPerSec": 277.1,
+        "usdPerMTok": 0.2,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 46
+      }
+    },
+    {
+      "id": "Qwen2.5-72B|A100-40GBx4|vllm|BF16",
+      "model": "Qwen2.5-72B",
+      "hardware": "A100-40GBx4",
+      "hardwareFamily": "A100",
+      "gpus": 4,
+      "engine": "vllm",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 33.5,
+      "cost": 6.9,
+      "domains": {
+        "chat": 16.7,
+        "coding": 43.7,
+        "terminal": 49.1,
+        "computerUse": 24.5
+      },
+      "raw": {
+        "tpotMs": 37.4,
+        "ttftMs": 23872,
+        "tokPerSec": 70.5,
+        "usdPerMTok": 31.36,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 44
+      }
+    },
+    {
       "id": "gpt-oss-20b|A100-40GBx4|sglang|BF16",
       "model": "gpt-oss-20b",
       "hardware": "A100-40GBx4",
@@ -2613,13 +2639,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 15.9,
-      "cost": 10.7,
+      "efficiency": 33.3,
+      "cost": 31.7,
       "domains": {
-        "chat": 34.3,
-        "coding": 29.1,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 54.7,
+        "coding": 43.2,
+        "terminal": 17.6,
+        "computerUse": 17.7
       },
       "raw": {
         "tpotMs": 119.7,
@@ -2638,68 +2664,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen3.5-9B|3090|vllm|BF16",
-      "model": "Qwen3.5-9B",
-      "hardware": "3090",
-      "hardwareFamily": "3090",
-      "gpus": 1,
-      "engine": "vllm",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 14.8,
-      "cost": 51,
-      "domains": {
-        "chat": 0,
-        "coding": 7.7,
-        "terminal": 36.1,
-        "computerUse": 15.3
-      },
-      "raw": {
-        "tpotMs": 79.9,
-        "ttftMs": 56767.6,
-        "tokPerSec": 55.2,
-        "usdPerMTok": 1.11,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 42
-      }
-    },
-    {
-      "id": "Llama-3.1-8B|2080Tix2|vllm|BF16",
-      "model": "Llama-3.1-8B",
-      "hardware": "2080Tix2",
-      "hardwareFamily": "2080 Ti",
-      "gpus": 2,
-      "engine": "vllm",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 13.3,
-      "cost": 88.2,
-      "domains": {
-        "chat": 36.5,
-        "coding": 2.3,
-        "terminal": 6.5,
-        "computerUse": 8
-      },
-      "raw": {
-        "tpotMs": 221.9,
-        "ttftMs": 8737.9,
-        "tokPerSec": 277.1,
-        "usdPerMTok": 0.2,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 46
-      }
-    },
-    {
       "id": "Llama-3.1-8B|2080Ti|vllm|BF16",
       "model": "Llama-3.1-8B",
       "hardware": "2080Ti",
@@ -2708,13 +2672,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 9.4,
-      "cost": 85.8,
+      "efficiency": 31.8,
+      "cost": 89.1,
       "domains": {
-        "chat": 0,
-        "coding": 16.3,
-        "terminal": 8.8,
-        "computerUse": 12.6
+        "chat": 29.5,
+        "coding": 33,
+        "terminal": 35.3,
+        "computerUse": 29.5
       },
       "raw": {
         "tpotMs": 52.9,
@@ -2739,13 +2703,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 9,
-      "cost": 56.9,
+      "efficiency": 31.8,
+      "cost": 67,
       "domains": {
-        "chat": 0,
-        "coding": 4,
-        "terminal": 14.2,
-        "computerUse": 17.6
+        "chat": 31.1,
+        "coding": 23.1,
+        "terminal": 39.2,
+        "computerUse": 33.6
       },
       "raw": {
         "tpotMs": 211.2,
@@ -2771,13 +2735,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 8.6,
-      "cost": 80.4,
+      "efficiency": 30.8,
+      "cost": 85,
       "domains": {
-        "chat": 27.3,
-        "coding": 0,
-        "terminal": 7,
-        "computerUse": 0.1
+        "chat": 49.9,
+        "coding": 19.9,
+        "terminal": 34.1,
+        "computerUse": 19.4
       },
       "raw": {
         "tpotMs": 126.8,
@@ -2803,13 +2767,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 8.2,
-      "cost": 74.1,
+      "efficiency": 30.6,
+      "cost": 80.2,
       "domains": {
-        "chat": 20.7,
-        "coding": 1.4,
-        "terminal": 8.6,
-        "computerUse": 2.1
+        "chat": 45.3,
+        "coding": 20.9,
+        "terminal": 35.2,
+        "computerUse": 21
       },
       "raw": {
         "tpotMs": 91.1,
@@ -2827,37 +2791,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Llama-3.3-70B|H100x2|sglang|BF16",
-      "model": "Llama-3.3-70B",
-      "hardware": "H100x2",
-      "hardwareFamily": "H100",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 7.3,
-      "cost": 0,
-      "domains": {
-        "chat": 22.1,
-        "coding": 5.4,
-        "terminal": 1.8,
-        "computerUse": 0
-      },
-      "raw": {
-        "tpotMs": 113.4,
-        "ttftMs": 17409,
-        "tokPerSec": 191.6,
-        "usdPerMTok": 11.57,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 46
-      }
-    },
-    {
       "id": "Llama-3.1-70B|H100x2|sglang|BF16",
       "model": "Llama-3.1-70B",
       "hardware": "H100x2",
@@ -2866,13 +2799,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 6.8,
-      "cost": 0,
+      "efficiency": 29.4,
+      "cost": 23.2,
       "domains": {
-        "chat": 20.6,
-        "coding": 2.3,
-        "terminal": 4.1,
-        "computerUse": 0
+        "chat": 45.3,
+        "coding": 21.7,
+        "terminal": 32,
+        "computerUse": 18.6
       },
       "raw": {
         "tpotMs": 86.8,
@@ -2890,35 +2823,65 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen3.5-9B|3090x4|sglang|BF16",
-      "model": "Qwen3.5-9B",
-      "hardware": "3090x4",
-      "hardwareFamily": "3090",
-      "gpus": 4,
+      "id": "Llama-3.3-70B|H100x2|sglang|BF16",
+      "model": "Llama-3.3-70B",
+      "hardware": "H100x2",
+      "hardwareFamily": "H100",
+      "gpus": 2,
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 4.5,
-      "cost": 43.1,
+      "efficiency": 29.3,
+      "cost": 23.5,
       "domains": {
-        "chat": 9.7,
-        "coding": 8.4,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 46.3,
+        "coding": 24.2,
+        "terminal": 30.4,
+        "computerUse": 16.2
       },
       "raw": {
-        "tpotMs": 224.9,
-        "ttftMs": 4610.5,
-        "tokPerSec": 153.5,
-        "usdPerMTok": 1.59,
+        "tpotMs": 113.4,
+        "ttftMs": 17409,
+        "tokPerSec": 191.6,
+        "usdPerMTok": 11.57,
         "loadsUsed": [
           1,
           40,
-          120,
           160
         ],
         "domainCount": 4,
-        "runCount": 50
+        "runCount": 46
+      }
+    },
+    {
+      "id": "Qwen3.5-9B|3090|vllm|BF16",
+      "model": "Qwen3.5-9B",
+      "hardware": "3090",
+      "hardwareFamily": "3090",
+      "gpus": 1,
+      "engine": "vllm",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 28.4,
+      "cost": 62.5,
+      "domains": {
+        "chat": 1,
+        "coding": 26,
+        "terminal": 54.7,
+        "computerUse": 31.7
+      },
+      "raw": {
+        "tpotMs": 79.9,
+        "ttftMs": 56767.6,
+        "tokPerSec": 55.2,
+        "usdPerMTok": 1.11,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 42
       }
     },
     {
@@ -2930,13 +2893,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 4.1,
-      "cost": 0,
+      "efficiency": 24.8,
+      "cost": 1,
       "domains": {
-        "chat": 0.2,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 16.2
+        "chat": 31.2,
+        "coding": 8.9,
+        "terminal": 26.6,
+        "computerUse": 32.4
       },
       "raw": {
         "tpotMs": 207.3,
@@ -2953,6 +2916,37 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
+      "id": "Qwen3.5-27B|A100-40GBx2|sglang|BF16",
+      "model": "Qwen3.5-27B",
+      "hardware": "A100-40GBx2",
+      "hardwareFamily": "A100",
+      "gpus": 2,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 24.1,
+      "cost": 28.9,
+      "domains": {
+        "chat": 25.7,
+        "coding": 14.6,
+        "terminal": 31.5,
+        "computerUse": 24.7
+      },
+      "raw": {
+        "tpotMs": 164.2,
+        "ttftMs": 10606,
+        "tokPerSec": 132.2,
+        "usdPerMTok": 8.36,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 52
+      }
+    },
+    {
       "id": "Qwen3.5-9B|2080Tix2|vllm|BF16",
       "model": "Qwen3.5-9B",
       "hardware": "2080Tix2",
@@ -2961,13 +2955,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 2.7,
-      "cost": 80.5,
+      "efficiency": 22.8,
+      "cost": 85.1,
       "domains": {
-        "chat": 10.7,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 38.5,
+        "coding": 15.8,
+        "terminal": 22.9,
+        "computerUse": 14.2
       },
       "raw": {
         "tpotMs": 311.7,
@@ -2985,92 +2979,31 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen3.5-27B|A100-40GBx2|sglang|BF16",
-      "model": "Qwen3.5-27B",
-      "hardware": "A100-40GBx2",
-      "hardwareFamily": "A100",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 2.5,
-      "cost": 7.1,
-      "domains": {
-        "chat": 0,
-        "coding": 0,
-        "terminal": 3.3,
-        "computerUse": 6.7
-      },
-      "raw": {
-        "tpotMs": 164.2,
-        "ttftMs": 10606,
-        "tokPerSec": 132.2,
-        "usdPerMTok": 8.36,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 52
-      }
-    },
-    {
-      "id": "Qwen3.5-9B|3090x2|sglang|BF16",
+      "id": "Qwen3.5-9B|3090x4|sglang|BF16",
       "model": "Qwen3.5-9B",
-      "hardware": "3090x2",
+      "hardware": "3090x4",
       "hardwareFamily": "3090",
-      "gpus": 2,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 2.3,
-      "cost": 16.6,
-      "domains": {
-        "chat": 0,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 9.1
-      },
-      "raw": {
-        "tpotMs": 319.2,
-        "ttftMs": 3373.8,
-        "tokPerSec": 22.6,
-        "usdPerMTok": 5.4,
-        "loadsUsed": [
-          1,
-          40,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 55
-      }
-    },
-    {
-      "id": "Qwen3.5-27B|A100-40GBx4|sglang|BF16",
-      "model": "Qwen3.5-27B",
-      "hardware": "A100-40GBx4",
-      "hardwareFamily": "A100",
       "gpus": 4,
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 0.1,
-      "cost": 0,
+      "efficiency": 20.7,
+      "cost": 56.5,
       "domains": {
-        "chat": 0.2,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 37.7,
+        "coding": 26.6,
+        "terminal": 17.5,
+        "computerUse": 1
       },
       "raw": {
-        "tpotMs": 447.3,
-        "ttftMs": 14161.9,
-        "tokPerSec": 87.6,
-        "usdPerMTok": 25.23,
+        "tpotMs": 224.9,
+        "ttftMs": 4610.5,
+        "tokPerSec": 153.5,
+        "usdPerMTok": 1.59,
         "loadsUsed": [
           1,
           40,
+          120,
           160
         ],
         "domainCount": 4,
@@ -3086,13 +3019,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 0,
-      "cost": 0,
+      "efficiency": 15.9,
+      "cost": 11.8,
       "domains": {
-        "chat": 0,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 21.1,
+        "coding": 17.4,
+        "terminal": 14.9,
+        "computerUse": 10.3
       },
       "raw": {
         "tpotMs": 149.7,
@@ -3110,6 +3043,37 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
+      "id": "Qwen3.5-9B|3090x2|sglang|BF16",
+      "model": "Qwen3.5-9B",
+      "hardware": "3090x2",
+      "hardwareFamily": "3090",
+      "gpus": 2,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 15.8,
+      "cost": 36.2,
+      "domains": {
+        "chat": 11.2,
+        "coding": 10.8,
+        "terminal": 14.3,
+        "computerUse": 26.7
+      },
+      "raw": {
+        "tpotMs": 319.2,
+        "ttftMs": 3373.8,
+        "tokPerSec": 22.6,
+        "usdPerMTok": 5.4,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 55
+      }
+    },
+    {
       "id": "Llama-3.3-70B|A100-40GBx4|sglang|BF16",
       "model": "Llama-3.3-70B",
       "hardware": "A100-40GBx4",
@@ -3118,13 +3082,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "sglang",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 0,
-      "cost": 0,
+      "efficiency": 15.3,
+      "cost": 9.5,
       "domains": {
-        "chat": 0,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 21.7,
+        "coding": 18.2,
+        "terminal": 10.5,
+        "computerUse": 10.9
       },
       "raw": {
         "tpotMs": 189.8,
@@ -3141,38 +3105,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       }
     },
     {
-      "id": "Qwen3.5-27B|3090x4|sglang|BF16",
-      "model": "Qwen3.5-27B",
-      "hardware": "3090x4",
-      "hardwareFamily": "3090",
-      "gpus": 4,
-      "engine": "sglang",
-      "quant": "BF16",
-      "provenance": "verified",
-      "efficiency": 0,
-      "cost": 21.4,
-      "domains": {
-        "chat": 0,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 0
-      },
-      "raw": {
-        "tpotMs": 441.7,
-        "ttftMs": 13233,
-        "tokPerSec": 56.6,
-        "usdPerMTok": 4.32,
-        "loadsUsed": [
-          1,
-          40,
-          120,
-          160
-        ],
-        "domainCount": 4,
-        "runCount": 39
-      }
-    },
-    {
       "id": "Qwen3.5-27B|3090x4|vllm|BF16",
       "model": "Qwen3.5-27B",
       "hardware": "3090x4",
@@ -3181,13 +3113,13 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "engine": "vllm",
       "quant": "BF16",
       "provenance": "verified",
-      "efficiency": 0,
-      "cost": 34.2,
+      "efficiency": 12,
+      "cost": 49.7,
       "domains": {
-        "chat": 0,
-        "coding": 0,
-        "terminal": 0,
-        "computerUse": 0
+        "chat": 24.6,
+        "coding": 4.2,
+        "terminal": 11.4,
+        "computerUse": 7.7
       },
       "raw": {
         "tpotMs": 510.9,
@@ -3202,6 +3134,69 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         ],
         "domainCount": 4,
         "runCount": 41
+      }
+    },
+    {
+      "id": "Qwen3.5-27B|A100-40GBx4|sglang|BF16",
+      "model": "Qwen3.5-27B",
+      "hardware": "A100-40GBx4",
+      "hardwareFamily": "A100",
+      "gpus": 4,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 10.4,
+      "cost": 10.5,
+      "domains": {
+        "chat": 31.2,
+        "coding": 1,
+        "terminal": 1,
+        "computerUse": 8.2
+      },
+      "raw": {
+        "tpotMs": 447.3,
+        "ttftMs": 14161.9,
+        "tokPerSec": 87.6,
+        "usdPerMTok": 25.23,
+        "loadsUsed": [
+          1,
+          40,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 50
+      }
+    },
+    {
+      "id": "Qwen3.5-27B|3090x4|sglang|BF16",
+      "model": "Qwen3.5-27B",
+      "hardware": "3090x4",
+      "hardwareFamily": "3090",
+      "gpus": 4,
+      "engine": "sglang",
+      "quant": "BF16",
+      "provenance": "verified",
+      "efficiency": 8.5,
+      "cost": 39.9,
+      "domains": {
+        "chat": 11.1,
+        "coding": 4.4,
+        "terminal": 11.9,
+        "computerUse": 6.7
+      },
+      "raw": {
+        "tpotMs": 441.7,
+        "ttftMs": 13233,
+        "tokPerSec": 56.6,
+        "usdPerMTok": 4.32,
+        "loadsUsed": [
+          1,
+          40,
+          120,
+          160
+        ],
+        "domainCount": 4,
+        "runCount": 39
       }
     }
   ]

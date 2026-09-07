@@ -28,11 +28,11 @@ test('faster decode / prefill / throughput raises cell raw', () => {
   assert.ok(fast > slow);
 });
 
-test('scaledScore maps p10→0 and max→100', () => {
-  assert.equal(scaledScore(10, { p10: 10, p90: 50, max: 100 }), 0);
-  assert.equal(scaledScore(100, { p10: 10, p90: 50, max: 100 }), 100);
-  const mid = scaledScore(Math.sqrt(10 * 100), { p10: 10, p90: 50, max: 100 });
-  assert.ok(Math.abs(mid - 50) < 1e-6);
+test('scaledScore maps min→1 and max→100', () => {
+  assert.equal(scaledScore(10, { min: 10, max: 100 }), 1);
+  assert.equal(scaledScore(100, { min: 10, max: 100 }), 100);
+  const mid = scaledScore(Math.sqrt(10 * 100), { min: 10, max: 100 });
+  assert.ok(Math.abs(mid - 50.5) < 1e-6);
 });
 
 test('usd/MTok scales with GPU count and tok/s', () => {
@@ -75,6 +75,9 @@ test('scoreCorpus ranks the faster config higher and tags verified', () => {
   assert.equal(rows[0].provenance, 'verified');
   assert.equal(rows[0].raw.domainCount, 4);
   assert.ok(rows[0].cost != null);
+  assert.equal(rows[0].efficiency, 100);
+  assert.equal(rows[1].efficiency, 1);
+  assert.ok(rows.every((r) => r.efficiency >= 1));
 });
 
 test('scoreCorpus drops configs that never hit the serving-point band', () => {

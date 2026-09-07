@@ -302,10 +302,11 @@ export function EfficiencyIndex() {
             geometric mean across those loads and profiles.
           </p>
           <p className="mt-4">
-            Domain score = 100 × (ln raw − ln p10) / (ln max − ln p10),
-            clamped to 0–100. p10 and max are taken over this snapshot.
-            Efficiency Index is the unweighted mean of the domain scores that
-            exist. The scale rebases when the corpus does.
+            Domain score = 1 + 99 × (ln raw − ln min) / (ln max − ln min).
+            Min and max are taken over this snapshot, so the slowest published
+            config is 1 and the fastest is 100. Efficiency Index is the
+            unweighted mean of the domain scores that exist. The scale rebases
+            when the corpus does.
           </p>
           <p className="mt-4">
             Cost Index uses the same scaling on tokens per dollar at concurrency
