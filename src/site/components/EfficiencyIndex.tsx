@@ -13,7 +13,6 @@ import { SiteNav } from './SiteNav';
 
 type View = 'efficiency' | 'cost';
 type EngineFilter = 'all' | 'vllm' | 'sglang';
-type ProvenanceFilter = 'all' | Provenance;
 
 const DOMAIN_LABEL: Record<Domain, string> = {
   chat: 'Chat',
@@ -67,14 +66,12 @@ export function EfficiencyIndex() {
   const [view, setView] = useState<View>('efficiency');
   const [family, setFamily] = useState<HardwareFamily | 'all'>('all');
   const [engine, setEngine] = useState<EngineFilter>('all');
-  const [provenance, setProvenance] = useState<ProvenanceFilter>('all');
   const [open, setOpen] = useState<string | null>(null);
 
   const rows = useMemo(() => {
     const filtered = snap.rows.filter((r) => {
       if (family !== 'all' && r.hardwareFamily !== family) return false;
       if (engine !== 'all' && r.engine !== engine) return false;
-      if (provenance !== 'all' && r.provenance !== provenance) return false;
       if (view === 'cost' && r.cost == null) return false;
       return true;
     });
@@ -84,7 +81,7 @@ export function EfficiencyIndex() {
       return bv - av || a.id.localeCompare(b.id);
     });
     return scored;
-  }, [snap.rows, family, engine, provenance, view]);
+  }, [snap.rows, family, engine, view]);
 
   return (
     <>
@@ -95,14 +92,13 @@ export function EfficiencyIndex() {
           {view === 'efficiency' ? 'Efficiency Index' : 'Cost Index'}
         </h1>
         <p className="mt-5 max-w-[42rem] text-[1.05rem] leading-relaxed">
-          A 0–100 score for how a model × hardware × engine serves agentic
+          A 1–100 score for how a model × hardware × engine serves agentic
           workloads. Chat, coding, terminal and computer-use, equally weighted.
-          Measured runs are tagged verified; analytical estimates are tagged
-          separately.
+          Every row is a measured QuettaBench run.
         </p>
         <p className="mt-4 max-w-[42rem] text-[14px] leading-relaxed text-[var(--ink-3)]">
-          Snapshot {snap.sourceModified} · {snap.n} configurations · {snap.verified}{' '}
-          verified · {snap.estimated} estimated · loads 1 / 40 / 160
+          Snapshot {snap.sourceModified} · {snap.n} configurations · loads 1 / 40 /
+          160
         </p>
       </header>
 
@@ -157,21 +153,6 @@ export function EfficiencyIndex() {
                 {label}
               </button>
             ))}
-            <span className="eyebrow ml-3 mr-1">Run</span>
-            {([
-              ['all', 'All'],
-              ['verified', 'Verified'],
-              ['estimated', 'Estimated'],
-            ] as const).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setProvenance(id)}
-                className={`idx-chip ${provenance === id ? 'idx-chip-on' : ''}`}
-              >
-                {label}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -183,9 +164,6 @@ export function EfficiencyIndex() {
         {rows.length === 0 ? (
           <p className="mt-8 text-[15px] text-[var(--ink-2)]">
             No configurations match these filters.
-            {provenance === 'estimated'
-              ? ' This snapshot has no estimated rows — every published score is a measured run.'
-              : ''}
           </p>
         ) : (
           <ol className="idx-table mt-4">
@@ -331,11 +309,7 @@ export function EfficiencyIndex() {
               ))}
             </tbody>
           </table>
-          <p className="mt-4">
-            Verified means the numbers were measured. Estimated is reserved for
-            analytical (QuettaSim) rows that have not been executed. This
-            snapshot is all verified.
-          </p>
+          <p className="mt-4">Every row on this board is a measured run.</p>
         </section>
       </section>
     </>
