@@ -244,58 +244,86 @@ export function EfficiencyIndex() {
           </ol>
         )}
 
-        <section className="mt-16 max-w-[42rem] border-t border-[var(--line)] pt-10">
-          <h2 className="text-[1.35rem] leading-tight">How the score is built</h2>
-          <p className="mt-4">
-            Each configuration is a model, a hardware width, and an engine. The
-            four workload families are folded into four subdomains. A
-            configuration needs at least three subdomains to appear.
+        <section className="idx-method mt-16 border-t border-[var(--line)] pt-10">
+          <h2>How the score is built</h2>
+          <p>
+            A row is (model, hardware, engine). At least three domains are
+            required. Every row is a measured run. Min / max are over this
+            snapshot; a new fastest run rebases the 1–100 scale.
           </p>
-          <ul className="mt-4 list-disc space-y-1 pl-5 text-[15px]">
-            <li>Chat — ShareGPT</li>
-            <li>Coding — SWE-bench</li>
-            <li>Terminal — TerminalBench</li>
-            <li>Computer-use — OSWorld</li>
-          </ul>
-          <p className="mt-4">
-            At each load (concurrency 1, 40, 160 — weights{' '}
-            {LOAD_WEIGHTS[1] * 100}/{LOAD_WEIGHTS[40] * 100}/{LOAD_WEIGHTS[160] * 100}
-            ) a cell is the geometric mean of 1/TPOT, 1/TTFT and output tok/s.
-            If the exact concurrency is missing, the nearest value in a fixed
-            band is used (1–5, 20–80, 120–256). Domain raw values are a
-            geometric mean across those loads and profiles.
-          </p>
-          <p className="mt-4">
-            Domain score = 1 + 99 × (ln raw − ln min) / (ln max − ln min).
-            Min and max are taken over this snapshot, so the slowest published
-            config is 1 and the fastest is 100. Efficiency Index is the
-            unweighted mean of the domain scores that exist. The scale rebases
-            when the corpus does.
-          </p>
-          <p className="mt-4">
-            Cost Index uses the same scaling on tokens per dollar at concurrency
-            40, from assumed $/GPU-hour × width. Higher is cheaper. These rates
-            are a dated assumption table, not a quote.
-          </p>
-          <table className="idx-rates mt-5">
-            <thead>
-              <tr>
-                <th>GPU</th>
-                <th>$ / GPU-hr</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(Object.keys(GPU_USD_PER_HOUR) as HardwareFamily[]).map((k) => (
-                <tr key={k}>
-                  <td>{k}</td>
-                  <td className="mono-nums">{GPU_USD_PER_HOUR[k].usd.toFixed(2)}</td>
-                  <td>{GPU_USD_PER_HOUR[k].source}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="mt-4">Every row on this board is a measured run.</p>
+
+          <div className="idx-method-grid">
+            <div>
+              <h3>1. Cell</h3>
+              <p className="idx-formula">
+                cell<sub>c</sub> = (1/TPOT · 1/TTFT · tok/s)<sup>1/3</sup>
+              </p>
+              <p>
+                c ∈ {'{'}1, 40, 160{'}'} with weights {LOAD_WEIGHTS[1]}/{LOAD_WEIGHTS[40]}/
+                {LOAD_WEIGHTS[160]}. If c is missing, use the nearest run in
+                [1, 5], [20, 80], or [120, 256].
+              </p>
+            </div>
+            <div>
+              <h3>2. Domain raw</h3>
+              <p className="idx-formula">
+                raw<sub>D</sub> = exp( Σ<sub>c</sub> w<sub>c</sub> ln cell<sub>c</sub> / Σ<sub>c</sub> w<sub>c</sub> )
+              </p>
+              <p>
+                Chat = ShareGPT (single-turn and multi-turn, then geo-mean).
+                Coding = SWE-bench. Terminal = TerminalBench. Computer-use =
+                OSWorld.
+              </p>
+            </div>
+            <div>
+              <h3>3. Domain score</h3>
+              <p className="idx-formula">
+                s<sub>D</sub> = 1 + 99 · ln(raw<sub>D</sub> / min<sub>D</sub>) / ln(max<sub>D</sub> / min<sub>D</sub>)
+              </p>
+              <p>Slowest published config in D is 1; fastest is 100.</p>
+            </div>
+            <div>
+              <h3>4. Efficiency Index</h3>
+              <p className="idx-formula">
+                E = mean {'{'} s<sub>D</sub> : D present {'}'}
+              </p>
+              <p>Equal weight. Missing domains are omitted, not zeroed.</p>
+            </div>
+            <div>
+              <h3>5. Cost Index</h3>
+              <p className="idx-formula">
+                tok/$ = (tok/s<sub>40</sub> · 3600) / (r · n<sub>GPU</sub>)
+              </p>
+              <p className="idx-formula">
+                C = 1 + 99 · ln((tok/$) / min) / ln(max / min)
+              </p>
+              <p>
+                r is the assumed $/GPU-hr below, not a quote. Higher C is
+                cheaper.
+              </p>
+            </div>
+            <div>
+              <h3>Assumed r</h3>
+              <table className="idx-rates">
+                <thead>
+                  <tr>
+                    <th>GPU</th>
+                    <th>$ / GPU-hr</th>
+                    <th>Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(Object.keys(GPU_USD_PER_HOUR) as HardwareFamily[]).map((k) => (
+                    <tr key={k}>
+                      <td>{k}</td>
+                      <td className="mono-nums">{GPU_USD_PER_HOUR[k].usd.toFixed(2)}</td>
+                      <td>{GPU_USD_PER_HOUR[k].source}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </section>
     </>
