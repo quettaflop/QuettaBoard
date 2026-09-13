@@ -204,7 +204,7 @@ It is also fragile:
   GPU count, so the H100's larger memory and batching headroom are never exercised. The
   index compares the cards at the A100's comfortable operating point.
 - **Board-only TCO.** No host, rack slot, networking, cooling or PUE. An A100 fleet needs
-  ~3.5× the slots per token, so every excluded per-slot cost narrows the gap. Electricity
+  ~3.7× the slots per token, so every excluded per-slot cost narrows the gap. Electricity
   is 38 % of the A100's hourly cost against 12 % for H100.
 
 Recommended next page change: publish the break-even price on each ranked row so the
@@ -227,4 +227,5 @@ claim reads "1.53× at $1,900 a card; ties at about $3,515".
   --branch=dev --commit-dirty=true` (credentials in `/home/debian/.secrets/cloudflare.env`).
   `--branch=main` changes `www.quettaflop.ai`.
 - Commits on `kev/marketing-site`: `c9f5979` draft as reviewed, `61fca4e` method and copy
-  fixes, `ce45157` model panel removed.
+  fixes, `ce45157` model panel removed, `7b5cb93` this record, `e019228` profiles balanced
+  inside domains (Cursor agent), `253aaa6` results re-pinned to that method.
