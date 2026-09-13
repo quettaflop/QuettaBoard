@@ -6,9 +6,9 @@ import {
   pickConcurrency,
   scaledScore,
   scoreCorpus,
-  usdPerMTok,
   type BenchRun,
 } from './score.ts';
+import { tcoUsdPerMTok } from './tco.ts';
 
 test('parseHardware reads family and width', () => {
   assert.deepEqual(parseHardware('H100x4'), { family: 'H100', gpus: 4, label: 'H100x4' });
@@ -33,15 +33,6 @@ test('scaledScore maps min→1 and max→100', () => {
   assert.equal(scaledScore(100, { min: 10, max: 100 }), 100);
   const mid = scaledScore(Math.sqrt(10 * 100), { min: 10, max: 100 });
   assert.ok(Math.abs(mid - 50.5) < 1e-6);
-});
-
-test('usd/MTok scales with GPU count and tok/s', () => {
-  const one = usdPerMTok(100, 'H100', 1);
-  const four = usdPerMTok(100, 'H100', 4);
-  const faster = usdPerMTok(400, 'H100', 1);
-  assert.ok(one != null && four != null && faster != null);
-  assert.ok(four > one);
-  assert.ok(Math.abs(faster - one / 4) < 1e-9);
 });
 
 test('scoreCorpus ranks the faster config higher and tags verified', () => {
@@ -74,10 +65,44 @@ test('scoreCorpus ranks the faster config higher and tags verified', () => {
   assert.ok(rows[0].efficiency > rows[1].efficiency);
   assert.equal(rows[0].provenance, 'verified');
   assert.equal(rows[0].raw.domainCount, 4);
-  assert.ok(rows[0].cost != null);
+  assert.ok(rows[0].raw.tcoUsdPerMTok > 0);
+  assert.equal(rows[0].raw.costCells.length, 15);
+  assert.equal('usdPerMTok' in rows[0].raw, false);
+  assert.equal('cost' in rows[0], false);
   assert.equal(rows[0].efficiency, 100);
   assert.equal(rows[1].efficiency, 1);
   assert.ok(rows.every((r) => r.efficiency >= 1));
+  assert.ok(rows[0].raw.tcoUsdPerMTok < rows[1].raw.tcoUsdPerMTok);
+});
+
+test('TCO mix weights loads and domains before freezing the row', () => {
+  const profiles = [
+    'chat-singleturn-synth',
+    'chat-multiturn-synth',
+    'swebench-multiturn-synth',
+    'terminalbench-multiturn-synth',
+    'osworld-multiturn-synth',
+  ];
+  const throughput = new Map([[1, 10], [40, 20], [160, 40]]);
+  const runs: BenchRun[] = profiles.flatMap((profile) =>
+    [...throughput].map(([concurrency, tokPerSec]) => ({
+      hardware: '3090',
+      modelShort: 'mixed',
+      quant: 'BF16',
+      engine: 'vllm',
+      profile,
+      concurrency,
+      successRate: 1,
+      tpotMs: 20,
+      ttftMs: 80,
+      tokPerSec,
+    })),
+  );
+  const { rows } = scoreCorpus(runs);
+  const costs = [10, 20, 40].map((tps) => tcoUsdPerMTok(tps, '3090', 1) as number);
+  const expected = costs[0] * 0.25 + costs[1] * 0.5 + costs[2] * 0.25;
+  assert.ok(Math.abs(rows[0].raw.tcoUsdPerMTok - expected) < 1e-4);
+  assert.ok(Math.abs((rows[0].raw.tcoByDomain.chat ?? 0) - expected) < 1e-4);
 });
 
 test('scoreCorpus drops configs that never hit the serving-point band', () => {

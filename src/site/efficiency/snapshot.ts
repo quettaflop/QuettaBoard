@@ -14,8 +14,8 @@ export interface EfficiencySnapshot {
 }
 
 export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
-  "version": "1.1",
-  "generatedAt": "2026-09-07",
+  "version": "1.4",
+  "generatedAt": "2026-09-13",
   "source": "json/current/data.synthetic_distributional.json",
   "sourceModified": "2026-08-30",
   "n": 101,
@@ -37,10 +37,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
     "computerUse": {
       "min": 0.022736923640110568,
       "max": 0.9430401499153881
-    },
-    "cost": {
-      "min": 22355.773486982725,
-      "max": 8582549.192720909
     }
   },
   "rows": [
@@ -54,7 +50,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 99.2,
-      "cost": 50.5,
       "domains": {
         "chat": 100,
         "coding": 96.7,
@@ -65,7 +60,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 5.2,
         "ttftMs": 414.7,
         "tokPerSec": 1946.2,
-        "usdPerMTok": 2.28,
+        "tcoUsdPerMTok": 1.0615,
+        "tcoByDomain": {
+          "chat": 0.7521,
+          "coding": 1.4615,
+          "terminal": 1.1604,
+          "computerUse": 0.8717
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 245.2,
+            "tcoUsdPerMTok": 2.71
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2168.5,
+            "tcoUsdPerMTok": 0.3065
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6131.6,
+            "tcoUsdPerMTok": 0.1084
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 302.8,
+            "tcoUsdPerMTok": 2.1947
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 4269.9,
+            "tcoUsdPerMTok": 0.1556
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 8350.3,
+            "tcoUsdPerMTok": 0.0796
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 175.6,
+            "tcoUsdPerMTok": 3.7842
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 855.1,
+            "tcoUsdPerMTok": 0.7772
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1309.5,
+            "tcoUsdPerMTok": 0.5075
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 235.2,
+            "tcoUsdPerMTok": 2.8252
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 957,
+            "tcoUsdPerMTok": 0.6945
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1554,
+            "tcoUsdPerMTok": 0.4277
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 285.5,
+            "tcoUsdPerMTok": 2.328
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1480.4,
+            "tcoUsdPerMTok": 0.4489
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2545,
+            "tcoUsdPerMTok": 0.2611
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -85,7 +208,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 97.6,
-      "cost": 59.5,
       "domains": {
         "chat": 96.5,
         "coding": 98.5,
@@ -96,7 +218,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 7.2,
         "ttftMs": 263.1,
         "tokPerSec": 1660.3,
-        "usdPerMTok": 1.33,
+        "tcoUsdPerMTok": 0.2061,
+        "tcoByDomain": {
+          "chat": 0.1406,
+          "coding": 0.2533,
+          "terminal": 0.2584,
+          "computerUse": 0.1721
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 237.3,
+            "tcoUsdPerMTok": 0.4923
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1832,
+            "tcoUsdPerMTok": 0.0638
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4672.8,
+            "tcoUsdPerMTok": 0.025
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 294.3,
+            "tcoUsdPerMTok": 0.397
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3460,
+            "tcoUsdPerMTok": 0.0338
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 7588.8,
+            "tcoUsdPerMTok": 0.0154
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 180.1,
+            "tcoUsdPerMTok": 0.6487
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 832.4,
+            "tcoUsdPerMTok": 0.1404
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1396.8,
+            "tcoUsdPerMTok": 0.0836
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 172.1,
+            "tcoUsdPerMTok": 0.6787
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 842.6,
+            "tcoUsdPerMTok": 0.1387
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1505.2,
+            "tcoUsdPerMTok": 0.0776
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 254,
+            "tcoUsdPerMTok": 0.46
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1334.2,
+            "tcoUsdPerMTok": 0.0876
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2196.8,
+            "tcoUsdPerMTok": 0.0532
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -116,7 +366,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 97,
-      "cost": 58.6,
       "domains": {
         "chat": 93.4,
         "coding": 99.9,
@@ -127,7 +376,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 6.1,
         "ttftMs": 311.2,
         "tokPerSec": 1579,
-        "usdPerMTok": 1.4,
+        "tcoUsdPerMTok": 0.6736,
+        "tcoByDomain": {
+          "chat": 0.5068,
+          "coding": 0.794,
+          "terminal": 0.8292,
+          "computerUse": 0.5645
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 181.5,
+            "tcoUsdPerMTok": 1.8311
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1856.5,
+            "tcoUsdPerMTok": 0.179
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4697.8,
+            "tcoUsdPerMTok": 0.0707
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 217,
+            "tcoUsdPerMTok": 1.5316
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3031.1,
+            "tcoUsdPerMTok": 0.1096
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 7595.4,
+            "tcoUsdPerMTok": 0.0437
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 155.8,
+            "tcoUsdPerMTok": 2.1321
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 817.2,
+            "tcoUsdPerMTok": 0.4066
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1440.2,
+            "tcoUsdPerMTok": 0.2307
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 147.6,
+            "tcoUsdPerMTok": 2.2516
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 793.4,
+            "tcoUsdPerMTok": 0.4188
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1460.5,
+            "tcoUsdPerMTok": 0.2275
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 203.2,
+            "tcoUsdPerMTok": 1.6349
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1396.9,
+            "tcoUsdPerMTok": 0.2379
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2252.3,
+            "tcoUsdPerMTok": 0.1475
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -147,7 +524,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 96.1,
-      "cost": 45.8,
       "domains": {
         "chat": 92.3,
         "coding": 100,
@@ -158,7 +534,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 7.8,
         "ttftMs": 269.5,
         "tokPerSec": 1465.1,
-        "usdPerMTok": 3.03,
+        "tcoUsdPerMTok": 1.3895,
+        "tcoByDomain": {
+          "chat": 0.9974,
+          "coding": 1.6371,
+          "terminal": 1.7292,
+          "computerUse": 1.1943
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 190,
+            "tcoUsdPerMTok": 3.4984
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1879.4,
+            "tcoUsdPerMTok": 0.3536
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5019.6,
+            "tcoUsdPerMTok": 0.1324
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 218.6,
+            "tcoUsdPerMTok": 3.0401
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2715.2,
+            "tcoUsdPerMTok": 0.2448
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5965,
+            "tcoUsdPerMTok": 0.1114
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 152.9,
+            "tcoUsdPerMTok": 4.3462
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 803.9,
+            "tcoUsdPerMTok": 0.8267
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1210.7,
+            "tcoUsdPerMTok": 0.5489
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 148.1,
+            "tcoUsdPerMTok": 4.4881
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 695.7,
+            "tcoUsdPerMTok": 0.9552
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1282.7,
+            "tcoUsdPerMTok": 0.5181
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 197.9,
+            "tcoUsdPerMTok": 3.3586
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1231.1,
+            "tcoUsdPerMTok": 0.5398
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1961.8,
+            "tcoUsdPerMTok": 0.3388
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -178,7 +682,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 95,
-      "cost": 68.5,
       "domains": {
         "chat": 91,
         "coding": 99,
@@ -189,7 +692,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 6.8,
         "ttftMs": 365,
         "tokPerSec": 1435.9,
-        "usdPerMTok": 0.77,
+        "tcoUsdPerMTok": 0.3445,
+        "tcoByDomain": {
+          "chat": 0.245,
+          "coding": 0.4107,
+          "terminal": 0.4348,
+          "computerUse": 0.2874
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 191.1,
+            "tcoUsdPerMTok": 0.8695
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1693.8,
+            "tcoUsdPerMTok": 0.0981
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4650.8,
+            "tcoUsdPerMTok": 0.0357
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 233.6,
+            "tcoUsdPerMTok": 0.7113
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2712.6,
+            "tcoUsdPerMTok": 0.0612
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6649.3,
+            "tcoUsdPerMTok": 0.025
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 154,
+            "tcoUsdPerMTok": 1.079
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 743.5,
+            "tcoUsdPerMTok": 0.2235
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1419.3,
+            "tcoUsdPerMTok": 0.1171
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 138.2,
+            "tcoUsdPerMTok": 1.2026
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 785.7,
+            "tcoUsdPerMTok": 0.2114
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1460.7,
+            "tcoUsdPerMTok": 0.1137
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 208.1,
+            "tcoUsdPerMTok": 0.7985
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1243.8,
+            "tcoUsdPerMTok": 0.1336
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1983.7,
+            "tcoUsdPerMTok": 0.0838
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -209,7 +840,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 94.2,
-      "cost": 49.6,
       "domains": {
         "chat": 93.5,
         "coding": 98.8,
@@ -220,7 +850,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 5,
         "ttftMs": 405.1,
         "tokPerSec": 1836.7,
-        "usdPerMTok": 2.41,
+        "tcoUsdPerMTok": 2.0867,
+        "tcoByDomain": {
+          "chat": 0.7052,
+          "coding": 2.4317,
+          "terminal": 3.4911,
+          "computerUse": 1.719
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 273.2,
+            "tcoUsdPerMTok": 2.4326
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2124.9,
+            "tcoUsdPerMTok": 0.3127
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5346.9,
+            "tcoUsdPerMTok": 0.1243
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 321.7,
+            "tcoUsdPerMTok": 2.066
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 4120,
+            "tcoUsdPerMTok": 0.1613
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 9443.8,
+            "tcoUsdPerMTok": 0.0704
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 84.3,
+            "tcoUsdPerMTok": 7.885
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 917.9,
+            "tcoUsdPerMTok": 0.724
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1687.9,
+            "tcoUsdPerMTok": 0.3937
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 55.1,
+            "tcoUsdPerMTok": 12.0654
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 863.9,
+            "tcoUsdPerMTok": 0.7693
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1844.3,
+            "tcoUsdPerMTok": 0.3603
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 121.8,
+            "tcoUsdPerMTok": 5.4574
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1156.7,
+            "tcoUsdPerMTok": 0.5745
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2463.6,
+            "tcoUsdPerMTok": 0.2698
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -240,7 +998,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 93.3,
-      "cost": 68.2,
       "domains": {
         "chat": 85.6,
         "coding": 97.6,
@@ -251,7 +1008,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 7.4,
         "ttftMs": 425.6,
         "tokPerSec": 1404.2,
-        "usdPerMTok": 0.79,
+        "tcoUsdPerMTok": 0.35,
+        "tcoByDomain": {
+          "chat": 0.2308,
+          "coding": 0.4452,
+          "terminal": 0.4366,
+          "computerUse": 0.2873
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 202.6,
+            "tcoUsdPerMTok": 0.8201
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1836.3,
+            "tcoUsdPerMTok": 0.0905
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4017.8,
+            "tcoUsdPerMTok": 0.0414
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 260.7,
+            "tcoUsdPerMTok": 0.6372
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2377.4,
+            "tcoUsdPerMTok": 0.0699
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6076.5,
+            "tcoUsdPerMTok": 0.0273
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 136.6,
+            "tcoUsdPerMTok": 1.2165
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 760.7,
+            "tcoUsdPerMTok": 0.2184
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1303.6,
+            "tcoUsdPerMTok": 0.1275
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 135.9,
+            "tcoUsdPerMTok": 1.2227
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 788.3,
+            "tcoUsdPerMTok": 0.2107
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1626.7,
+            "tcoUsdPerMTok": 0.1021
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 207.3,
+            "tcoUsdPerMTok": 0.8015
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1258,
+            "tcoUsdPerMTok": 0.1321
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1991.7,
+            "tcoUsdPerMTok": 0.0834
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -271,7 +1156,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 93.3,
-      "cost": 49.1,
       "domains": {
         "chat": 98,
         "coding": 87.1,
@@ -282,7 +1166,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 6.1,
         "ttftMs": 544.7,
         "tokPerSec": 1780.5,
-        "usdPerMTok": 2.49,
+        "tcoUsdPerMTok": 1.2792,
+        "tcoByDomain": {
+          "chat": 0.7429,
+          "coding": 1.9356,
+          "terminal": 1.4558,
+          "computerUse": 0.9827
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 255.2,
+            "tcoUsdPerMTok": 2.6041
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2448.4,
+            "tcoUsdPerMTok": 0.2714
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6127.2,
+            "tcoUsdPerMTok": 0.1085
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 295.1,
+            "tcoUsdPerMTok": 2.2518
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3740.1,
+            "tcoUsdPerMTok": 0.1777
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 8230.4,
+            "tcoUsdPerMTok": 0.0807
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 134.3,
+            "tcoUsdPerMTok": 4.9486
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 631.8,
+            "tcoUsdPerMTok": 1.0518
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 963,
+            "tcoUsdPerMTok": 0.6901
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 184,
+            "tcoUsdPerMTok": 3.611
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 775.3,
+            "tcoUsdPerMTok": 0.8572
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1335.4,
+            "tcoUsdPerMTok": 0.4977
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 257.1,
+            "tcoUsdPerMTok": 2.5848
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1306.9,
+            "tcoUsdPerMTok": 0.5085
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2020.9,
+            "tcoUsdPerMTok": 0.3288
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -302,7 +1314,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 93.1,
-      "cost": 67,
       "domains": {
         "chat": 91.7,
         "coding": 95.7,
@@ -313,7 +1324,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 10.7,
         "ttftMs": 273.1,
         "tokPerSec": 1307.8,
-        "usdPerMTok": 0.85,
+        "tcoUsdPerMTok": 0.1202,
+        "tcoByDomain": {
+          "chat": 0.0847,
+          "coding": 0.1431,
+          "terminal": 0.1458,
+          "computerUse": 0.1071
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 202,
+            "tcoUsdPerMTok": 0.2891
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1511.9,
+            "tcoUsdPerMTok": 0.0386
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4137,
+            "tcoUsdPerMTok": 0.0141
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 241.9,
+            "tcoUsdPerMTok": 0.2415
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2591.9,
+            "tcoUsdPerMTok": 0.0225
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5770.7,
+            "tcoUsdPerMTok": 0.0101
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 163.1,
+            "tcoUsdPerMTok": 0.3582
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 710.4,
+            "tcoUsdPerMTok": 0.0822
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1173.6,
+            "tcoUsdPerMTok": 0.0498
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 155.7,
+            "tcoUsdPerMTok": 0.3752
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 729.3,
+            "tcoUsdPerMTok": 0.0801
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1224.5,
+            "tcoUsdPerMTok": 0.0477
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 211.4,
+            "tcoUsdPerMTok": 0.2764
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 995.5,
+            "tcoUsdPerMTok": 0.0587
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1688.5,
+            "tcoUsdPerMTok": 0.0346
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -333,7 +1472,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 92.9,
-      "cost": 49.6,
       "domains": {
         "chat": 92.8,
         "coding": 91.7,
@@ -344,7 +1482,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 7.6,
         "ttftMs": 396.5,
         "tokPerSec": 1836.7,
-        "usdPerMTok": 2.41,
+        "tcoUsdPerMTok": 1.2545,
+        "tcoByDomain": {
+          "chat": 0.839,
+          "coding": 1.7353,
+          "terminal": 1.4537,
+          "computerUse": 0.9898
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 225.5,
+            "tcoUsdPerMTok": 2.9468
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2184.6,
+            "tcoUsdPerMTok": 0.3042
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5615.3,
+            "tcoUsdPerMTok": 0.1183
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 254.8,
+            "tcoUsdPerMTok": 2.6078
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3845.1,
+            "tcoUsdPerMTok": 0.1728
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 7801.7,
+            "tcoUsdPerMTok": 0.0852
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 137.6,
+            "tcoUsdPerMTok": 4.8297
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 876.5,
+            "tcoUsdPerMTok": 0.7582
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1116.4,
+            "tcoUsdPerMTok": 0.5953
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 178.1,
+            "tcoUsdPerMTok": 3.7324
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 839.5,
+            "tcoUsdPerMTok": 0.7916
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1331.9,
+            "tcoUsdPerMTok": 0.499
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 240.6,
+            "tcoUsdPerMTok": 2.7616
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1437.9,
+            "tcoUsdPerMTok": 0.4622
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2430.6,
+            "tcoUsdPerMTok": 0.2734
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -364,7 +1630,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 92.5,
-      "cost": 53.8,
       "domains": {
         "chat": 88.7,
         "coding": 95.7,
@@ -375,7 +1640,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 10.2,
         "ttftMs": 279.5,
         "tokPerSec": 1184.7,
-        "usdPerMTok": 1.87,
+        "tcoUsdPerMTok": 0.77,
+        "tcoByDomain": {
+          "chat": 0.563,
+          "coding": 0.9149,
+          "terminal": 0.9403,
+          "computerUse": 0.6617
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 172.1,
+            "tcoUsdPerMTok": 1.9307
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1563.7,
+            "tcoUsdPerMTok": 0.2125
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4182.6,
+            "tcoUsdPerMTok": 0.0794
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 199,
+            "tcoUsdPerMTok": 1.6695
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2029,
+            "tcoUsdPerMTok": 0.1638
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4644.1,
+            "tcoUsdPerMTok": 0.0715
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 141.8,
+            "tcoUsdPerMTok": 2.3429
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 660,
+            "tcoUsdPerMTok": 0.5035
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1072.1,
+            "tcoUsdPerMTok": 0.3099
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 137.4,
+            "tcoUsdPerMTok": 2.4192
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 635.2,
+            "tcoUsdPerMTok": 0.5231
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1123,
+            "tcoUsdPerMTok": 0.2959
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 186.1,
+            "tcoUsdPerMTok": 1.7854
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1035.4,
+            "tcoUsdPerMTok": 0.3209
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1512.9,
+            "tcoUsdPerMTok": 0.2196
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -395,7 +1788,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 92.4,
-      "cost": 59.2,
       "domains": {
         "chat": 91.4,
         "coding": 96.7,
@@ -406,7 +1798,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 5.9,
         "ttftMs": 406.7,
         "tokPerSec": 1641.5,
-        "usdPerMTok": 1.35,
+        "tcoUsdPerMTok": 1.0357,
+        "tcoByDomain": {
+          "chat": 0.3858,
+          "coding": 1.2487,
+          "terminal": 1.6181,
+          "computerUse": 0.8902
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 254.7,
+            "tcoUsdPerMTok": 1.3048
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2051.7,
+            "tcoUsdPerMTok": 0.162
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4889.2,
+            "tcoUsdPerMTok": 0.068
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 288.2,
+            "tcoUsdPerMTok": 1.1531
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3415.2,
+            "tcoUsdPerMTok": 0.0973
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 7866.5,
+            "tcoUsdPerMTok": 0.0422
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 83.7,
+            "tcoUsdPerMTok": 3.9712
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 822.5,
+            "tcoUsdPerMTok": 0.404
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1541,
+            "tcoUsdPerMTok": 0.2156
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.7,
+            "tcoUsdPerMTok": 5.4772
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 836.1,
+            "tcoUsdPerMTok": 0.3974
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1657.9,
+            "tcoUsdPerMTok": 0.2004
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 118.9,
+            "tcoUsdPerMTok": 2.7951
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1082.2,
+            "tcoUsdPerMTok": 0.307
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2194,
+            "tcoUsdPerMTok": 0.1514
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -426,7 +1946,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 92.4,
-      "cost": 40.8,
       "domains": {
         "chat": 88.2,
         "coding": 95.6,
@@ -437,7 +1956,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 10.5,
         "ttftMs": 325.5,
         "tokPerSec": 1084.7,
-        "usdPerMTok": 4.09,
+        "tcoUsdPerMTok": 1.4534,
+        "tcoByDomain": {
+          "chat": 1.0927,
+          "coding": 1.7072,
+          "terminal": 1.7199,
+          "computerUse": 1.2939
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 183.3,
+            "tcoUsdPerMTok": 3.6257
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1570.8,
+            "tcoUsdPerMTok": 0.4231
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4409.8,
+            "tcoUsdPerMTok": 0.1507
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 211.6,
+            "tcoUsdPerMTok": 3.1409
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1615.6,
+            "tcoUsdPerMTok": 0.4113
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4276.4,
+            "tcoUsdPerMTok": 0.1554
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 159.7,
+            "tcoUsdPerMTok": 4.1608
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 642,
+            "tcoUsdPerMTok": 1.0351
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1112.1,
+            "tcoUsdPerMTok": 0.5976
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 153.4,
+            "tcoUsdPerMTok": 4.3325
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 670.7,
+            "tcoUsdPerMTok": 0.9909
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1175.5,
+            "tcoUsdPerMTok": 0.5654
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 202.3,
+            "tcoUsdPerMTok": 3.2849
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 924.4,
+            "tcoUsdPerMTok": 0.7189
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1468,
+            "tcoUsdPerMTok": 0.4527
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -457,7 +2104,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 91.4,
-      "cost": 58.3,
       "domains": {
         "chat": 96.4,
         "coding": 82.9,
@@ -468,7 +2114,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 7.7,
         "ttftMs": 416.6,
         "tokPerSec": 1556.3,
-        "usdPerMTok": 1.42,
+        "tcoUsdPerMTok": 0.764,
+        "tcoByDomain": {
+          "chat": 0.4962,
+          "coding": 1.1215,
+          "terminal": 0.8422,
+          "computerUse": 0.5963
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 186.1,
+            "tcoUsdPerMTok": 1.7853
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1978.9,
+            "tcoUsdPerMTok": 0.1679
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5648.3,
+            "tcoUsdPerMTok": 0.0588
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 216.9,
+            "tcoUsdPerMTok": 1.5322
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3185.3,
+            "tcoUsdPerMTok": 0.1043
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6827.2,
+            "tcoUsdPerMTok": 0.0487
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 136.5,
+            "tcoUsdPerMTok": 2.4343
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 720.1,
+            "tcoUsdPerMTok": 0.4614
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 294.3,
+            "tcoUsdPerMTok": 1.129
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 155.2,
+            "tcoUsdPerMTok": 2.1415
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 773.1,
+            "tcoUsdPerMTok": 0.4298
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 904,
+            "tcoUsdPerMTok": 0.3676
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 204.6,
+            "tcoUsdPerMTok": 1.6238
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1124.4,
+            "tcoUsdPerMTok": 0.2955
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1952.3,
+            "tcoUsdPerMTok": 0.1702
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -488,7 +2262,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 91.3,
-      "cost": 53.9,
       "domains": {
         "chat": 83.2,
         "coding": 96.5,
@@ -499,7 +2272,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 9.8,
         "ttftMs": 326.9,
         "tokPerSec": 1188.4,
-        "usdPerMTok": 1.87,
+        "tcoUsdPerMTok": 0.8012,
+        "tcoByDomain": {
+          "chat": 0.5698,
+          "coding": 1.0594,
+          "terminal": 0.9306,
+          "computerUse": 0.6451
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 168.5,
+            "tcoUsdPerMTok": 1.9719
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1513.9,
+            "tcoUsdPerMTok": 0.2195
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3776.3,
+            "tcoUsdPerMTok": 0.088
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 198.2,
+            "tcoUsdPerMTok": 1.6763
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2100.1,
+            "tcoUsdPerMTok": 0.1582
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4962.1,
+            "tcoUsdPerMTok": 0.067
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 116.1,
+            "tcoUsdPerMTok": 2.8629
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 587.6,
+            "tcoUsdPerMTok": 0.5655
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1362.8,
+            "tcoUsdPerMTok": 0.2438
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 140.9,
+            "tcoUsdPerMTok": 2.3579
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 603,
+            "tcoUsdPerMTok": 0.551
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1266.6,
+            "tcoUsdPerMTok": 0.2623
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 180.6,
+            "tcoUsdPerMTok": 1.8398
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1137.1,
+            "tcoUsdPerMTok": 0.2922
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2126,
+            "tcoUsdPerMTok": 0.1563
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -519,7 +2420,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 89.4,
-      "cost": 57.8,
       "domains": {
         "chat": 89.3,
         "coding": 87.6,
@@ -530,7 +2430,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 8.9,
         "ttftMs": 423.1,
         "tokPerSec": 1507.6,
-        "usdPerMTok": 1.47,
+        "tcoUsdPerMTok": 0.7709,
+        "tcoByDomain": {
+          "chat": 0.5383,
+          "coding": 1.026,
+          "terminal": 0.8852,
+          "computerUse": 0.634
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 174.5,
+            "tcoUsdPerMTok": 1.9047
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1936.8,
+            "tcoUsdPerMTok": 0.1716
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4954.4,
+            "tcoUsdPerMTok": 0.0671
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 193.5,
+            "tcoUsdPerMTok": 1.7176
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3006.7,
+            "tcoUsdPerMTok": 0.1105
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6315,
+            "tcoUsdPerMTok": 0.0526
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 117.2,
+            "tcoUsdPerMTok": 2.8341
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 703.8,
+            "tcoUsdPerMTok": 0.4721
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1020.2,
+            "tcoUsdPerMTok": 0.3257
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 146.1,
+            "tcoUsdPerMTok": 2.2746
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 680.7,
+            "tcoUsdPerMTok": 0.4881
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1145.7,
+            "tcoUsdPerMTok": 0.29
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 182.9,
+            "tcoUsdPerMTok": 1.8167
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1210.1,
+            "tcoUsdPerMTok": 0.2746
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1952.4,
+            "tcoUsdPerMTok": 0.1702
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -550,7 +2578,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 89.3,
-      "cost": 52.8,
       "domains": {
         "chat": 86.5,
         "coding": 91,
@@ -561,7 +2588,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 12.7,
         "ttftMs": 294,
         "tokPerSec": 1108.8,
-        "usdPerMTok": 1.99,
+        "tcoUsdPerMTok": 0.2885,
+        "tcoByDomain": {
+          "chat": 0.1961,
+          "coding": 0.3525,
+          "terminal": 0.3608,
+          "computerUse": 0.2446
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 178.4,
+            "tcoUsdPerMTok": 0.6549
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1363.6,
+            "tcoUsdPerMTok": 0.0857
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3381,
+            "tcoUsdPerMTok": 0.0346
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 204.4,
+            "tcoUsdPerMTok": 0.5715
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2093.8,
+            "tcoUsdPerMTok": 0.0558
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4615.4,
+            "tcoUsdPerMTok": 0.0253
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 127.8,
+            "tcoUsdPerMTok": 0.9143
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 611.6,
+            "tcoUsdPerMTok": 0.191
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1028.6,
+            "tcoUsdPerMTok": 0.1136
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 124,
+            "tcoUsdPerMTok": 0.9424
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 590.1,
+            "tcoUsdPerMTok": 0.198
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1113.1,
+            "tcoUsdPerMTok": 0.105
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 183.9,
+            "tcoUsdPerMTok": 0.6354
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 884.8,
+            "tcoUsdPerMTok": 0.132
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1479.1,
+            "tcoUsdPerMTok": 0.079
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -581,7 +2736,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 87.3,
-      "cost": 50.6,
       "domains": {
         "chat": 84.3,
         "coding": 90.1,
@@ -592,7 +2746,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 13.8,
         "ttftMs": 320.7,
         "tokPerSec": 975.8,
-        "usdPerMTok": 2.27,
+        "tcoUsdPerMTok": 0.3194,
+        "tcoByDomain": {
+          "chat": 0.2336,
+          "coding": 0.3727,
+          "terminal": 0.3805,
+          "computerUse": 0.2909
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 148.3,
+            "tcoUsdPerMTok": 0.7878
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1352.9,
+            "tcoUsdPerMTok": 0.0864
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3525.9,
+            "tcoUsdPerMTok": 0.0331
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 164.7,
+            "tcoUsdPerMTok": 0.7093
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1701.2,
+            "tcoUsdPerMTok": 0.0687
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4154.7,
+            "tcoUsdPerMTok": 0.0281
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 126.1,
+            "tcoUsdPerMTok": 0.9265
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 545.5,
+            "tcoUsdPerMTok": 0.2142
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 858.5,
+            "tcoUsdPerMTok": 0.1361
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 124.4,
+            "tcoUsdPerMTok": 0.9388
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 509.8,
+            "tcoUsdPerMTok": 0.2292
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 936.4,
+            "tcoUsdPerMTok": 0.1248
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 153.4,
+            "tcoUsdPerMTok": 0.7616
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 769.6,
+            "tcoUsdPerMTok": 0.1518
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1189.8,
+            "tcoUsdPerMTok": 0.0982
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -612,7 +2894,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 87.2,
-      "cost": 41.8,
       "domains": {
         "chat": 86.6,
         "coding": 90.4,
@@ -623,7 +2904,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 10,
         "ttftMs": 511.5,
         "tokPerSec": 1153.6,
-        "usdPerMTok": 3.84,
+        "tcoUsdPerMTok": 1.8055,
+        "tcoByDomain": {
+          "chat": 0.946,
+          "coding": 2.3904,
+          "terminal": 2.1136,
+          "computerUse": 1.7718
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 205.3,
+            "tcoUsdPerMTok": 3.2364
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1778.7,
+            "tcoUsdPerMTok": 0.3736
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4418.6,
+            "tcoUsdPerMTok": 0.1504
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 238.1,
+            "tcoUsdPerMTok": 2.7911
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2483.5,
+            "tcoUsdPerMTok": 0.2676
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6178.6,
+            "tcoUsdPerMTok": 0.1076
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 100.7,
+            "tcoUsdPerMTok": 6.6021
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 579.1,
+            "tcoUsdPerMTok": 1.1475
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 999.8,
+            "tcoUsdPerMTok": 0.6647
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 122.6,
+            "tcoUsdPerMTok": 5.4224
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 537.9,
+            "tcoUsdPerMTok": 1.2354
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1184.2,
+            "tcoUsdPerMTok": 0.5612
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 202.2,
+            "tcoUsdPerMTok": 3.2863
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 388.7,
+            "tcoUsdPerMTok": 1.7097
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1741.7,
+            "tcoUsdPerMTok": 0.3816
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -643,7 +3052,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 86.6,
-      "cost": 57.9,
       "domains": {
         "chat": 94.4,
         "coding": 75.2,
@@ -654,7 +3062,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 8.4,
         "ttftMs": 532.6,
         "tokPerSec": 1514.1,
-        "usdPerMTok": 1.46,
+        "tcoUsdPerMTok": 0.923,
+        "tcoByDomain": {
+          "chat": 0.4851,
+          "coding": 1.651,
+          "terminal": 0.9059,
+          "computerUse": 0.6499
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 193.9,
+            "tcoUsdPerMTok": 1.7136
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2205.5,
+            "tcoUsdPerMTok": 0.1507
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5770,
+            "tcoUsdPerMTok": 0.0576
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 216,
+            "tcoUsdPerMTok": 1.5383
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 3027.4,
+            "tcoUsdPerMTok": 0.1098
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6575.3,
+            "tcoUsdPerMTok": 0.0505
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 117.2,
+            "tcoUsdPerMTok": 2.8362
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 593.8,
+            "tcoUsdPerMTok": 0.5596
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 125.4,
+            "tcoUsdPerMTok": 2.6488
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 153,
+            "tcoUsdPerMTok": 2.1711
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 710.4,
+            "tcoUsdPerMTok": 0.4677
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 642.5,
+            "tcoUsdPerMTok": 0.5172
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 189.6,
+            "tcoUsdPerMTok": 1.7524
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1033.3,
+            "tcoUsdPerMTok": 0.3216
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1627.8,
+            "tcoUsdPerMTok": 0.2041
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -674,7 +3210,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 86,
-      "cost": 36.6,
       "domains": {
         "chat": 76.7,
         "coding": 93.3,
@@ -685,7 +3220,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 14.4,
         "ttftMs": 422.4,
         "tokPerSec": 842.1,
-        "usdPerMTok": 5.26,
+        "tcoUsdPerMTok": 2.2627,
+        "tcoByDomain": {
+          "chat": 2.5167,
+          "coding": 2.7645,
+          "terminal": 2.2473,
+          "computerUse": 1.5225
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 52.5,
+            "tcoUsdPerMTok": 12.6601
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 777.3,
+            "tcoUsdPerMTok": 0.855
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1634.5,
+            "tcoUsdPerMTok": 0.4066
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 152.4,
+            "tcoUsdPerMTok": 4.3613
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1570.5,
+            "tcoUsdPerMTok": 0.4231
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4459.8,
+            "tcoUsdPerMTok": 0.149
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 81.5,
+            "tcoUsdPerMTok": 8.1505
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 581.7,
+            "tcoUsdPerMTok": 1.1424
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1067,
+            "tcoUsdPerMTok": 0.6228
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 109.5,
+            "tcoUsdPerMTok": 6.0682
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 568.8,
+            "tcoUsdPerMTok": 1.1683
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1137,
+            "tcoUsdPerMTok": 0.5845
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 178.8,
+            "tcoUsdPerMTok": 3.7168
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 712.4,
+            "tcoUsdPerMTok": 0.9329
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1310.3,
+            "tcoUsdPerMTok": 0.5072
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -705,7 +3368,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 85,
-      "cost": 55.1,
       "domains": {
         "chat": 91.1,
         "coding": 75.6,
@@ -716,7 +3378,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 11.6,
         "ttftMs": 427.8,
         "tokPerSec": 1276,
-        "usdPerMTok": 1.73,
+        "tcoUsdPerMTok": 0.3607,
+        "tcoByDomain": {
+          "chat": 0.2115,
+          "coding": 0.5854,
+          "terminal": 0.3829,
+          "computerUse": 0.263
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 155.2,
+            "tcoUsdPerMTok": 0.7529
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1745.4,
+            "tcoUsdPerMTok": 0.0669
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4635.1,
+            "tcoUsdPerMTok": 0.0252
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 174.9,
+            "tcoUsdPerMTok": 0.6681
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2576.2,
+            "tcoUsdPerMTok": 0.0454
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5584.7,
+            "tcoUsdPerMTok": 0.0209
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 106.2,
+            "tcoUsdPerMTok": 1.1004
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 555,
+            "tcoUsdPerMTok": 0.2105
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 142.4,
+            "tcoUsdPerMTok": 0.8204
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 132.6,
+            "tcoUsdPerMTok": 0.8814
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 595.1,
+            "tcoUsdPerMTok": 0.1963
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 453.3,
+            "tcoUsdPerMTok": 0.2577
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 162.9,
+            "tcoUsdPerMTok": 0.7172
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 908.2,
+            "tcoUsdPerMTok": 0.1286
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1508.2,
+            "tcoUsdPerMTok": 0.0775
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -736,7 +3526,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 83.6,
-      "cost": 54.4,
       "domains": {
         "chat": 84.7,
         "coding": 80.2,
@@ -747,7 +3536,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 11.4,
         "ttftMs": 534.5,
         "tokPerSec": 1224.2,
-        "usdPerMTok": 1.81,
+        "tcoUsdPerMTok": 0.3273,
+        "tcoByDomain": {
+          "chat": 0.2175,
+          "coding": 0.4464,
+          "terminal": 0.3772,
+          "computerUse": 0.2683
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 153.9,
+            "tcoUsdPerMTok": 0.759
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1594.5,
+            "tcoUsdPerMTok": 0.0733
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4048.7,
+            "tcoUsdPerMTok": 0.0289
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 170.2,
+            "tcoUsdPerMTok": 0.6863
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2507.4,
+            "tcoUsdPerMTok": 0.0466
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4434.7,
+            "tcoUsdPerMTok": 0.0263
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 100.1,
+            "tcoUsdPerMTok": 1.1676
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 511.9,
+            "tcoUsdPerMTok": 0.2282
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 723.5,
+            "tcoUsdPerMTok": 0.1615
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 125.7,
+            "tcoUsdPerMTok": 0.9293
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 541.5,
+            "tcoUsdPerMTok": 0.2158
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 790,
+            "tcoUsdPerMTok": 0.1479
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 156.4,
+            "tcoUsdPerMTok": 0.747
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 965.8,
+            "tcoUsdPerMTok": 0.121
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1388.8,
+            "tcoUsdPerMTok": 0.0841
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -767,7 +3684,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 81.7,
-      "cost": 45.4,
       "domains": {
         "chat": 80.2,
         "coding": 83.8,
@@ -778,7 +3694,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 18.1,
         "ttftMs": 373.8,
         "tokPerSec": 713.7,
-        "usdPerMTok": 3.11,
+        "tcoUsdPerMTok": 1.098,
+        "tcoByDomain": {
+          "chat": 0.7862,
+          "coding": 1.3155,
+          "terminal": 1.2921,
+          "computerUse": 0.9982
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 132.5,
+            "tcoUsdPerMTok": 2.5081
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1109.3,
+            "tcoUsdPerMTok": 0.2995
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3259.2,
+            "tcoUsdPerMTok": 0.102
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 144.1,
+            "tcoUsdPerMTok": 2.3058
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1003.7,
+            "tcoUsdPerMTok": 0.331
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2941.3,
+            "tcoUsdPerMTok": 0.113
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 110.1,
+            "tcoUsdPerMTok": 3.0189
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 433.8,
+            "tcoUsdPerMTok": 0.766
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 467.1,
+            "tcoUsdPerMTok": 0.7113
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 108.3,
+            "tcoUsdPerMTok": 3.068
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 437.7,
+            "tcoUsdPerMTok": 0.7592
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 570.8,
+            "tcoUsdPerMTok": 0.5821
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 135.9,
+            "tcoUsdPerMTok": 2.445
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 583.9,
+            "tcoUsdPerMTok": 0.5691
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 811.1,
+            "tcoUsdPerMTok": 0.4097
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -798,7 +3842,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 81.5,
-      "cost": 65.3,
       "domains": {
         "chat": 90.9,
         "coding": 70.7,
@@ -809,7 +3852,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 12.3,
         "ttftMs": 424.2,
         "tokPerSec": 1183,
-        "usdPerMTok": 0.94,
+        "tcoUsdPerMTok": 0.5899,
+        "tcoByDomain": {
+          "chat": 0.345,
+          "coding": 0.9268,
+          "terminal": 0.6259,
+          "computerUse": 0.462
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 135.5,
+            "tcoUsdPerMTok": 1.2258
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1852.9,
+            "tcoUsdPerMTok": 0.0897
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 5167.6,
+            "tcoUsdPerMTok": 0.0322
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 145.3,
+            "tcoUsdPerMTok": 1.1435
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2279.6,
+            "tcoUsdPerMTok": 0.0729
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4940.5,
+            "tcoUsdPerMTok": 0.0336
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 99.2,
+            "tcoUsdPerMTok": 1.6752
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 376.3,
+            "tcoUsdPerMTok": 0.4416
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 144.6,
+            "tcoUsdPerMTok": 1.1489
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 118.6,
+            "tcoUsdPerMTok": 1.4007
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 605.4,
+            "tcoUsdPerMTok": 0.2744
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 299.9,
+            "tcoUsdPerMTok": 0.5539
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 138.8,
+            "tcoUsdPerMTok": 1.1974
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 800.8,
+            "tcoUsdPerMTok": 0.2075
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 704.6,
+            "tcoUsdPerMTok": 0.2358
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -829,7 +4000,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 80.4,
-      "cost": 45.1,
       "domains": {
         "chat": 78.6,
         "coding": 82.8,
@@ -840,7 +4010,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 18.2,
         "ttftMs": 445,
         "tokPerSec": 701.7,
-        "usdPerMTok": 3.16,
+        "tcoUsdPerMTok": 1.1566,
+        "tcoByDomain": {
+          "chat": 0.8142,
+          "coding": 1.3687,
+          "terminal": 1.3829,
+          "computerUse": 1.0606
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 122.5,
+            "tcoUsdPerMTok": 2.7122
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1112.2,
+            "tcoUsdPerMTok": 0.2987
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3120.4,
+            "tcoUsdPerMTok": 0.1065
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 144.1,
+            "tcoUsdPerMTok": 2.3052
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 984.4,
+            "tcoUsdPerMTok": 0.3375
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2845.7,
+            "tcoUsdPerMTok": 0.1168
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 101.9,
+            "tcoUsdPerMTok": 3.2623
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 421.6,
+            "tcoUsdPerMTok": 0.7882
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 522.6,
+            "tcoUsdPerMTok": 0.6359
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 92.7,
+            "tcoUsdPerMTok": 3.5854
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 452.3,
+            "tcoUsdPerMTok": 0.7346
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 696.7,
+            "tcoUsdPerMTok": 0.477
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 131.5,
+            "tcoUsdPerMTok": 2.5262
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 538.2,
+            "tcoUsdPerMTok": 0.6174
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 690.1,
+            "tcoUsdPerMTok": 0.4815
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -860,7 +4158,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 79.4,
-      "cost": 64.1,
       "domains": {
         "chat": 87.6,
         "coding": 69.7,
@@ -871,7 +4168,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 11.8,
         "ttftMs": 534.3,
         "tokPerSec": 1100.9,
-        "usdPerMTok": 1.01,
+        "tcoUsdPerMTok": 0.6114,
+        "tcoByDomain": {
+          "chat": 0.352,
+          "coding": 0.9739,
+          "terminal": 0.6525,
+          "computerUse": 0.4672
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 131.8,
+            "tcoUsdPerMTok": 1.2603
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1631.1,
+            "tcoUsdPerMTok": 0.1019
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4744,
+            "tcoUsdPerMTok": 0.035
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 146.7,
+            "tcoUsdPerMTok": 1.1329
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2227.3,
+            "tcoUsdPerMTok": 0.0746
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4737.5,
+            "tcoUsdPerMTok": 0.0351
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 97.1,
+            "tcoUsdPerMTok": 1.7111
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 317.9,
+            "tcoUsdPerMTok": 0.5226
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 145.9,
+            "tcoUsdPerMTok": 1.139
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 117.1,
+            "tcoUsdPerMTok": 1.419
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 537.6,
+            "tcoUsdPerMTok": 0.309
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 289.9,
+            "tcoUsdPerMTok": 0.573
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 139,
+            "tcoUsdPerMTok": 1.1953
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 790.8,
+            "tcoUsdPerMTok": 0.2101
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 655.8,
+            "tcoUsdPerMTok": 0.2533
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -891,7 +4316,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 78.3,
-      "cost": 46.6,
       "domains": {
         "chat": 76.5,
         "coding": 79.7,
@@ -902,7 +4326,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 14.2,
         "ttftMs": 727.6,
         "tokPerSec": 766.8,
-        "usdPerMTok": 2.88,
+        "tcoUsdPerMTok": 0.3845,
+        "tcoByDomain": {
+          "chat": 0.2266,
+          "coding": 0.5446,
+          "terminal": 0.4337,
+          "computerUse": 0.3332
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 177,
+            "tcoUsdPerMTok": 0.6601
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1240.9,
+            "tcoUsdPerMTok": 0.0941
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2512.8,
+            "tcoUsdPerMTok": 0.0465
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 166.2,
+            "tcoUsdPerMTok": 0.703
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1369,
+            "tcoUsdPerMTok": 0.0853
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2628.4,
+            "tcoUsdPerMTok": 0.0444
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 90.9,
+            "tcoUsdPerMTok": 1.2856
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 379.9,
+            "tcoUsdPerMTok": 0.3075
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 420.8,
+            "tcoUsdPerMTok": 0.2777
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 119.4,
+            "tcoUsdPerMTok": 0.9783
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 403.7,
+            "tcoUsdPerMTok": 0.2894
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 658.4,
+            "tcoUsdPerMTok": 0.1775
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 174.4,
+            "tcoUsdPerMTok": 0.6698
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 440.5,
+            "tcoUsdPerMTok": 0.2652
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 883,
+            "tcoUsdPerMTok": 0.1323
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -922,7 +4474,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 77.9,
-      "cost": 64,
       "domains": {
         "chat": 80.1,
         "coding": 70.1,
@@ -933,7 +4484,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 13.5,
         "ttftMs": 584.4,
         "tokPerSec": 1094.3,
-        "usdPerMTok": 1.01,
+        "tcoUsdPerMTok": 0.6254,
+        "tcoByDomain": {
+          "chat": 0.3836,
+          "coding": 0.9507,
+          "terminal": 0.7149,
+          "computerUse": 0.4522
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 122.8,
+            "tcoUsdPerMTok": 1.3527
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1560.2,
+            "tcoUsdPerMTok": 0.1065
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3839.5,
+            "tcoUsdPerMTok": 0.0433
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 131.8,
+            "tcoUsdPerMTok": 1.261
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 2079.6,
+            "tcoUsdPerMTok": 0.0799
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 4265.9,
+            "tcoUsdPerMTok": 0.0389
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 80.6,
+            "tcoUsdPerMTok": 2.0623
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 506.9,
+            "tcoUsdPerMTok": 0.3277
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 153.1,
+            "tcoUsdPerMTok": 1.085
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 99.9,
+            "tcoUsdPerMTok": 1.6638
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 468,
+            "tcoUsdPerMTok": 0.355
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 342,
+            "tcoUsdPerMTok": 0.4859
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 127.6,
+            "tcoUsdPerMTok": 1.3022
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 856.8,
+            "tcoUsdPerMTok": 0.1939
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1399,
+            "tcoUsdPerMTok": 0.1188
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -953,7 +4632,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 77.5,
-      "cost": 38.6,
       "domains": {
         "chat": 77.6,
         "coding": 74.5,
@@ -964,7 +4642,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 16.6,
         "ttftMs": 585.6,
         "tokPerSec": 951.3,
-        "usdPerMTok": 4.66,
+        "tcoUsdPerMTok": 2.5797,
+        "tcoByDomain": {
+          "chat": 1.8024,
+          "coding": 3.3458,
+          "terminal": 2.9969,
+          "computerUse": 2.1736
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 104.8,
+            "tcoUsdPerMTok": 6.341
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1369.7,
+            "tcoUsdPerMTok": 0.4852
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3412,
+            "tcoUsdPerMTok": 0.1948
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 111.1,
+            "tcoUsdPerMTok": 5.9825
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1778.9,
+            "tcoUsdPerMTok": 0.3736
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3625.8,
+            "tcoUsdPerMTok": 0.1833
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 72,
+            "tcoUsdPerMTok": 9.2326
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 439.8,
+            "tcoUsdPerMTok": 1.5112
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 589.1,
+            "tcoUsdPerMTok": 1.1281
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 86,
+            "tcoUsdPerMTok": 7.7258
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 406.7,
+            "tcoUsdPerMTok": 1.6339
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 668.6,
+            "tcoUsdPerMTok": 0.994
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 103.3,
+            "tcoUsdPerMTok": 6.434
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 761.2,
+            "tcoUsdPerMTok": 0.8731
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1291.8,
+            "tcoUsdPerMTok": 0.5144
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -984,7 +4790,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 75.3,
-      "cost": 80.4,
       "domains": {
         "chat": 74.6,
         "coding": 77.2,
@@ -995,7 +4800,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 26.4,
         "ttftMs": 612.7,
         "tokPerSec": 646.4,
-        "usdPerMTok": 0.38,
+        "tcoUsdPerMTok": 0.3018,
+        "tcoByDomain": {
+          "chat": 0.1743,
+          "coding": 0.3975,
+          "terminal": 0.3942,
+          "computerUse": 0.2412
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 152,
+            "tcoUsdPerMTok": 0.5577
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 751.5,
+            "tcoUsdPerMTok": 0.1128
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1597.3,
+            "tcoUsdPerMTok": 0.0531
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 218.8,
+            "tcoUsdPerMTok": 0.3874
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1299.6,
+            "tcoUsdPerMTok": 0.0652
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2112.7,
+            "tcoUsdPerMTok": 0.0401
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 93.8,
+            "tcoUsdPerMTok": 0.9037
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 324.5,
+            "tcoUsdPerMTok": 0.2613
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 518,
+            "tcoUsdPerMTok": 0.1637
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 85.8,
+            "tcoUsdPerMTok": 0.988
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 377.6,
+            "tcoUsdPerMTok": 0.2245
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 606.1,
+            "tcoUsdPerMTok": 0.1399
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 168.2,
+            "tcoUsdPerMTok": 0.5041
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 478.8,
+            "tcoUsdPerMTok": 0.1771
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 795.4,
+            "tcoUsdPerMTok": 0.1066
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1015,7 +4948,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 73.6,
-      "cost": 72.5,
       "domains": {
         "chat": 82.5,
         "coding": 62.7,
@@ -1026,7 +4958,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 22.2,
         "ttftMs": 586.2,
         "tokPerSec": 908.1,
-        "usdPerMTok": 0.61,
+        "tcoUsdPerMTok": 0.1363,
+        "tcoByDomain": {
+          "chat": 0.0535,
+          "coding": 0.2577,
+          "terminal": 0.1437,
+          "computerUse": 0.0903
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 165.8,
+            "tcoUsdPerMTok": 0.1762
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1282.5,
+            "tcoUsdPerMTok": 0.0228
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3349,
+            "tcoUsdPerMTok": 0.0087
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 187.9,
+            "tcoUsdPerMTok": 0.1555
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1751.1,
+            "tcoUsdPerMTok": 0.0167
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3345.5,
+            "tcoUsdPerMTok": 0.0087
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 88.2,
+            "tcoUsdPerMTok": 0.3313
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 350.6,
+            "tcoUsdPerMTok": 0.0833
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 54.8,
+            "tcoUsdPerMTok": 0.533
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 132.9,
+            "tcoUsdPerMTok": 0.2197
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 458.5,
+            "tcoUsdPerMTok": 0.0637
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 128.3,
+            "tcoUsdPerMTok": 0.2277
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 165.5,
+            "tcoUsdPerMTok": 0.1765
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 697.8,
+            "tcoUsdPerMTok": 0.0419
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 289.5,
+            "tcoUsdPerMTok": 0.1009
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1046,7 +5106,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 73,
-      "cost": 60.5,
       "domains": {
         "chat": 84.3,
         "coding": 60.8,
@@ -1057,7 +5116,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 20.4,
         "ttftMs": 485.2,
         "tokPerSec": 884.4,
-        "usdPerMTok": 1.25,
+        "tcoUsdPerMTok": 0.3196,
+        "tcoByDomain": {
+          "chat": 0.1528,
+          "coding": 0.5868,
+          "terminal": 0.3135,
+          "computerUse": 0.2254
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 107.1,
+            "tcoUsdPerMTok": 0.5457
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1412.9,
+            "tcoUsdPerMTok": 0.0413
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3631,
+            "tcoUsdPerMTok": 0.0161
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 117.3,
+            "tcoUsdPerMTok": 0.4979
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1816.4,
+            "tcoUsdPerMTok": 0.0322
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3623.6,
+            "tcoUsdPerMTok": 0.0161
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 77.5,
+            "tcoUsdPerMTok": 0.7541
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 132.5,
+            "tcoUsdPerMTok": 0.441
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 82.1,
+            "tcoUsdPerMTok": 0.7112
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 93.9,
+            "tcoUsdPerMTok": 0.6224
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 430.9,
+            "tcoUsdPerMTok": 0.1356
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 162.1,
+            "tcoUsdPerMTok": 0.3604
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 110.7,
+            "tcoUsdPerMTok": 0.5278
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 629.5,
+            "tcoUsdPerMTok": 0.0928
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 310.6,
+            "tcoUsdPerMTok": 0.1881
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1077,7 +5264,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 71.8,
-      "cost": 91.8,
       "domains": {
         "chat": 74,
         "coding": 73.9,
@@ -1088,7 +5274,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 25.6,
         "ttftMs": 610,
         "tokPerSec": 639.7,
-        "usdPerMTok": 0.19,
+        "tcoUsdPerMTok": 0.1672,
+        "tcoByDomain": {
+          "chat": 0.0934,
+          "coding": 0.2106,
+          "terminal": 0.2206,
+          "computerUse": 0.1442
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 140.5,
+            "tcoUsdPerMTok": 0.3018
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 765.6,
+            "tcoUsdPerMTok": 0.0554
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1512.8,
+            "tcoUsdPerMTok": 0.028
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 194.2,
+            "tcoUsdPerMTok": 0.2184
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1309.3,
+            "tcoUsdPerMTok": 0.0324
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1778.3,
+            "tcoUsdPerMTok": 0.0238
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 94,
+            "tcoUsdPerMTok": 0.4509
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 328.1,
+            "tcoUsdPerMTok": 0.1292
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 318.3,
+            "tcoUsdPerMTok": 0.1332
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 81.1,
+            "tcoUsdPerMTok": 0.5229
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 351.2,
+            "tcoUsdPerMTok": 0.1207
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 359.4,
+            "tcoUsdPerMTok": 0.1179
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 150.5,
+            "tcoUsdPerMTok": 0.2817
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 444.2,
+            "tcoUsdPerMTok": 0.0954
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 407.4,
+            "tcoUsdPerMTok": 0.1041
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1108,7 +5422,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 70.6,
-      "cost": 46.8,
       "domains": {
         "chat": 82.2,
         "coding": 67.4,
@@ -1119,7 +5432,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 27.2,
         "ttftMs": 1372.5,
         "tokPerSec": 775.1,
-        "usdPerMTok": 2.85,
+        "tcoUsdPerMTok": 0.6877,
+        "tcoByDomain": {
+          "chat": 0.2156,
+          "coding": 1.0932,
+          "terminal": 0.9782,
+          "computerUse": 0.4639
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 165.9,
+            "tcoUsdPerMTok": 0.7043
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1539.2,
+            "tcoUsdPerMTok": 0.0759
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3279.1,
+            "tcoUsdPerMTok": 0.0356
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 186.1,
+            "tcoUsdPerMTok": 0.6278
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1469.7,
+            "tcoUsdPerMTok": 0.0795
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2510.7,
+            "tcoUsdPerMTok": 0.0465
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 54.2,
+            "tcoUsdPerMTok": 2.1574
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 208.2,
+            "tcoUsdPerMTok": 0.5611
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 88.8,
+            "tcoUsdPerMTok": 1.3162
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 222.4,
+            "tcoUsdPerMTok": 0.5253
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 75.6,
+            "tcoUsdPerMTok": 1.5462
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 107.3,
+            "tcoUsdPerMTok": 1.0888
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 435.9,
+            "tcoUsdPerMTok": 0.268
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 506.4,
+            "tcoUsdPerMTok": 0.2307
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1139,7 +5572,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 69.6,
-      "cost": 39.2,
       "domains": {
         "chat": 79.4,
         "coding": 63.8,
@@ -1150,7 +5582,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 26.8,
         "ttftMs": 1068.9,
         "tokPerSec": 984.5,
-        "usdPerMTok": 4.5,
+        "tcoUsdPerMTok": 2.9437,
+        "tcoByDomain": {
+          "chat": 1.2467,
+          "coding": 4.5351,
+          "terminal": 3.7812,
+          "computerUse": 2.2117
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 160.4,
+            "tcoUsdPerMTok": 4.143
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1844.2,
+            "tcoUsdPerMTok": 0.3603
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3671.6,
+            "tcoUsdPerMTok": 0.181
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 164.7,
+            "tcoUsdPerMTok": 4.0357
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1939.2,
+            "tcoUsdPerMTok": 0.3427
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3202.8,
+            "tcoUsdPerMTok": 0.2075
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 54.9,
+            "tcoUsdPerMTok": 12.1132
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 322.4,
+            "tcoUsdPerMTok": 2.061
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 348.8,
+            "tcoUsdPerMTok": 1.9052
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 77.4,
+            "tcoUsdPerMTok": 8.5872
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 289,
+            "tcoUsdPerMTok": 2.2992
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 342.7,
+            "tcoUsdPerMTok": 1.9391
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 121.2,
+            "tcoUsdPerMTok": 5.4843
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 527.3,
+            "tcoUsdPerMTok": 1.2603
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 789.3,
+            "tcoUsdPerMTok": 0.8419
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1170,7 +5730,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 69.5,
-      "cost": 55.1,
       "domains": {
         "chat": 75.5,
         "coding": 67.6,
@@ -1181,7 +5740,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 27.2,
         "ttftMs": 534.3,
         "tokPerSec": 638.1,
-        "usdPerMTok": 1.73,
+        "tcoUsdPerMTok": 0.6853,
+        "tcoByDomain": {
+          "chat": 0.1498,
+          "coding": 0.4175,
+          "terminal": 1.9678,
+          "computerUse": 0.2062
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 121.9,
+            "tcoUsdPerMTok": 0.4794
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1041.3,
+            "tcoUsdPerMTok": 0.0561
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2551.3,
+            "tcoUsdPerMTok": 0.0229
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 134.1,
+            "tcoUsdPerMTok": 0.4356
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1194,
+            "tcoUsdPerMTok": 0.0489
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1163.9,
+            "tcoUsdPerMTok": 0.0502
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 94.8,
+            "tcoUsdPerMTok": 0.6164
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 227.6,
+            "tcoUsdPerMTok": 0.2567
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 108.2,
+            "tcoUsdPerMTok": 0.5401
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 8.5,
+            "tcoUsdPerMTok": 6.9015
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 256.3,
+            "tcoUsdPerMTok": 0.2279
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 113.6,
+            "tcoUsdPerMTok": 0.5141
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 126,
+            "tcoUsdPerMTok": 0.4635
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 471.4,
+            "tcoUsdPerMTok": 0.1239
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 514.6,
+            "tcoUsdPerMTok": 0.1135
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1201,7 +5888,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 67.7,
-      "cost": 41.3,
       "domains": {
         "chat": 76.8,
         "coding": 56.8,
@@ -1212,7 +5898,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 30.7,
         "ttftMs": 563.5,
         "tokPerSec": 556.7,
-        "usdPerMTok": 3.97,
+        "tcoUsdPerMTok": 0.7272,
+        "tcoByDomain": {
+          "chat": 0.3111,
+          "coding": 1.3784,
+          "terminal": 0.7142,
+          "computerUse": 0.505
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 120.1,
+            "tcoUsdPerMTok": 0.9727
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 964.2,
+            "tcoUsdPerMTok": 0.1212
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2846.2,
+            "tcoUsdPerMTok": 0.041
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 127.3,
+            "tcoUsdPerMTok": 0.9181
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 874.6,
+            "tcoUsdPerMTok": 0.1336
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2475.8,
+            "tcoUsdPerMTok": 0.0472
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 81.2,
+            "tcoUsdPerMTok": 1.4395
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 93.9,
+            "tcoUsdPerMTok": 1.2437
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 73.6,
+            "tcoUsdPerMTok": 1.5868
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 103.1,
+            "tcoUsdPerMTok": 1.1336
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 362.9,
+            "tcoUsdPerMTok": 0.3219
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 108.2,
+            "tcoUsdPerMTok": 1.0794
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 118.8,
+            "tcoUsdPerMTok": 0.9834
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 488.1,
+            "tcoUsdPerMTok": 0.2394
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 209.4,
+            "tcoUsdPerMTok": 0.5579
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1232,7 +6046,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 67.1,
-      "cost": 59.2,
       "domains": {
         "chat": 74,
         "coding": 56.6,
@@ -1243,7 +6056,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 28.2,
         "ttftMs": 1044.4,
         "tokPerSec": 817,
-        "usdPerMTok": 1.36,
+        "tcoUsdPerMTok": 0.8603,
+        "tcoByDomain": {
+          "chat": 0.4407,
+          "coding": 1.4176,
+          "terminal": 0.9866,
+          "computerUse": 0.5963
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 111.4,
+            "tcoUsdPerMTok": 1.491
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1476.8,
+            "tcoUsdPerMTok": 0.1125
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3077.7,
+            "tcoUsdPerMTok": 0.054
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 113.2,
+            "tcoUsdPerMTok": 1.4674
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1484.4,
+            "tcoUsdPerMTok": 0.1119
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2583.1,
+            "tcoUsdPerMTok": 0.0643
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 51.5,
+            "tcoUsdPerMTok": 3.2282
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 260.6,
+            "tcoUsdPerMTok": 0.6376
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 142.4,
+            "tcoUsdPerMTok": 1.1671
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 74.2,
+            "tcoUsdPerMTok": 2.2389
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 292.5,
+            "tcoUsdPerMTok": 0.568
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 290.7,
+            "tcoUsdPerMTok": 0.5714
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 104.3,
+            "tcoUsdPerMTok": 1.5929
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 570.5,
+            "tcoUsdPerMTok": 0.2912
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 791.1,
+            "tcoUsdPerMTok": 0.21
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1263,7 +6204,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 66,
-      "cost": 56.2,
       "domains": {
         "chat": 77.2,
         "coding": 56.4,
@@ -1274,7 +6214,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 38.9,
         "ttftMs": 965.6,
         "tokPerSec": 684,
-        "usdPerMTok": 1.62,
+        "tcoUsdPerMTok": 0.5191,
+        "tcoByDomain": {
+          "chat": 0.1531,
+          "coding": 1.1205,
+          "terminal": 0.4831,
+          "computerUse": 0.3196
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 113.8,
+            "tcoUsdPerMTok": 0.5134
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1144.4,
+            "tcoUsdPerMTok": 0.051
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2877,
+            "tcoUsdPerMTok": 0.0203
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 122.5,
+            "tcoUsdPerMTok": 0.477
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1388.2,
+            "tcoUsdPerMTok": 0.0421
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2075.7,
+            "tcoUsdPerMTok": 0.0281
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 56.7,
+            "tcoUsdPerMTok": 1.0306
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 50.1,
+            "tcoUsdPerMTok": 1.1655
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 91.5,
+            "tcoUsdPerMTok": 0.6385
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 341.5,
+            "tcoUsdPerMTok": 0.1711
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 61.4,
+            "tcoUsdPerMTok": 0.9516
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 100,
+            "tcoUsdPerMTok": 0.584
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 495.5,
+            "tcoUsdPerMTok": 0.1179
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 127.4,
+            "tcoUsdPerMTok": 0.4587
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1294,7 +6354,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 65.8,
-      "cost": 31.4,
       "domains": {
         "chat": 74.5,
         "coding": 53.4,
@@ -1305,7 +6364,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 25.4,
         "ttftMs": 600.6,
         "tokPerSec": 616.6,
-        "usdPerMTok": 7.19,
+        "tcoUsdPerMTok": 5.3745,
+        "tcoByDomain": {
+          "chat": 3.0565,
+          "coding": 8.8376,
+          "terminal": 5.623,
+          "computerUse": 3.9809
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.5,
+            "tcoUsdPerMTok": 10.9826
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1009.7,
+            "tcoUsdPerMTok": 0.6582
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3011.7,
+            "tcoUsdPerMTok": 0.2207
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 63.4,
+            "tcoUsdPerMTok": 10.4892
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1102.4,
+            "tcoUsdPerMTok": 0.6028
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2798.4,
+            "tcoUsdPerMTok": 0.2375
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 48.2,
+            "tcoUsdPerMTok": 13.7736
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 135.3,
+            "tcoUsdPerMTok": 4.9124
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 56.5,
+            "tcoUsdPerMTok": 11.7518
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 51.8,
+            "tcoUsdPerMTok": 12.8171
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 367.7,
+            "tcoUsdPerMTok": 1.8072
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 109.7,
+            "tcoUsdPerMTok": 6.0604
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.7,
+            "tcoUsdPerMTok": 10.947
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 467.8,
+            "tcoUsdPerMTok": 1.4207
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 311.2,
+            "tcoUsdPerMTok": 2.1352
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1325,7 +6512,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 65.5,
-      "cost": 30.5,
       "domains": {
         "chat": 72.4,
         "coding": 54.2,
@@ -1336,7 +6522,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 25.5,
         "ttftMs": 592.6,
         "tokPerSec": 583.6,
-        "usdPerMTok": 7.6,
+        "tcoUsdPerMTok": 5.1806,
+        "tcoByDomain": {
+          "chat": 3.0948,
+          "coding": 8.2521,
+          "terminal": 5.4468,
+          "computerUse": 3.9287
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.2,
+            "tcoUsdPerMTok": 11.0411
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 916.5,
+            "tcoUsdPerMTok": 0.7251
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2374.4,
+            "tcoUsdPerMTok": 0.2799
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 63.2,
+            "tcoUsdPerMTok": 10.517
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1084.2,
+            "tcoUsdPerMTok": 0.613
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2722.5,
+            "tcoUsdPerMTok": 0.2441
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.8,
+            "tcoUsdPerMTok": 13.3482
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 150.9,
+            "tcoUsdPerMTok": 4.4032
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 61.2,
+            "tcoUsdPerMTok": 10.8538
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 56.3,
+            "tcoUsdPerMTok": 11.7946
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 280.4,
+            "tcoUsdPerMTok": 2.3702
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 126.5,
+            "tcoUsdPerMTok": 5.252
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.9,
+            "tcoUsdPerMTok": 10.9104
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 486.3,
+            "tcoUsdPerMTok": 1.3667
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 320.9,
+            "tcoUsdPerMTok": 2.0709
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1356,7 +6670,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 65,
-      "cost": 44.2,
       "domains": {
         "chat": 70,
         "coding": 58.1,
@@ -1367,7 +6680,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 24.5,
         "ttftMs": 919.1,
         "tokPerSec": 666,
-        "usdPerMTok": 3.33,
+        "tcoUsdPerMTok": 2.135,
+        "tcoByDomain": {
+          "chat": 1.2961,
+          "coding": 3.0794,
+          "terminal": 2.5121,
+          "computerUse": 1.6525
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 73.2,
+            "tcoUsdPerMTok": 4.5377
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1090.1,
+            "tcoUsdPerMTok": 0.3048
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2485,
+            "tcoUsdPerMTok": 0.1337
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 76,
+            "tcoUsdPerMTok": 4.3724
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1191.4,
+            "tcoUsdPerMTok": 0.2789
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2107.8,
+            "tcoUsdPerMTok": 0.1576
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 55.3,
+            "tcoUsdPerMTok": 6.0129
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 298.1,
+            "tcoUsdPerMTok": 1.1148
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 81.5,
+            "tcoUsdPerMTok": 4.075
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 63.3,
+            "tcoUsdPerMTok": 5.2467
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 258.8,
+            "tcoUsdPerMTok": 1.284
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 148.8,
+            "tcoUsdPerMTok": 2.2336
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 72,
+            "tcoUsdPerMTok": 4.616
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 491.5,
+            "tcoUsdPerMTok": 0.676
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 517.7,
+            "tcoUsdPerMTok": 0.6418
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1387,7 +6828,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 64.5,
-      "cost": 30.8,
       "domains": {
         "chat": 74.3,
         "coding": 51.8,
@@ -1398,7 +6838,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 26.8,
         "ttftMs": 663.6,
         "tokPerSec": 594,
-        "usdPerMTok": 7.46,
+        "tcoUsdPerMTok": 5.6028,
+        "tcoByDomain": {
+          "chat": 3.251,
+          "coding": 9.0813,
+          "terminal": 5.8761,
+          "computerUse": 4.2028
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 56.8,
+            "tcoUsdPerMTok": 11.7098
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1023.7,
+            "tcoUsdPerMTok": 0.6492
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2942.5,
+            "tcoUsdPerMTok": 0.2258
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 58.8,
+            "tcoUsdPerMTok": 11.2988
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1082.1,
+            "tcoUsdPerMTok": 0.6141
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2694.1,
+            "tcoUsdPerMTok": 0.2467
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 46.6,
+            "tcoUsdPerMTok": 14.2639
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 125.9,
+            "tcoUsdPerMTok": 5.2773
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 57.8,
+            "tcoUsdPerMTok": 11.5067
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 52.3,
+            "tcoUsdPerMTok": 12.713
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 275.8,
+            "tcoUsdPerMTok": 2.4093
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 111.3,
+            "tcoUsdPerMTok": 5.973
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 56.7,
+            "tcoUsdPerMTok": 11.7267
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 462.3,
+            "tcoUsdPerMTok": 1.4374
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 300.8,
+            "tcoUsdPerMTok": 2.2096
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1418,7 +6986,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 63.8,
-      "cost": 65,
       "domains": {
         "chat": 63.8,
         "coding": 65.6,
@@ -1429,7 +6996,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 24.9,
         "ttftMs": 781.7,
         "tokPerSec": 578,
-        "usdPerMTok": 0.96,
+        "tcoUsdPerMTok": 0.1996,
+        "tcoByDomain": {
+          "chat": 0.1283,
+          "coding": 0.263,
+          "terminal": 0.2441,
+          "computerUse": 0.163
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 66.3,
+            "tcoUsdPerMTok": 0.4406
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 990.3,
+            "tcoUsdPerMTok": 0.0295
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1999.7,
+            "tcoUsdPerMTok": 0.0146
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 69.4,
+            "tcoUsdPerMTok": 0.4207
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1027.8,
+            "tcoUsdPerMTok": 0.0284
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 848.6,
+            "tcoUsdPerMTok": 0.0344
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 47.5,
+            "tcoUsdPerMTok": 0.6149
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 212.5,
+            "tcoUsdPerMTok": 0.1375
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 180.1,
+            "tcoUsdPerMTok": 0.1622
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 50.5,
+            "tcoUsdPerMTok": 0.5784
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 224.3,
+            "tcoUsdPerMTok": 0.1302
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 212.7,
+            "tcoUsdPerMTok": 0.1373
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 65.2,
+            "tcoUsdPerMTok": 0.4478
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 435.2,
+            "tcoUsdPerMTok": 0.0671
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 418.4,
+            "tcoUsdPerMTok": 0.0698
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1449,7 +7144,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 63.6,
-      "cost": 100,
       "domains": {
         "chat": 68.7,
         "coding": 61.4,
@@ -1460,7 +7154,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 26.6,
         "ttftMs": 1017.9,
         "tokPerSec": 524.5,
-        "usdPerMTok": 0.12,
+        "tcoUsdPerMTok": 0.1271,
+        "tcoByDomain": {
+          "chat": 0.0575,
+          "coding": 0.1925,
+          "terminal": 0.1645,
+          "computerUse": 0.0938
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 118.8,
+            "tcoUsdPerMTok": 0.1784
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 716.3,
+            "tcoUsdPerMTok": 0.0296
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1647.9,
+            "tcoUsdPerMTok": 0.0129
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 153.2,
+            "tcoUsdPerMTok": 0.1384
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1096.6,
+            "tcoUsdPerMTok": 0.0193
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 656.8,
+            "tcoUsdPerMTok": 0.0323
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 82.6,
+            "tcoUsdPerMTok": 0.2566
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 230.7,
+            "tcoUsdPerMTok": 0.0919
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 64.3,
+            "tcoUsdPerMTok": 0.3294
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 77.2,
+            "tcoUsdPerMTok": 0.2746
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 266.9,
+            "tcoUsdPerMTok": 0.0794
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 94.5,
+            "tcoUsdPerMTok": 0.2244
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 130,
+            "tcoUsdPerMTok": 0.1631
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 312,
+            "tcoUsdPerMTok": 0.0679
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 277.8,
+            "tcoUsdPerMTok": 0.0763
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1480,7 +7302,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 62,
-      "cost": 50.1,
       "domains": {
         "chat": 63.2,
         "coding": 60.6,
@@ -1491,7 +7312,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 37.6,
         "ttftMs": 849.9,
         "tokPerSec": 473.3,
-        "usdPerMTok": 2.34,
+        "tcoUsdPerMTok": 0.3514,
+        "tcoByDomain": {
+          "chat": 0.1605,
+          "coding": 0.5667,
+          "terminal": 0.4336,
+          "computerUse": 0.2449
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 137.5,
+            "tcoUsdPerMTok": 0.425
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 633.2,
+            "tcoUsdPerMTok": 0.0923
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1580.5,
+            "tcoUsdPerMTok": 0.037
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 150.9,
+            "tcoUsdPerMTok": 0.3872
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 853.3,
+            "tcoUsdPerMTok": 0.0685
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 513.9,
+            "tcoUsdPerMTok": 0.1137
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 80.3,
+            "tcoUsdPerMTok": 0.7279
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 253.3,
+            "tcoUsdPerMTok": 0.2306
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 54.2,
+            "tcoUsdPerMTok": 1.0774
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 97.6,
+            "tcoUsdPerMTok": 0.5987
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 279.9,
+            "tcoUsdPerMTok": 0.2087
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 81.3,
+            "tcoUsdPerMTok": 0.7183
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 135.3,
+            "tcoUsdPerMTok": 0.4317
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 346.7,
+            "tcoUsdPerMTok": 0.1685
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 277,
+            "tcoUsdPerMTok": 0.2109
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1511,7 +7460,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 60.2,
-      "cost": 59.1,
       "domains": {
         "chat": 78.7,
         "coding": 65.2,
@@ -1522,7 +7470,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 22.9,
         "ttftMs": 755.2,
         "tokPerSec": 812.7,
-        "usdPerMTok": 1.36,
+        "tcoUsdPerMTok": 1.0082,
+        "tcoByDomain": {
+          "chat": 0.1563,
+          "coding": 0.4401,
+          "terminal": 0.7219,
+          "computerUse": 2.7145
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 106.5,
+            "tcoUsdPerMTok": 0.5487
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1376.6,
+            "tcoUsdPerMTok": 0.0424
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3063.4,
+            "tcoUsdPerMTok": 0.0191
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 114.1,
+            "tcoUsdPerMTok": 0.5118
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1754.6,
+            "tcoUsdPerMTok": 0.0333
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3003.2,
+            "tcoUsdPerMTok": 0.0195
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 75.2,
+            "tcoUsdPerMTok": 0.7768
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 354.3,
+            "tcoUsdPerMTok": 0.1649
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 89.3,
+            "tcoUsdPerMTok": 0.654
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 90.3,
+            "tcoUsdPerMTok": 0.6467
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 351.3,
+            "tcoUsdPerMTok": 0.1663
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 30.6,
+            "tcoUsdPerMTok": 1.9082
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 5.9,
+            "tcoUsdPerMTok": 9.9078
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 226.8,
+            "tcoUsdPerMTok": 0.2576
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 134.3,
+            "tcoUsdPerMTok": 0.4351
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1542,7 +7618,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 59.9,
-      "cost": 61.5,
       "domains": {
         "chat": 57.7,
         "coding": 59.5,
@@ -1553,7 +7628,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 36.3,
         "ttftMs": 921.5,
         "tokPerSec": 469.6,
-        "usdPerMTok": 1.18,
+        "tcoUsdPerMTok": 0.2392,
+        "tcoByDomain": {
+          "chat": 0.1406,
+          "coding": 0.3408,
+          "terminal": 0.2938,
+          "computerUse": 0.1815
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 64.2,
+            "tcoUsdPerMTok": 0.4551
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 846.2,
+            "tcoUsdPerMTok": 0.0345
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1252.7,
+            "tcoUsdPerMTok": 0.0233
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 62.9,
+            "tcoUsdPerMTok": 0.4646
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 771.1,
+            "tcoUsdPerMTok": 0.0379
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 784.6,
+            "tcoUsdPerMTok": 0.0372
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 33.8,
+            "tcoUsdPerMTok": 0.8632
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 165.8,
+            "tcoUsdPerMTok": 0.1762
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 198.2,
+            "tcoUsdPerMTok": 0.1474
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 40.1,
+            "tcoUsdPerMTok": 0.7277
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 183,
+            "tcoUsdPerMTok": 0.1596
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 228,
+            "tcoUsdPerMTok": 0.1281
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 57,
+            "tcoUsdPerMTok": 0.5123
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 381.9,
+            "tcoUsdPerMTok": 0.0765
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 481.6,
+            "tcoUsdPerMTok": 0.0606
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1573,7 +7776,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 58.8,
-      "cost": 28,
       "domains": {
         "chat": 67.8,
         "coding": 58.6,
@@ -1584,7 +7786,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 26.5,
         "ttftMs": 2138.4,
         "tokPerSec": 501.1,
-        "usdPerMTok": 8.85,
+        "tcoUsdPerMTok": 7.8833,
+        "tcoByDomain": {
+          "chat": 3.1146,
+          "coding": 10.3429,
+          "terminal": 12.0125,
+          "computerUse": 6.0632
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 61,
+            "tcoUsdPerMTok": 10.8935
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1023.8,
+            "tcoUsdPerMTok": 0.6491
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2672.2,
+            "tcoUsdPerMTok": 0.2487
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 62.9,
+            "tcoUsdPerMTok": 10.5628
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 894.9,
+            "tcoUsdPerMTok": 0.7426
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1550.6,
+            "tcoUsdPerMTok": 0.4286
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 35.2,
+            "tcoUsdPerMTok": 18.8563
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 109.2,
+            "tcoUsdPerMTok": 6.0862
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.6,
+            "tcoUsdPerMTok": 17.6519
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 182.1,
+            "tcoUsdPerMTok": 3.649
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 28.8,
+            "tcoUsdPerMTok": 23.1
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 51.6,
+            "tcoUsdPerMTok": 12.8761
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 295.7,
+            "tcoUsdPerMTok": 2.2475
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 96.6,
+            "tcoUsdPerMTok": 6.8818
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1605,7 +7927,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 58.8,
-      "cost": 27.6,
       "domains": {
         "chat": 67.6,
         "coding": 58.2,
@@ -1616,7 +7937,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 27.4,
         "ttftMs": 1956.3,
         "tokPerSec": 490.8,
-        "usdPerMTok": 9.03,
+        "tcoUsdPerMTok": 7.3316,
+        "tcoByDomain": {
+          "chat": 3.126,
+          "coding": 10.2578,
+          "terminal": 10.0053,
+          "computerUse": 5.9371
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.9,
+            "tcoUsdPerMTok": 10.9085
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 995.1,
+            "tcoUsdPerMTok": 0.6679
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2698,
+            "tcoUsdPerMTok": 0.2463
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 63,
+            "tcoUsdPerMTok": 10.5516
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 870.3,
+            "tcoUsdPerMTok": 0.7636
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1515.9,
+            "tcoUsdPerMTok": 0.4384
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 35.2,
+            "tcoUsdPerMTok": 18.8849
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 111.8,
+            "tcoUsdPerMTok": 5.9442
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 45.3,
+            "tcoUsdPerMTok": 14.6581
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 167,
+            "tcoUsdPerMTok": 3.9795
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 38.2,
+            "tcoUsdPerMTok": 17.4044
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 51.6,
+            "tcoUsdPerMTok": 12.8843
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 309.8,
+            "tcoUsdPerMTok": 2.1454
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 101.1,
+            "tcoUsdPerMTok": 6.5731
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1637,7 +8078,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 58.3,
-      "cost": 26.7,
       "domains": {
         "chat": 65.9,
         "coding": 58.3,
@@ -1648,7 +8088,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 27.8,
         "ttftMs": 2051.8,
         "tokPerSec": 464.9,
-        "usdPerMTok": 9.54,
+        "tcoUsdPerMTok": 7.6372,
+        "tcoByDomain": {
+          "chat": 3.382,
+          "coding": 10.4491,
+          "terminal": 10.7752,
+          "computerUse": 5.9423
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 56.9,
+            "tcoUsdPerMTok": 11.6856
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 936.4,
+            "tcoUsdPerMTok": 0.7097
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2647.5,
+            "tcoUsdPerMTok": 0.251
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 57.8,
+            "tcoUsdPerMTok": 11.4941
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 777.5,
+            "tcoUsdPerMTok": 0.8547
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1338.4,
+            "tcoUsdPerMTok": 0.4965
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 32.1,
+            "tcoUsdPerMTok": 20.6928
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 124.7,
+            "tcoUsdPerMTok": 5.3272
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 41.7,
+            "tcoUsdPerMTok": 15.9218
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 177.8,
+            "tcoUsdPerMTok": 3.7371
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 33.7,
+            "tcoUsdPerMTok": 19.7049
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 50,
+            "tcoUsdPerMTok": 13.2927
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 308,
+            "tcoUsdPerMTok": 2.1579
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 107.9,
+            "tcoUsdPerMTok": 6.1609
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1669,7 +8229,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 57.6,
-      "cost": 38.2,
       "domains": {
         "chat": 68.6,
         "coding": 53.6,
@@ -1680,7 +8239,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 28.4,
         "ttftMs": 1517,
         "tokPerSec": 462.2,
-        "usdPerMTok": 4.78,
+        "tcoUsdPerMTok": 1.1059,
+        "tcoByDomain": {
+          "chat": 0.3239,
+          "coding": 1.7585,
+          "terminal": 1.5403,
+          "computerUse": 0.801
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 116.8,
+            "tcoUsdPerMTok": 1.0001
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 973.2,
+            "tcoUsdPerMTok": 0.12
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2508.2,
+            "tcoUsdPerMTok": 0.0466
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 134.1,
+            "tcoUsdPerMTok": 0.8713
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 719.5,
+            "tcoUsdPerMTok": 0.1624
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1080.9,
+            "tcoUsdPerMTok": 0.1081
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42.8,
+            "tcoUsdPerMTok": 2.7286
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 181.6,
+            "tcoUsdPerMTok": 0.6432
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 38.7,
+            "tcoUsdPerMTok": 3.0188
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 36.2,
+            "tcoUsdPerMTok": 3.2311
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 236.1,
+            "tcoUsdPerMTok": 0.4948
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 60.2,
+            "tcoUsdPerMTok": 1.9404
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 86.5,
+            "tcoUsdPerMTok": 1.3509
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 200.7,
+            "tcoUsdPerMTok": 0.5822
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 169.7,
+            "tcoUsdPerMTok": 0.6886
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1700,7 +8387,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 55.6,
-      "cost": 35.8,
       "domains": {
         "chat": 68.9,
         "coding": 50.7,
@@ -1711,7 +8397,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 33.2,
         "ttftMs": 3047.9,
         "tokPerSec": 401.2,
-        "usdPerMTok": 5.51,
+        "tcoUsdPerMTok": 1.2676,
+        "tcoByDomain": {
+          "chat": 0.2879,
+          "coding": 1.9048,
+          "terminal": 1.8282,
+          "computerUse": 1.0493
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 140.9,
+            "tcoUsdPerMTok": 0.8292
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 878.1,
+            "tcoUsdPerMTok": 0.133
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1701.8,
+            "tcoUsdPerMTok": 0.0687
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 154.8,
+            "tcoUsdPerMTok": 0.7547
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 764.1,
+            "tcoUsdPerMTok": 0.1529
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1476.8,
+            "tcoUsdPerMTok": 0.0791
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26,
+            "tcoUsdPerMTok": 4.4994
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 110.5,
+            "tcoUsdPerMTok": 1.057
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 116.2,
+            "tcoUsdPerMTok": 1.0058
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 23.1,
+            "tcoUsdPerMTok": 5.0632
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 133.7,
+            "tcoUsdPerMTok": 0.8738
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 232.7,
+            "tcoUsdPerMTok": 0.5022
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 63.1,
+            "tcoUsdPerMTok": 1.8508
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 119.7,
+            "tcoUsdPerMTok": 0.976
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 296.1,
+            "tcoUsdPerMTok": 0.3946
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1731,7 +8545,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 55.4,
-      "cost": 69.8,
       "domains": {
         "chat": 58.6,
         "coding": 55,
@@ -1742,7 +8555,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 50.3,
         "ttftMs": 1064,
         "tokPerSec": 341.4,
-        "usdPerMTok": 0.72,
+        "tcoUsdPerMTok": 0.743,
+        "tcoByDomain": {
+          "chat": 0.3032,
+          "coding": 1.1203,
+          "terminal": 1.0329,
+          "computerUse": 0.5157
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 99.2,
+            "tcoUsdPerMTok": 0.8545
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 550.7,
+            "tcoUsdPerMTok": 0.154
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1047.4,
+            "tcoUsdPerMTok": 0.081
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 114,
+            "tcoUsdPerMTok": 0.7435
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 530.2,
+            "tcoUsdPerMTok": 0.1599
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 710.8,
+            "tcoUsdPerMTok": 0.1193
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 59.8,
+            "tcoUsdPerMTok": 1.4189
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 190.6,
+            "tcoUsdPerMTok": 0.4449
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 39,
+            "tcoUsdPerMTok": 2.1723
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.6,
+            "tcoUsdPerMTok": 1.7108
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 197,
+            "tcoUsdPerMTok": 0.4304
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 54.3,
+            "tcoUsdPerMTok": 1.56
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 93,
+            "tcoUsdPerMTok": 0.9118
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 238.5,
+            "tcoUsdPerMTok": 0.3554
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 192.6,
+            "tcoUsdPerMTok": 0.4402
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1762,7 +8703,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 54.7,
-      "cost": 63.6,
       "domains": {
         "chat": 73.6,
         "coding": 36.4,
@@ -1773,7 +8713,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 69.1,
         "ttftMs": 1936.5,
         "tokPerSec": 531.8,
-        "usdPerMTok": 1.04,
+        "tcoUsdPerMTok": 0.3445,
+        "tcoByDomain": {
+          "chat": 0.1152,
+          "coding": 0.6297,
+          "terminal": 0.3003,
+          "computerUse": 0.3328
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 73.7,
+            "tcoUsdPerMTok": 0.3961
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1101.4,
+            "tcoUsdPerMTok": 0.0265
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2817.7,
+            "tcoUsdPerMTok": 0.0104
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 76.3,
+            "tcoUsdPerMTok": 0.3828
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1151,
+            "tcoUsdPerMTok": 0.0254
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1028.3,
+            "tcoUsdPerMTok": 0.0284
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 53.4,
+            "tcoUsdPerMTok": 0.5466
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 48.2,
+            "tcoUsdPerMTok": 0.606
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 38.4,
+            "tcoUsdPerMTok": 0.7603
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 63.6,
+            "tcoUsdPerMTok": 0.4594
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 132.6,
+            "tcoUsdPerMTok": 0.2203
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 97,
+            "tcoUsdPerMTok": 0.3011
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 72.4,
+            "tcoUsdPerMTok": 0.4032
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 225.7,
+            "tcoUsdPerMTok": 0.1294
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 43.6,
+            "tcoUsdPerMTok": 0.6692
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1793,7 +8861,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 54.4,
-      "cost": 62.8,
       "domains": {
         "chat": 71.2,
         "coding": 37.9,
@@ -1804,7 +8871,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 63,
         "ttftMs": 2428.9,
         "tokPerSec": 507.3,
-        "usdPerMTok": 1.09,
+        "tcoUsdPerMTok": 0.3261,
+        "tcoByDomain": {
+          "chat": 0.1183,
+          "coding": 0.6236,
+          "terminal": 0.3261,
+          "computerUse": 0.2364
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 71.5,
+            "tcoUsdPerMTok": 0.4087
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1081.1,
+            "tcoUsdPerMTok": 0.027
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2599.7,
+            "tcoUsdPerMTok": 0.0112
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 75.4,
+            "tcoUsdPerMTok": 0.3871
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1102,
+            "tcoUsdPerMTok": 0.0265
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 895.5,
+            "tcoUsdPerMTok": 0.0326
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 52.7,
+            "tcoUsdPerMTok": 0.554
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 43.9,
+            "tcoUsdPerMTok": 0.6648
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 47.8,
+            "tcoUsdPerMTok": 0.6109
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 61.6,
+            "tcoUsdPerMTok": 0.474
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 116.1,
+            "tcoUsdPerMTok": 0.2515
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 89.2,
+            "tcoUsdPerMTok": 0.3275
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 71.3,
+            "tcoUsdPerMTok": 0.4099
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 193.5,
+            "tcoUsdPerMTok": 0.151
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 124.9,
+            "tcoUsdPerMTok": 0.2338
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1824,7 +9019,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 54.3,
-      "cost": 73.6,
       "domains": {
         "chat": 66.5,
         "coding": 41.3,
@@ -1835,7 +9029,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 51.2,
         "ttftMs": 1252.3,
         "tokPerSec": 429.7,
-        "usdPerMTok": 0.57,
+        "tcoUsdPerMTok": 1.0374,
+        "tcoByDomain": {
+          "chat": 0.2716,
+          "coding": 2.1133,
+          "terminal": 1.1608,
+          "computerUse": 0.6038
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 96.8,
+            "tcoUsdPerMTok": 0.8756
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 664.4,
+            "tcoUsdPerMTok": 0.1276
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1216.3,
+            "tcoUsdPerMTok": 0.0697
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 118.6,
+            "tcoUsdPerMTok": 0.715
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 900.9,
+            "tcoUsdPerMTok": 0.0941
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1233,
+            "tcoUsdPerMTok": 0.0688
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.5,
+            "tcoUsdPerMTok": 1.7133
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 92.4,
+            "tcoUsdPerMTok": 0.9173
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 17.3,
+            "tcoUsdPerMTok": 4.9052
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 72.9,
+            "tcoUsdPerMTok": 1.1635
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 209,
+            "tcoUsdPerMTok": 0.4058
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 31.8,
+            "tcoUsdPerMTok": 2.6683
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 84.3,
+            "tcoUsdPerMTok": 1.0061
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 281.9,
+            "tcoUsdPerMTok": 0.3008
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 105,
+            "tcoUsdPerMTok": 0.8075
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1856,7 +9178,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 52,
-      "cost": 70.5,
       "domains": {
         "chat": 55.7,
         "coding": 52,
@@ -1867,7 +9188,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 50.9,
         "ttftMs": 1300.5,
         "tokPerSec": 355.4,
-        "usdPerMTok": 0.69,
+        "tcoUsdPerMTok": 0.8492,
+        "tcoByDomain": {
+          "chat": 0.3817,
+          "coding": 1.3078,
+          "terminal": 1.1393,
+          "computerUse": 0.5679
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 116.5,
+            "tcoUsdPerMTok": 0.728
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 540.9,
+            "tcoUsdPerMTok": 0.1568
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1018.2,
+            "tcoUsdPerMTok": 0.0833
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 61.4,
+            "tcoUsdPerMTok": 1.3814
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 679.5,
+            "tcoUsdPerMTok": 0.1248
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 284.3,
+            "tcoUsdPerMTok": 0.2982
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 61.5,
+            "tcoUsdPerMTok": 1.3784
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 177.6,
+            "tcoUsdPerMTok": 0.4774
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 29.3,
+            "tcoUsdPerMTok": 2.8981
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 51,
+            "tcoUsdPerMTok": 1.6629
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 180.7,
+            "tcoUsdPerMTok": 0.4693
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 43.4,
+            "tcoUsdPerMTok": 1.9556
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 105.4,
+            "tcoUsdPerMTok": 0.8043
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 198.4,
+            "tcoUsdPerMTok": 0.4274
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 138.4,
+            "tcoUsdPerMTok": 0.6127
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1887,7 +9336,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 52,
-      "cost": 43.9,
       "domains": {
         "chat": 62.4,
         "coding": 49.6,
@@ -1898,7 +9346,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 53.3,
         "ttftMs": 3491.8,
         "tokPerSec": 325.8,
-        "usdPerMTok": 3.39,
+        "tcoUsdPerMTok": 0.6751,
+        "tcoByDomain": {
+          "chat": 0.1621,
+          "coding": 0.9811,
+          "terminal": 1.0045,
+          "computerUse": 0.5527
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 142.1,
+            "tcoUsdPerMTok": 0.4111
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 642.7,
+            "tcoUsdPerMTok": 0.0909
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1429.7,
+            "tcoUsdPerMTok": 0.0409
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 136.4,
+            "tcoUsdPerMTok": 0.4281
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 643.2,
+            "tcoUsdPerMTok": 0.0908
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1091.2,
+            "tcoUsdPerMTok": 0.0535
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 25.2,
+            "tcoUsdPerMTok": 2.319
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 103.1,
+            "tcoUsdPerMTok": 0.5667
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 123.7,
+            "tcoUsdPerMTok": 0.4722
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 20.4,
+            "tcoUsdPerMTok": 2.8604
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 126.3,
+            "tcoUsdPerMTok": 0.4624
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 250.8,
+            "tcoUsdPerMTok": 0.2329
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60,
+            "tcoUsdPerMTok": 0.9729
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 113.5,
+            "tcoUsdPerMTok": 0.5147
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 280.4,
+            "tcoUsdPerMTok": 0.2083
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1918,7 +9494,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 51.2,
-      "cost": 35,
       "domains": {
         "chat": 55.7,
         "coding": 47.3,
@@ -1929,7 +9504,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 48,
         "ttftMs": 1976.8,
         "tokPerSec": 382.1,
-        "usdPerMTok": 5.8,
+        "tcoUsdPerMTok": 3.4454,
+        "tcoByDomain": {
+          "chat": 1.5467,
+          "coding": 5.1314,
+          "terminal": 4.7803,
+          "computerUse": 2.323
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 67,
+            "tcoUsdPerMTok": 4.9581
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 815,
+            "tcoUsdPerMTok": 0.4077
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1541.8,
+            "tcoUsdPerMTok": 0.2155
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 67.8,
+            "tcoUsdPerMTok": 4.9029
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 615.3,
+            "tcoUsdPerMTok": 0.54
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 826.5,
+            "tcoUsdPerMTok": 0.402
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.7,
+            "tcoUsdPerMTok": 11.1997
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 111.9,
+            "tcoUsdPerMTok": 2.9693
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 98.1,
+            "tcoUsdPerMTok": 3.3874
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.5,
+            "tcoUsdPerMTok": 11.2766
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 129,
+            "tcoUsdPerMTok": 2.5758
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 123.4,
+            "tcoUsdPerMTok": 2.6932
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 61.3,
+            "tcoUsdPerMTok": 5.4234
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 239.2,
+            "tcoUsdPerMTok": 1.3889
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 304.6,
+            "tcoUsdPerMTok": 1.0908
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1949,7 +9652,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 49.4,
-      "cost": 16.7,
       "domains": {
         "chat": 51,
         "coding": 45.9,
@@ -1960,7 +9662,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 62,
         "ttftMs": 2363.7,
         "tokPerSec": 254.9,
-        "usdPerMTok": 17.4,
+        "tcoUsdPerMTok": 7.3434,
+        "tcoByDomain": {
+          "chat": 2.9786,
+          "coding": 12.299,
+          "terminal": 9.6808,
+          "computerUse": 4.4154
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 81.1,
+            "tcoUsdPerMTok": 8.1947
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 311.8,
+            "tcoUsdPerMTok": 2.1311
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1006.5,
+            "tcoUsdPerMTok": 0.6602
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 92.5,
+            "tcoUsdPerMTok": 7.185
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 512.1,
+            "tcoUsdPerMTok": 1.2976
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 713.7,
+            "tcoUsdPerMTok": 0.9312
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 22.3,
+            "tcoUsdPerMTok": 29.8001
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 99.4,
+            "tcoUsdPerMTok": 6.6859
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 110.3,
+            "tcoUsdPerMTok": 6.024
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.6,
+            "tcoUsdPerMTok": 22.4203
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 113.6,
+            "tcoUsdPerMTok": 5.8477
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 144.2,
+            "tcoUsdPerMTok": 4.6073
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 68.4,
+            "tcoUsdPerMTok": 9.7096
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 237.3,
+            "tcoUsdPerMTok": 2.801
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 282.8,
+            "tcoUsdPerMTok": 2.35
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -1980,7 +9810,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 48.3,
-      "cost": 63.2,
       "domains": {
         "chat": 49.7,
         "coding": 50.3,
@@ -1991,7 +9820,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 80.4,
         "ttftMs": 1698.4,
         "tokPerSec": 230.4,
-        "usdPerMTok": 1.06,
+        "tcoUsdPerMTok": 1.4209,
+        "tcoByDomain": {
+          "chat": 0.5466,
+          "coding": 1.5578,
+          "terminal": 2.598,
+          "computerUse": 0.981
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 50.3,
+            "tcoUsdPerMTok": 1.6851
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 397.8,
+            "tcoUsdPerMTok": 0.2131
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 798.6,
+            "tcoUsdPerMTok": 0.1062
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 52.7,
+            "tcoUsdPerMTok": 1.6096
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 397.3,
+            "tcoUsdPerMTok": 0.2134
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 713.7,
+            "tcoUsdPerMTok": 0.1188
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 27.9,
+            "tcoUsdPerMTok": 3.0367
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 103.6,
+            "tcoUsdPerMTok": 0.8184
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 11.6,
+            "tcoUsdPerMTok": 7.2861
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 74.9,
+            "tcoUsdPerMTok": 1.1317
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 100.6,
+            "tcoUsdPerMTok": 0.8426
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42,
+            "tcoUsdPerMTok": 2.0177
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 178.2,
+            "tcoUsdPerMTok": 0.4757
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 88.8,
+            "tcoUsdPerMTok": 0.9548
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2011,7 +9960,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 48.2,
-      "cost": 37.6,
       "domains": {
         "chat": 59.9,
         "coding": 31,
@@ -2022,7 +9970,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 100.3,
         "ttftMs": 3065,
         "tokPerSec": 447.2,
-        "usdPerMTok": 4.94,
+        "tcoUsdPerMTok": 1.2015,
+        "tcoByDomain": {
+          "chat": 0.3404,
+          "coding": 2.5043,
+          "terminal": 1.3876,
+          "computerUse": 0.5737
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 127.9,
+            "tcoUsdPerMTok": 0.9137
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1046.4,
+            "tcoUsdPerMTok": 0.1117
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1642.5,
+            "tcoUsdPerMTok": 0.0711
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 117.8,
+            "tcoUsdPerMTok": 0.9915
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 651.5,
+            "tcoUsdPerMTok": 0.1793
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 707.5,
+            "tcoUsdPerMTok": 0.1651
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 28.8,
+            "tcoUsdPerMTok": 4.05
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 82.8,
+            "tcoUsdPerMTok": 1.4109
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 37.1,
+            "tcoUsdPerMTok": 3.1454
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 50.3,
+            "tcoUsdPerMTok": 2.3207
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 103.6,
+            "tcoUsdPerMTok": 1.1275
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 119.9,
+            "tcoUsdPerMTok": 0.9747
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 89.6,
+            "tcoUsdPerMTok": 1.3036
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 351.6,
+            "tcoUsdPerMTok": 0.3323
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 357.7,
+            "tcoUsdPerMTok": 0.3266
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2042,7 +10118,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 47.8,
-      "cost": 30.5,
       "domains": {
         "chat": 44.9,
         "coding": 69.3,
@@ -2053,7 +10128,87 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 115.7,
         "ttftMs": 2478.7,
         "tokPerSec": 292.2,
-        "usdPerMTok": 7.59,
+        "tcoUsdPerMTok": 8.9734,
+        "tcoByDomain": {
+          "chat": 3.1617,
+          "coding": 12.6657,
+          "terminal": 11.0927,
+          "computerUse": null
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 34.2,
+            "tcoUsdPerMTok": 9.722
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 635.1,
+            "tcoUsdPerMTok": 0.5232
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1241.8,
+            "tcoUsdPerMTok": 0.2676
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 34.7,
+            "tcoUsdPerMTok": 9.5707
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 210.8,
+            "tcoUsdPerMTok": 1.576
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 216.5,
+            "tcoUsdPerMTok": 1.535
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26.2,
+            "tcoUsdPerMTok": 12.6657
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 80,
+            "tokPerSec": 30.6,
+            "tcoUsdPerMTok": 10.8501
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 28.7,
+            "tcoUsdPerMTok": 11.5779
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2074,7 +10229,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 47.2,
-      "cost": 67.5,
       "domains": {
         "chat": 55.6,
         "coding": 49,
@@ -2085,7 +10239,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 80.3,
         "ttftMs": 2645.7,
         "tokPerSec": 297.4,
-        "usdPerMTok": 0.82,
+        "tcoUsdPerMTok": 0.8588,
+        "tcoByDomain": {
+          "chat": 0.3142,
+          "coding": 1.0718,
+          "terminal": 1.0295,
+          "computerUse": 1.0197
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 93.8,
+            "tcoUsdPerMTok": 0.9042
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 612.1,
+            "tcoUsdPerMTok": 0.1385
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1094.3,
+            "tcoUsdPerMTok": 0.0775
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 102.1,
+            "tcoUsdPerMTok": 0.8301
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 573.2,
+            "tcoUsdPerMTok": 0.1479
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 656.2,
+            "tcoUsdPerMTok": 0.1292
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42.1,
+            "tcoUsdPerMTok": 2.0141
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 110.3,
+            "tcoUsdPerMTok": 0.7684
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 115.2,
+            "tcoUsdPerMTok": 0.7361
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.9,
+            "tcoUsdPerMTok": 2.2355
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 128.6,
+            "tcoUsdPerMTok": 0.6595
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 150.5,
+            "tcoUsdPerMTok": 0.5635
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 89.9,
+            "tcoUsdPerMTok": 0.9433
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 62.9,
+            "tcoUsdPerMTok": 1.3474
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 192.4,
+            "tcoUsdPerMTok": 0.4406
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2105,7 +10387,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 46.9,
-      "cost": 6.5,
       "domains": {
         "chat": 49.3,
         "coding": 42.5,
@@ -2116,7 +10397,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 54,
         "ttftMs": 915,
         "tokPerSec": 68.8,
-        "usdPerMTok": 32.21,
+        "tcoUsdPerMTok": 12.8667,
+        "tcoByDomain": {
+          "chat": 15.5364,
+          "coding": 14.1497,
+          "terminal": 15.9704,
+          "computerUse": 5.8101
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 3.6,
+            "tcoUsdPerMTok": 91.6227
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 103.3,
+            "tcoUsdPerMTok": 3.2176
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 102.4,
+            "tcoUsdPerMTok": 3.2442
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 23.4,
+            "tcoUsdPerMTok": 14.2013
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 100.1,
+            "tcoUsdPerMTok": 3.3189
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 154.6,
+            "tcoUsdPerMTok": 2.1498
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 11.1,
+            "tcoUsdPerMTok": 29.8035
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 36.3,
+            "tcoUsdPerMTok": 9.1619
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 39.2,
+            "tcoUsdPerMTok": 8.4717
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 9,
+            "tcoUsdPerMTok": 37.0087
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 38,
+            "tcoUsdPerMTok": 8.7531
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 35.5,
+            "tcoUsdPerMTok": 9.3669
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 5,
+            "tokPerSec": 38.6,
+            "tcoUsdPerMTok": 8.5989
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 66.5,
+            "tcoUsdPerMTok": 5.0003
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 71.6,
+            "tcoUsdPerMTok": 4.6408
+          }
+        ],
         "loadsUsed": [
           1,
           5,
@@ -2137,7 +10546,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 46.7,
-      "cost": 69.2,
       "domains": {
         "chat": 41.8,
         "coding": 51.5,
@@ -2148,7 +10556,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 128,
         "ttftMs": 1597.1,
         "tokPerSec": 165.2,
-        "usdPerMTok": 0.74,
+        "tcoUsdPerMTok": 0.4885,
+        "tcoByDomain": {
+          "chat": 0.5709,
+          "coding": 0.5094,
+          "terminal": 0.486,
+          "computerUse": 0.3876
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 13.3,
+            "tcoUsdPerMTok": 3.1964
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 177.9,
+            "tcoUsdPerMTok": 0.2383
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 605.3,
+            "tcoUsdPerMTok": 0.07
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 97.3,
+            "tcoUsdPerMTok": 0.4357
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 273.3,
+            "tcoUsdPerMTok": 0.1551
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 544.5,
+            "tcoUsdPerMTok": 0.0779
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 51.6,
+            "tcoUsdPerMTok": 0.8213
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 94.2,
+            "tcoUsdPerMTok": 0.4501
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 134,
+            "tcoUsdPerMTok": 0.3163
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 36.1,
+            "tcoUsdPerMTok": 1.1732
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 157.8,
+            "tcoUsdPerMTok": 0.2687
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 181.7,
+            "tcoUsdPerMTok": 0.2333
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 67.9,
+            "tcoUsdPerMTok": 0.6244
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 122.9,
+            "tcoUsdPerMTok": 0.3449
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 179.4,
+            "tcoUsdPerMTok": 0.2363
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2168,7 +10704,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 44.6,
-      "cost": 63.2,
       "domains": {
         "chat": 52.8,
         "coding": 45.1,
@@ -2179,7 +10714,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 90.8,
         "ttftMs": 1291,
         "tokPerSec": 229.6,
-        "usdPerMTok": 1.06,
+        "tcoUsdPerMTok": 2.179,
+        "tcoByDomain": {
+          "chat": 0.4587,
+          "coding": 3.6531,
+          "terminal": 1.8584,
+          "computerUse": 2.7457
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.6,
+            "tcoUsdPerMTok": 1.3986
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 403.1,
+            "tcoUsdPerMTok": 0.2104
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 852.6,
+            "tcoUsdPerMTok": 0.0994
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 67.3,
+            "tcoUsdPerMTok": 1.2589
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 431,
+            "tcoUsdPerMTok": 0.1967
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 859.7,
+            "tcoUsdPerMTok": 0.0986
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 7.2,
+            "tcoUsdPerMTok": 11.7339
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 94.7,
+            "tcoUsdPerMTok": 0.8953
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 78,
+            "tcoUsdPerMTok": 1.0876
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 23.1,
+            "tcoUsdPerMTok": 3.6712
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 52.8,
+            "tcoUsdPerMTok": 1.6049
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 153.5,
+            "tcoUsdPerMTok": 0.5524
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 8.9,
+            "tcoUsdPerMTok": 9.5034
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 166.3,
+            "tcoUsdPerMTok": 0.5099
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 184.5,
+            "tcoUsdPerMTok": 0.4594
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2199,7 +10862,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 44.4,
-      "cost": 79.7,
       "domains": {
         "chat": 47.9,
         "coding": 45.9,
@@ -2210,7 +10872,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 107.7,
         "ttftMs": 3408.7,
         "tokPerSec": 281.1,
-        "usdPerMTok": 0.4,
+        "tcoUsdPerMTok": 0.4875,
+        "tcoByDomain": {
+          "chat": 0.1771,
+          "coding": 0.6381,
+          "terminal": 0.7821,
+          "computerUse": 0.3527
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 69,
+            "tcoUsdPerMTok": 0.5516
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 516.6,
+            "tcoUsdPerMTok": 0.0737
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 547.5,
+            "tcoUsdPerMTok": 0.0695
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 88.4,
+            "tcoUsdPerMTok": 0.4306
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 518.5,
+            "tcoUsdPerMTok": 0.0734
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 537,
+            "tcoUsdPerMTok": 0.0709
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.7,
+            "tcoUsdPerMTok": 1.0091
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 84.1,
+            "tcoUsdPerMTok": 0.4525
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 53.4,
+            "tcoUsdPerMTok": 0.7135
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 93.1,
+            "tcoUsdPerMTok": 0.4091
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 23.9,
+            "tcoUsdPerMTok": 1.5964
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 62.9,
+            "tcoUsdPerMTok": 0.6052
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 193.1,
+            "tcoUsdPerMTok": 0.1971
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 92.6,
+            "tcoUsdPerMTok": 0.4112
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2231,7 +11013,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 44.1,
-      "cost": 40.1,
       "domains": {
         "chat": 39.4,
         "coding": 43.8,
@@ -2242,7 +11023,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 63.4,
         "ttftMs": 4129.6,
         "tokPerSec": 259.1,
-        "usdPerMTok": 4.28,
+        "tcoUsdPerMTok": 2.215,
+        "tcoByDomain": {
+          "chat": 1.1735,
+          "coding": 3.1587,
+          "terminal": 2.927,
+          "computerUse": 1.6008
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 45.5,
+            "tcoUsdPerMTok": 3.6511
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 527.9,
+            "tcoUsdPerMTok": 0.3147
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 631.8,
+            "tcoUsdPerMTok": 0.263
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 45.5,
+            "tcoUsdPerMTok": 3.6549
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 407.8,
+            "tcoUsdPerMTok": 0.4074
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 442.9,
+            "tcoUsdPerMTok": 0.3751
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26,
+            "tcoUsdPerMTok": 6.3809
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 78.8,
+            "tcoUsdPerMTok": 2.1094
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 81.6,
+            "tcoUsdPerMTok": 2.0349
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26,
+            "tcoUsdPerMTok": 6.3996
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 87.6,
+            "tcoUsdPerMTok": 1.8956
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 109.5,
+            "tcoUsdPerMTok": 1.5174
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42.2,
+            "tcoUsdPerMTok": 3.937
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 193.2,
+            "tcoUsdPerMTok": 0.8597
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 222.5,
+            "tcoUsdPerMTok": 0.7468
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2262,7 +11171,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 41.8,
-      "cost": 82.6,
       "domains": {
         "chat": 43.9,
         "coding": 41.4,
@@ -2273,7 +11181,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 117.2,
         "ttftMs": 1815.1,
         "tokPerSec": 184,
-        "usdPerMTok": 0.33,
+        "tcoUsdPerMTok": 0.2803,
+        "tcoByDomain": {
+          "chat": 0.1071,
+          "coding": 0.4368,
+          "terminal": 0.3827,
+          "computerUse": 0.1948
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 88,
+            "tcoUsdPerMTok": 0.2409
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 270.5,
+            "tcoUsdPerMTok": 0.0784
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 716.5,
+            "tcoUsdPerMTok": 0.0296
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 97,
+            "tcoUsdPerMTok": 0.2186
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 282.4,
+            "tcoUsdPerMTok": 0.0751
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 347,
+            "tcoUsdPerMTok": 0.0611
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 40,
+            "tcoUsdPerMTok": 0.5299
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 104,
+            "tcoUsdPerMTok": 0.2039
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 26.2,
+            "tcoUsdPerMTok": 0.8094
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 35.8,
+            "tcoUsdPerMTok": 0.5919
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 127.8,
+            "tcoUsdPerMTok": 0.1658
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 34.9,
+            "tcoUsdPerMTok": 0.6071
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 71.3,
+            "tcoUsdPerMTok": 0.2973
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 135.4,
+            "tcoUsdPerMTok": 0.1566
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 125.7,
+            "tcoUsdPerMTok": 0.1686
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2293,7 +11329,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 40.7,
-      "cost": 80.4,
       "domains": {
         "chat": 61.5,
         "coding": 18.2,
@@ -2304,7 +11339,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 146.5,
         "ttftMs": 5998,
         "tokPerSec": 322.6,
-        "usdPerMTok": 0.38,
+        "tcoUsdPerMTok": 0.9592,
+        "tcoByDomain": {
+          "chat": 0.1924,
+          "coding": 2.2494,
+          "terminal": 0.8573,
+          "computerUse": 0.5376
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 67.7,
+            "tcoUsdPerMTok": 0.626
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 635.5,
+            "tcoUsdPerMTok": 0.0667
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1384.4,
+            "tcoUsdPerMTok": 0.0306
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 77.6,
+            "tcoUsdPerMTok": 0.5466
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 764.6,
+            "tcoUsdPerMTok": 0.0554
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 463.2,
+            "tcoUsdPerMTok": 0.0915
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 39.7,
+            "tcoUsdPerMTok": 1.0675
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 15.6,
+            "tcoUsdPerMTok": 2.7162
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 17,
+            "tcoUsdPerMTok": 2.4977
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 55.8,
+            "tcoUsdPerMTok": 0.7598
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 62.9,
+            "tcoUsdPerMTok": 0.6738
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 32.1,
+            "tcoUsdPerMTok": 1.3219
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 68.9,
+            "tcoUsdPerMTok": 0.6157
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 134.1,
+            "tcoUsdPerMTok": 0.3161
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 47,
+            "tcoUsdPerMTok": 0.9024
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2325,7 +11488,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 39.7,
-      "cost": 43.4,
       "domains": {
         "chat": 50.8,
         "coding": 28.1,
@@ -2336,7 +11498,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 121.2,
         "ttftMs": 5015.1,
         "tokPerSec": 317.5,
-        "usdPerMTok": 3.49,
+        "tcoUsdPerMTok": 2.5423,
+        "tcoByDomain": {
+          "chat": 1.0717,
+          "coding": 4.3727,
+          "terminal": 2.7972,
+          "computerUse": 1.9277
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 46.1,
+            "tcoUsdPerMTok": 3.6049
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 732.1,
+            "tcoUsdPerMTok": 0.227
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1273,
+            "tcoUsdPerMTok": 0.1305
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 46.7,
+            "tcoUsdPerMTok": 3.5556
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 607.7,
+            "tcoUsdPerMTok": 0.2734
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 589.8,
+            "tcoUsdPerMTok": 0.2817
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 34.8,
+            "tcoUsdPerMTok": 4.7742
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 37.8,
+            "tcoUsdPerMTok": 4.3972
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 42.4,
+            "tcoUsdPerMTok": 3.9222
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 39.5,
+            "tcoUsdPerMTok": 4.2072
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 70.4,
+            "tcoUsdPerMTok": 2.36
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 73.5,
+            "tcoUsdPerMTok": 2.2617
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 43.8,
+            "tcoUsdPerMTok": 3.7897
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 139.7,
+            "tcoUsdPerMTok": 1.1892
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 107.7,
+            "tcoUsdPerMTok": 1.5426
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2356,7 +11646,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 39.5,
-      "cost": 52.2,
       "domains": {
         "chat": 56.1,
         "coding": 38.3,
@@ -2367,7 +11656,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 67.9,
         "ttftMs": 5604.2,
         "tokPerSec": 268.1,
-        "usdPerMTok": 2.06,
+        "tcoUsdPerMTok": 0.6211,
+        "tcoByDomain": {
+          "chat": 0.1089,
+          "coding": 0.8864,
+          "terminal": 0.9686,
+          "computerUse": 0.5205
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 108.1,
+            "tcoUsdPerMTok": 0.2701
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 667.6,
+            "tcoUsdPerMTok": 0.0437
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1484.1,
+            "tcoUsdPerMTok": 0.0197
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 96.7,
+            "tcoUsdPerMTok": 0.3021
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 461.9,
+            "tcoUsdPerMTok": 0.0632
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 447.7,
+            "tcoUsdPerMTok": 0.0652
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 15.5,
+            "tcoUsdPerMTok": 1.8821
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 62.2,
+            "tcoUsdPerMTok": 0.47
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 40.4,
+            "tcoUsdPerMTok": 0.7237
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 12.3,
+            "tcoUsdPerMTok": 2.3768
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 79,
+            "tcoUsdPerMTok": 0.3697
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 38.5,
+            "tcoUsdPerMTok": 0.7582
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 39.8,
+            "tcoUsdPerMTok": 0.7334
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 69.7,
+            "tcoUsdPerMTok": 0.4193
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 57.3,
+            "tcoUsdPerMTok": 0.5098
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2388,7 +11805,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 38,
-      "cost": 21.6,
       "domains": {
         "chat": 38,
         "coding": 37.5,
@@ -2399,7 +11815,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 59.7,
         "ttftMs": 5922.6,
         "tokPerSec": 170.4,
-        "usdPerMTok": 12.97,
+        "tcoUsdPerMTok": 2.569,
+        "tcoByDomain": {
+          "chat": 1.3023,
+          "coding": 3.8041,
+          "terminal": 3.079,
+          "computerUse": 2.0906
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.7,
+            "tcoUsdPerMTok": 3.9376
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 523.3,
+            "tcoUsdPerMTok": 0.2233
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 821.2,
+            "tcoUsdPerMTok": 0.1423
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.3,
+            "tcoUsdPerMTok": 3.8542
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 168.1,
+            "tcoUsdPerMTok": 0.695
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 180.4,
+            "tcoUsdPerMTok": 0.6475
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 25.2,
+            "tcoUsdPerMTok": 4.6406
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 32.2,
+            "tcoUsdPerMTok": 3.6272
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 35.2,
+            "tcoUsdPerMTok": 3.3213
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 24.7,
+            "tcoUsdPerMTok": 4.7353
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 44.9,
+            "tcoUsdPerMTok": 2.6012
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 49.1,
+            "tcoUsdPerMTok": 2.3782
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 28.7,
+            "tcoUsdPerMTok": 4.0652
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 83.7,
+            "tcoUsdPerMTok": 1.3956
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 77.6,
+            "tcoUsdPerMTok": 1.5058
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2419,7 +11963,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 38,
-      "cost": 79.4,
       "domains": {
         "chat": 53.1,
         "coding": 20.9,
@@ -2430,7 +11973,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 129.1,
         "ttftMs": 4647,
         "tokPerSec": 304.9,
-        "usdPerMTok": 0.4,
+        "tcoUsdPerMTok": 0.9348,
+        "tcoByDomain": {
+          "chat": 0.2048,
+          "coding": 2.1964,
+          "terminal": 0.7971,
+          "computerUse": 0.5409
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 68.5,
+            "tcoUsdPerMTok": 0.619
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 593.9,
+            "tcoUsdPerMTok": 0.0714
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1071.8,
+            "tcoUsdPerMTok": 0.0396
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 70.6,
+            "tcoUsdPerMTok": 0.6007
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 609.7,
+            "tcoUsdPerMTok": 0.0695
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 436.2,
+            "tcoUsdPerMTok": 0.0972
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.3,
+            "tcoUsdPerMTok": 1.1351
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 17.4,
+            "tcoUsdPerMTok": 2.4379
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 15.3,
+            "tcoUsdPerMTok": 2.7744
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.8,
+            "tcoUsdPerMTok": 0.852
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 109,
+            "tcoUsdPerMTok": 0.3888
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 27.2,
+            "tcoUsdPerMTok": 1.5589
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 62.1,
+            "tcoUsdPerMTok": 0.683
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 194.5,
+            "tcoUsdPerMTok": 0.218
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 40.6,
+            "tcoUsdPerMTok": 1.0446
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2451,7 +12122,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 37.9,
-      "cost": 21.5,
       "domains": {
         "chat": 39.2,
         "coding": 37,
@@ -2462,7 +12132,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 62.8,
         "ttftMs": 5734.5,
         "tokPerSec": 169.5,
-        "usdPerMTok": 13.04,
+        "tcoUsdPerMTok": 2.6422,
+        "tcoByDomain": {
+          "chat": 1.2974,
+          "coding": 3.9234,
+          "terminal": 3.2359,
+          "computerUse": 2.1123
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.7,
+            "tcoUsdPerMTok": 3.9321
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 522.7,
+            "tcoUsdPerMTok": 0.2235
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 830.5,
+            "tcoUsdPerMTok": 0.1407
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.3,
+            "tcoUsdPerMTok": 3.8556
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 171.2,
+            "tcoUsdPerMTok": 0.6823
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 182.9,
+            "tcoUsdPerMTok": 0.6389
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 25.2,
+            "tcoUsdPerMTok": 4.631
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 30.9,
+            "tcoUsdPerMTok": 3.7795
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 33.3,
+            "tcoUsdPerMTok": 3.5037
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 24.9,
+            "tcoUsdPerMTok": 4.6889
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 41.3,
+            "tcoUsdPerMTok": 2.8271
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 44.9,
+            "tcoUsdPerMTok": 2.6005
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29,
+            "tcoUsdPerMTok": 4.0235
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 81.4,
+            "tcoUsdPerMTok": 1.4358
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 75.2,
+            "tcoUsdPerMTok": 1.5539
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2482,7 +12280,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 37.1,
-      "cost": 58,
       "domains": {
         "chat": 38,
         "coding": 37.8,
@@ -2493,7 +12290,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 90.5,
         "ttftMs": 2095,
         "tokPerSec": 167.9,
-        "usdPerMTok": 1.46,
+        "tcoUsdPerMTok": 1.6,
+        "tcoByDomain": {
+          "chat": 1.1091,
+          "coding": 2.186,
+          "terminal": 2.0097,
+          "computerUse": 1.0953
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 25.4,
+            "tcoUsdPerMTok": 3.3375
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 20,
+            "tokPerSec": 227.6,
+            "tcoUsdPerMTok": 0.3725
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 31.9,
+            "tcoUsdPerMTok": 2.6574
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 299.3,
+            "tcoUsdPerMTok": 0.2833
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 412.8,
+            "tcoUsdPerMTok": 0.2054
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26.1,
+            "tcoUsdPerMTok": 3.2492
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 92.6,
+            "tcoUsdPerMTok": 0.916
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 23.1,
+            "tcoUsdPerMTok": 3.6628
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 24.5,
+            "tcoUsdPerMTok": 3.4674
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 100.9,
+            "tcoUsdPerMTok": 0.8406
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 29.3,
+            "tcoUsdPerMTok": 2.8904
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 39.9,
+            "tcoUsdPerMTok": 2.1252
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 119.2,
+            "tcoUsdPerMTok": 0.7114
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 101.8,
+            "tcoUsdPerMTok": 0.833
+          }
+        ],
         "loadsUsed": [
           1,
           20,
@@ -2514,7 +12431,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 37.1,
-      "cost": 34.9,
       "domains": {
         "chat": 50.7,
         "coding": 35.7,
@@ -2525,7 +12441,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 74.6,
         "ttftMs": 6226.3,
         "tokPerSec": 190.2,
-        "usdPerMTok": 5.81,
+        "tcoUsdPerMTok": 1.3795,
+        "tcoByDomain": {
+          "chat": 0.2751,
+          "coding": 2.4171,
+          "terminal": 1.8712,
+          "computerUse": 0.9545
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 92.1,
+            "tcoUsdPerMTok": 0.6344
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 442,
+            "tcoUsdPerMTok": 0.1322
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1075.9,
+            "tcoUsdPerMTok": 0.0543
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 110.5,
+            "tcoUsdPerMTok": 0.5286
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 286.9,
+            "tcoUsdPerMTok": 0.2036
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 14.2,
+            "tcoUsdPerMTok": 4.1081
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 55.7,
+            "tcoUsdPerMTok": 1.0485
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 16.9,
+            "tcoUsdPerMTok": 3.4631
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 15.9,
+            "tcoUsdPerMTok": 3.6848
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 74.7,
+            "tcoUsdPerMTok": 0.7822
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 26.1,
+            "tcoUsdPerMTok": 2.2357
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 40.4,
+            "tcoUsdPerMTok": 1.4445
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 91.6,
+            "tcoUsdPerMTok": 0.6379
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 53.2,
+            "tcoUsdPerMTok": 1.0978
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2546,7 +12582,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 35.6,
-      "cost": 76.9,
       "domains": {
         "chat": 24.2,
         "coding": 40.1,
@@ -2557,7 +12592,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 54.1,
         "ttftMs": 10824.2,
         "tokPerSec": 131.2,
-        "usdPerMTok": 0.47,
+        "tcoUsdPerMTok": 0.3923,
+        "tcoByDomain": {
+          "chat": 0.2161,
+          "coding": 0.5551,
+          "terminal": 0.4955,
+          "computerUse": 0.3026
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 38.4,
+            "tcoUsdPerMTok": 0.5523
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 287,
+            "tcoUsdPerMTok": 0.0739
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 316.2,
+            "tcoUsdPerMTok": 0.067
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 39,
+            "tcoUsdPerMTok": 0.5434
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 148.1,
+            "tcoUsdPerMTok": 0.1431
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 160.8,
+            "tcoUsdPerMTok": 0.1318
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 22.1,
+            "tcoUsdPerMTok": 0.9573
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 48.6,
+            "tcoUsdPerMTok": 0.4357
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 54.1,
+            "tcoUsdPerMTok": 0.3918
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 22.3,
+            "tcoUsdPerMTok": 0.9495
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 59.1,
+            "tcoUsdPerMTok": 0.3586
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 67.3,
+            "tcoUsdPerMTok": 0.3152
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 32,
+            "tcoUsdPerMTok": 0.6625
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 113.1,
+            "tcoUsdPerMTok": 0.1873
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 122.5,
+            "tcoUsdPerMTok": 0.173
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2578,7 +12741,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 34.4,
-      "cost": 91,
       "domains": {
         "chat": 56.2,
         "coding": 21.7,
@@ -2589,7 +12751,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 221.9,
         "ttftMs": 8737.9,
         "tokPerSec": 277.1,
-        "usdPerMTok": 0.2,
+        "tcoUsdPerMTok": 0.5743,
+        "tcoByDomain": {
+          "chat": 0.1063,
+          "coding": 1.2152,
+          "terminal": 0.5956,
+          "computerUse": 0.3803
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 57.3,
+            "tcoUsdPerMTok": 0.3321
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 671.7,
+            "tcoUsdPerMTok": 0.0283
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1340.9,
+            "tcoUsdPerMTok": 0.0142
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 60.6,
+            "tcoUsdPerMTok": 0.3142
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 605.6,
+            "tcoUsdPerMTok": 0.0314
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 270.8,
+            "tcoUsdPerMTok": 0.0703
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 33.6,
+            "tcoUsdPerMTok": 0.5669
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 12.4,
+            "tcoUsdPerMTok": 1.5393
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42.1,
+            "tcoUsdPerMTok": 0.4523
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 33.7,
+            "tcoUsdPerMTok": 0.5645
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 23.8,
+            "tcoUsdPerMTok": 0.8011
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 52.6,
+            "tcoUsdPerMTok": 0.3616
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 62,
+            "tcoUsdPerMTok": 0.3068
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 34.9,
+            "tcoUsdPerMTok": 0.546
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2609,7 +12891,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 33.5,
-      "cost": 6.9,
       "domains": {
         "chat": 16.7,
         "coding": 43.7,
@@ -2620,7 +12901,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 37.4,
         "ttftMs": 23872,
         "tokPerSec": 70.5,
-        "usdPerMTok": 31.36,
+        "tcoUsdPerMTok": 3.0297,
+        "tcoByDomain": {
+          "chat": 2.1301,
+          "coding": 4.1814,
+          "terminal": 3.0411,
+          "computerUse": 2.7665
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.8,
+            "tcoUsdPerMTok": 3.9205
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 160.7,
+            "tcoUsdPerMTok": 0.7272
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 155.5,
+            "tcoUsdPerMTok": 0.7514
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.4,
+            "tcoUsdPerMTok": 3.8476
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 53.9,
+            "tcoUsdPerMTok": 2.169
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 14.2,
+            "tcoUsdPerMTok": 8.2529
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 40.8,
+            "tcoUsdPerMTok": 2.8628
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 42.5,
+            "tcoUsdPerMTok": 2.7469
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 24.3,
+            "tcoUsdPerMTok": 4.7989
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 47,
+            "tcoUsdPerMTok": 2.4883
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 48.9,
+            "tcoUsdPerMTok": 2.3886
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 27.6,
+            "tcoUsdPerMTok": 4.2363
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 50.3,
+            "tcoUsdPerMTok": 2.3235
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 53.5,
+            "tcoUsdPerMTok": 2.1824
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2640,7 +13041,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 33.3,
-      "cost": 31.7,
       "domains": {
         "chat": 54.7,
         "coding": 43.2,
@@ -2651,7 +13051,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 119.7,
         "ttftMs": 7007.3,
         "tokPerSec": 312.6,
-        "usdPerMTok": 7.07,
+        "tcoUsdPerMTok": 27.1341,
+        "tcoByDomain": {
+          "chat": 0.4896,
+          "coding": 20.1344,
+          "terminal": 33.4902,
+          "computerUse": 54.4222
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 192.3,
+            "tcoUsdPerMTok": 0.6074
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 1218.7,
+            "tcoUsdPerMTok": 0.0959
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2033.5,
+            "tcoUsdPerMTok": 0.0575
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 196.4,
+            "tcoUsdPerMTok": 0.5948
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 144,
+            "tcoUsdPerMTok": 0.8111
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 138.6,
+            "tcoUsdPerMTok": 0.8431
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 1.5,
+            "tcoUsdPerMTok": 77.5775
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 89.6,
+            "tcoUsdPerMTok": 1.3035
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 330.8,
+            "tcoUsdPerMTok": 0.3532
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 1.6,
+            "tcoUsdPerMTok": 74.736
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 20,
+            "tokPerSec": 4,
+            "tcoUsdPerMTok": 29.1801
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 200,
+            "tokPerSec": 135.1,
+            "tcoUsdPerMTok": 0.8648
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 0.5,
+            "tcoUsdPerMTok": 215.2486
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 106.3,
+            "tcoUsdPerMTok": 1.0986
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 480.7,
+            "tcoUsdPerMTok": 0.2431
+          }
+        ],
         "loadsUsed": [
           1,
           20,
@@ -2673,7 +13201,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 31.8,
-      "cost": 89.1,
       "domains": {
         "chat": 29.5,
         "coding": 33,
@@ -2684,7 +13211,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 52.9,
         "ttftMs": 11088.5,
         "tokPerSec": 124.1,
-        "usdPerMTok": 0.22,
+        "tcoUsdPerMTok": 0.2853,
+        "tcoByDomain": {
+          "chat": 0.1058,
+          "coding": 0.4633,
+          "terminal": 0.3604,
+          "computerUse": 0.2116
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 34.5,
+            "tcoUsdPerMTok": 0.276
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 401.8,
+            "tcoUsdPerMTok": 0.0237
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 567.8,
+            "tcoUsdPerMTok": 0.0168
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 35.4,
+            "tcoUsdPerMTok": 0.2692
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 119.1,
+            "tcoUsdPerMTok": 0.0799
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 123,
+            "tcoUsdPerMTok": 0.0774
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 25.4,
+            "tcoUsdPerMTok": 0.3747
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 18.8,
+            "tcoUsdPerMTok": 0.5053
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 20.3,
+            "tcoUsdPerMTok": 0.4679
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 23.9,
+            "tcoUsdPerMTok": 0.3988
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 26.6,
+            "tcoUsdPerMTok": 0.3573
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 29,
+            "tcoUsdPerMTok": 0.3283
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 32.4,
+            "tcoUsdPerMTok": 0.294
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 53.9,
+            "tcoUsdPerMTok": 0.1765
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 47.7,
+            "tcoUsdPerMTok": 0.1995
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2704,7 +13359,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 31.8,
-      "cost": 67,
       "domains": {
         "chat": 31.1,
         "coding": 23.1,
@@ -2715,7 +13369,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 211.2,
         "ttftMs": 9603.2,
         "tokPerSec": 144.6,
-        "usdPerMTok": 0.85,
+        "tcoUsdPerMTok": 1.6787,
+        "tcoByDomain": {
+          "chat": 2.1346,
+          "coding": 2.7739,
+          "terminal": 1.085,
+          "computerUse": 0.721
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 3.6,
+            "tcoUsdPerMTok": 11.9221
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 20.6,
+            "tcoUsdPerMTok": 2.0588
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 955.3,
+            "tcoUsdPerMTok": 0.0444
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 58.6,
+            "tcoUsdPerMTok": 0.724
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 456,
+            "tcoUsdPerMTok": 0.093
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 509.8,
+            "tcoUsdPerMTok": 0.0832
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 31.5,
+            "tcoUsdPerMTok": 1.3461
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 12.2,
+            "tcoUsdPerMTok": 3.4878
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42.5,
+            "tcoUsdPerMTok": 0.9985
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 71.7,
+            "tcoUsdPerMTok": 0.5912
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 19.6,
+            "tcoUsdPerMTok": 2.1592
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.9,
+            "tcoUsdPerMTok": 0.8488
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 162.4,
+            "tcoUsdPerMTok": 0.2611
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 28,
+            "tcoUsdPerMTok": 1.5131
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2736,7 +13510,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 30.8,
-      "cost": 85,
       "domains": {
         "chat": 49.9,
         "coding": 19.9,
@@ -2747,7 +13520,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 126.8,
         "ttftMs": 12139.9,
         "tokPerSec": 213.4,
-        "usdPerMTok": 0.29,
+        "tcoUsdPerMTok": 0.6332,
+        "tcoByDomain": {
+          "chat": 0.144,
+          "coding": 1.2378,
+          "terminal": 0.6349,
+          "computerUse": 0.516
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 45.8,
+            "tcoUsdPerMTok": 0.4625
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 546.7,
+            "tcoUsdPerMTok": 0.0388
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1206.3,
+            "tcoUsdPerMTok": 0.0176
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.6,
+            "tcoUsdPerMTok": 0.4272
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 434.7,
+            "tcoUsdPerMTok": 0.0488
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 304.1,
+            "tcoUsdPerMTok": 0.0697
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 31,
+            "tcoUsdPerMTok": 0.6843
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 14.3,
+            "tcoUsdPerMTok": 1.487
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 16.4,
+            "tcoUsdPerMTok": 1.2929
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 39.3,
+            "tcoUsdPerMTok": 0.5392
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 32.7,
+            "tcoUsdPerMTok": 0.6479
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 30.1,
+            "tcoUsdPerMTok": 0.7048
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 45.3,
+            "tcoUsdPerMTok": 0.4677
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 38.9,
+            "tcoUsdPerMTok": 0.5451
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 41.9,
+            "tcoUsdPerMTok": 0.5061
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2768,7 +13669,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 30.6,
-      "cost": 80.2,
       "domains": {
         "chat": 45.3,
         "coding": 20.9,
@@ -2779,7 +13679,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 91.1,
         "ttftMs": 12595,
         "tokPerSec": 159.4,
-        "usdPerMTok": 0.38,
+        "tcoUsdPerMTok": 0.6174,
+        "tcoByDomain": {
+          "chat": 0.1608,
+          "coding": 1.0958,
+          "terminal": 0.6348,
+          "computerUse": 0.578
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 42.9,
+            "tcoUsdPerMTok": 0.4941
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 453.1,
+            "tcoUsdPerMTok": 0.0468
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1033.6,
+            "tcoUsdPerMTok": 0.0205
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 48.8,
+            "tcoUsdPerMTok": 0.4347
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 260.9,
+            "tcoUsdPerMTok": 0.0813
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 261.9,
+            "tcoUsdPerMTok": 0.0809
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 5,
+            "tokPerSec": 25,
+            "tcoUsdPerMTok": 0.8495
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 17.6,
+            "tcoUsdPerMTok": 1.205
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 18.9,
+            "tcoUsdPerMTok": 1.1238
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.7,
+            "tcoUsdPerMTok": 0.5617
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 31.4,
+            "tcoUsdPerMTok": 0.6749
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 33.8,
+            "tcoUsdPerMTok": 0.6277
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 44.3,
+            "tcoUsdPerMTok": 0.479
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 33.9,
+            "tcoUsdPerMTok": 0.6261
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 36.5,
+            "tcoUsdPerMTok": 0.5807
+          }
+        ],
         "loadsUsed": [
           1,
           5,
@@ -2800,7 +13828,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 29.4,
-      "cost": 23.2,
       "domains": {
         "chat": 45.3,
         "coding": 21.7,
@@ -2811,7 +13838,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 86.8,
         "ttftMs": 15715.8,
         "tokPerSec": 187.7,
-        "usdPerMTok": 11.81,
+        "tcoUsdPerMTok": 12.2674,
+        "tcoByDomain": {
+          "chat": 3.0062,
+          "coding": 23.6253,
+          "terminal": 12.629,
+          "computerUse": 9.8093
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 36.5,
+            "tcoUsdPerMTok": 9.1015
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 658.7,
+            "tcoUsdPerMTok": 0.5045
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1296.5,
+            "tcoUsdPerMTok": 0.2563
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.1,
+            "tcoUsdPerMTok": 8.9497
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 210.4,
+            "tcoUsdPerMTok": 1.5796
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 211.1,
+            "tcoUsdPerMTok": 1.5739
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 27.2,
+            "tcoUsdPerMTok": 12.2097
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 10.8,
+            "tcoUsdPerMTok": 30.6492
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 15.8,
+            "tcoUsdPerMTok": 20.9933
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.2,
+            "tcoUsdPerMTok": 11.3705
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 25.6,
+            "tcoUsdPerMTok": 12.9849
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 25.2,
+            "tcoUsdPerMTok": 13.1756
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 33.9,
+            "tcoUsdPerMTok": 9.8075
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 32.9,
+            "tcoUsdPerMTok": 10.0903
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 35.9,
+            "tcoUsdPerMTok": 9.2491
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2832,7 +13987,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 29.3,
-      "cost": 23.5,
       "domains": {
         "chat": 46.3,
         "coding": 24.2,
@@ -2843,7 +13997,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 113.4,
         "ttftMs": 17409,
         "tokPerSec": 191.6,
-        "usdPerMTok": 11.57,
+        "tcoUsdPerMTok": 12.8819,
+        "tcoByDomain": {
+          "chat": 2.9418,
+          "coding": 24.9443,
+          "terminal": 13.1276,
+          "computerUse": 10.514
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 36.6,
+            "tcoUsdPerMTok": 9.0889
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 632.4,
+            "tcoUsdPerMTok": 0.5255
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 1324.4,
+            "tcoUsdPerMTok": 0.2509
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.1,
+            "tcoUsdPerMTok": 8.9675
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 259.3,
+            "tcoUsdPerMTok": 1.2814
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 206,
+            "tcoUsdPerMTok": 1.6134
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26.1,
+            "tcoUsdPerMTok": 12.7278
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 10.7,
+            "tcoUsdPerMTok": 31.0526
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.9,
+            "tcoUsdPerMTok": 10.7616
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 24,
+            "tcoUsdPerMTok": 13.8467
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 23.6,
+            "tcoUsdPerMTok": 14.0553
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 33.4,
+            "tcoUsdPerMTok": 9.9526
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 31.5,
+            "tcoUsdPerMTok": 10.5378
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 30.1,
+            "tcoUsdPerMTok": 11.0276
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2863,7 +14137,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 28.4,
-      "cost": 62.5,
       "domains": {
         "chat": 1,
         "coding": 26,
@@ -2874,7 +14147,119 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 79.9,
         "ttftMs": 56767.6,
         "tokPerSec": 55.2,
-        "usdPerMTok": 1.11,
+        "tcoUsdPerMTok": 0.7794,
+        "tcoByDomain": {
+          "chat": 0.9858,
+          "coding": 1.3585,
+          "terminal": 0.3334,
+          "computerUse": 0.44
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 13.5,
+            "tcoUsdPerMTok": 1.5696
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 52.3,
+            "tcoUsdPerMTok": 0.4054
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 8.5,
+            "tcoUsdPerMTok": 2.4956
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 40.8,
+            "tcoUsdPerMTok": 0.5195
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 7.9,
+            "tcoUsdPerMTok": 2.6986
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 23.5,
+            "tcoUsdPerMTok": 0.9037
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 22.8,
+            "tcoUsdPerMTok": 0.9279
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 27.8,
+            "tcoUsdPerMTok": 0.7629
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 105.7,
+            "tcoUsdPerMTok": 0.2004
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 124.9,
+            "tcoUsdPerMTok": 0.1698
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.4,
+            "tcoUsdPerMTok": 0.7202
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 53.5,
+            "tcoUsdPerMTok": 0.3961
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 85.6,
+            "tcoUsdPerMTok": 0.2476
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2894,7 +14279,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 24.8,
-      "cost": 1,
       "domains": {
         "chat": 31.2,
         "coding": 8.9,
@@ -2905,7 +14289,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 207.3,
         "ttftMs": 2462,
         "tokPerSec": 24.7,
-        "usdPerMTok": 44.73,
+        "tcoUsdPerMTok": 6.2233,
+        "tcoByDomain": {
+          "chat": 3.0849,
+          "coding": 12.9712,
+          "terminal": 5.9454,
+          "computerUse": 2.8916
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 4.8,
+            "tcoUsdPerMTok": 12.1581
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 22.5,
+            "tcoUsdPerMTok": 2.5931
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 225.4,
+            "tcoUsdPerMTok": 0.2592
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 20.2,
+            "tcoUsdPerMTok": 2.8975
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 42.6,
+            "tcoUsdPerMTok": 1.3707
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 40.7,
+            "tcoUsdPerMTok": 1.4369
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 3,
+            "tcoUsdPerMTok": 19.6302
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 13.3,
+            "tcoUsdPerMTok": 4.4013
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2.5,
+            "tcoUsdPerMTok": 23.452
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 8.6,
+            "tcoUsdPerMTok": 6.7896
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 15.1,
+            "tcoUsdPerMTok": 3.8705
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 6.3,
+            "tcoUsdPerMTok": 9.2507
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 10.6,
+            "tcoUsdPerMTok": 5.5273
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 30.1,
+            "tcoUsdPerMTok": 1.9428
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 27.1,
+            "tcoUsdPerMTok": 2.1535
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2925,7 +14437,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 24.1,
-      "cost": 28.9,
       "domains": {
         "chat": 25.7,
         "coding": 14.6,
@@ -2936,7 +14447,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 164.2,
         "ttftMs": 10606,
         "tokPerSec": 132.2,
-        "usdPerMTok": 8.36,
+        "tcoUsdPerMTok": 2.1677,
+        "tcoByDomain": {
+          "chat": 2.1713,
+          "coding": 3.5548,
+          "terminal": 1.872,
+          "computerUse": 1.0726
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.9,
+            "tcoUsdPerMTok": 1.5408
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 348.9,
+            "tcoUsdPerMTok": 0.1674
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 419.9,
+            "tcoUsdPerMTok": 0.1391
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 4.1,
+            "tcoUsdPerMTok": 14.2991
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 172.3,
+            "tcoUsdPerMTok": 0.339
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 154.5,
+            "tcoUsdPerMTok": 0.3781
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 11.8,
+            "tcoUsdPerMTok": 4.958
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 17.9,
+            "tcoUsdPerMTok": 3.2636
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 21.4,
+            "tcoUsdPerMTok": 2.7342
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 21.5,
+            "tcoUsdPerMTok": 2.7141
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 38,
+            "tcoUsdPerMTok": 1.5375
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 34.4,
+            "tcoUsdPerMTok": 1.6989
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 26.6,
+            "tcoUsdPerMTok": 2.1944
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 83.9,
+            "tcoUsdPerMTok": 0.6963
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 83,
+            "tcoUsdPerMTok": 0.7034
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2956,7 +14595,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 22.8,
-      "cost": 85.1,
       "domains": {
         "chat": 38.5,
         "coding": 15.8,
@@ -2967,7 +14605,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 311.7,
         "ttftMs": 14940.9,
         "tokPerSec": 194.6,
-        "usdPerMTok": 0.29,
+        "tcoUsdPerMTok": 0.7726,
+        "tcoByDomain": {
+          "chat": 0.1332,
+          "coding": 1.6007,
+          "terminal": 0.8355,
+          "computerUse": 0.5209
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 52.8,
+            "tcoUsdPerMTok": 0.3602
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 494.4,
+            "tcoUsdPerMTok": 0.0385
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 389,
+            "tcoUsdPerMTok": 0.0489
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 53.2,
+            "tcoUsdPerMTok": 0.3576
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 403.1,
+            "tcoUsdPerMTok": 0.0472
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 149.6,
+            "tcoUsdPerMTok": 0.1273
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 28.2,
+            "tcoUsdPerMTok": 0.6762
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 9.2,
+            "tcoUsdPerMTok": 2.0629
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 37.2,
+            "tcoUsdPerMTok": 0.5117
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 22,
+            "tcoUsdPerMTok": 0.8649
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 17.3,
+            "tcoUsdPerMTok": 1.1006
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 43.3,
+            "tcoUsdPerMTok": 0.4396
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 44.2,
+            "tcoUsdPerMTok": 0.4312
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 24.4,
+            "tcoUsdPerMTok": 0.7817
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -2988,7 +14746,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 20.7,
-      "cost": 56.5,
       "domains": {
         "chat": 37.7,
         "coding": 26.6,
@@ -2999,7 +14756,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 224.9,
         "ttftMs": 4610.5,
         "tokPerSec": 153.5,
-        "usdPerMTok": 1.59,
+        "tcoUsdPerMTok": 9.1934,
+        "tcoByDomain": {
+          "chat": 1.2359,
+          "coding": 3.8978,
+          "terminal": 19.2386,
+          "computerUse": 12.4011
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 19.7,
+            "tcoUsdPerMTok": 4.3068
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 449.9,
+            "tcoUsdPerMTok": 0.1884
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 763.5,
+            "tcoUsdPerMTok": 0.111
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 21,
+            "tcoUsdPerMTok": 4.0334
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 260.7,
+            "tcoUsdPerMTok": 0.3253
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 207.5,
+            "tcoUsdPerMTok": 0.4086
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 14.7,
+            "tcoUsdPerMTok": 5.7827
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 19.9,
+            "tcoUsdPerMTok": 4.2576
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 65.6,
+            "tcoUsdPerMTok": 1.2934
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 1.3,
+            "tcoUsdPerMTok": 65.1199
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 23.5,
+            "tcoUsdPerMTok": 3.6086
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 18.4,
+            "tcoUsdPerMTok": 4.6171
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 2.4,
+            "tcoUsdPerMTok": 35.6516
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 13.2,
+            "tcoUsdPerMTok": 6.4055
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 74.3,
+            "tcoUsdPerMTok": 1.1418
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -3020,7 +14905,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 15.9,
-      "cost": 11.8,
       "domains": {
         "chat": 21.1,
         "coding": 17.4,
@@ -3031,7 +14915,119 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 149.7,
         "ttftMs": 32808.7,
         "tokPerSec": 94.7,
-        "usdPerMTok": 23.35,
+        "tcoUsdPerMTok": 10.0332,
+        "tcoByDomain": {
+          "chat": 1.8198,
+          "coding": 17.8763,
+          "terminal": 14.752,
+          "computerUse": 5.6848
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.3,
+            "tcoUsdPerMTok": 3.8577
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 381.7,
+            "tcoUsdPerMTok": 0.3061
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 531.1,
+            "tcoUsdPerMTok": 0.22
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.9,
+            "tcoUsdPerMTok": 3.7862
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 57.6,
+            "tcoUsdPerMTok": 2.0274
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 57.6,
+            "tcoUsdPerMTok": 2.0272
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 12.3,
+            "tcoUsdPerMTok": 9.5354
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 5.3,
+            "tcoUsdPerMTok": 22.0467
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 9.8,
+            "tcoUsdPerMTok": 11.9807
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 7.2,
+            "tcoUsdPerMTok": 16.1377
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 23.3,
+            "tcoUsdPerMTok": 5.0185
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 21.6,
+            "tcoUsdPerMTok": 5.4141
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 17,
+            "tcoUsdPerMTok": 6.8926
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -3052,7 +15048,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 15.8,
-      "cost": 36.2,
       "domains": {
         "chat": 11.2,
         "coding": 10.8,
@@ -3063,7 +15058,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 319.2,
         "ttftMs": 3373.8,
         "tokPerSec": 22.6,
-        "usdPerMTok": 5.4,
+        "tcoUsdPerMTok": 8.2726,
+        "tcoByDomain": {
+          "chat": 4.5916,
+          "coding": 9.3941,
+          "terminal": 9.7507,
+          "computerUse": 9.3539
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 17.6,
+            "tcoUsdPerMTok": 2.4124
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 63.8,
+            "tcoUsdPerMTok": 0.665
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 2.6,
+            "tcoUsdPerMTok": 16.4687
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 3.9,
+            "tcoUsdPerMTok": 10.9259
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 25.4,
+            "tcoUsdPerMTok": 1.6712
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 18.8,
+            "tcoUsdPerMTok": 2.2531
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 3.1,
+            "tcoUsdPerMTok": 13.6275
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 8.2,
+            "tcoUsdPerMTok": 5.1564
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3.1,
+            "tcoUsdPerMTok": 13.6361
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 3.1,
+            "tcoUsdPerMTok": 13.8611
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 7.8,
+            "tcoUsdPerMTok": 5.4497
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 3,
+            "tcoUsdPerMTok": 14.2423
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 1.8,
+            "tcoUsdPerMTok": 23.2416
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 8.1,
+            "tcoUsdPerMTok": 5.2331
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 11.4,
+            "tcoUsdPerMTok": 3.7078
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -3083,7 +15206,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 15.3,
-      "cost": 9.5,
       "domains": {
         "chat": 21.7,
         "coding": 18.2,
@@ -3094,7 +15216,103 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 189.8,
         "ttftMs": 40884,
         "tokPerSec": 82.3,
-        "usdPerMTok": 26.87,
+        "tcoUsdPerMTok": 10.5073,
+        "tcoByDomain": {
+          "chat": 2.0287,
+          "coding": 15.6817,
+          "terminal": 17.4858,
+          "computerUse": 6.8329
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30,
+            "tcoUsdPerMTok": 3.8919
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 334.5,
+            "tcoUsdPerMTok": 0.3493
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 468.7,
+            "tcoUsdPerMTok": 0.2493
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 30.9,
+            "tcoUsdPerMTok": 3.7829
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 49.1,
+            "tcoUsdPerMTok": 2.3799
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 14.8,
+            "tcoUsdPerMTok": 7.8706
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 6,
+            "tcoUsdPerMTok": 19.5873
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 9.2,
+            "tcoUsdPerMTok": 12.7029
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 5.9,
+            "tcoUsdPerMTok": 19.8772
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 19.9,
+            "tcoUsdPerMTok": 5.8664
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 16,
+            "tcoUsdPerMTok": 7.3161
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -3114,7 +15332,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 12,
-      "cost": 49.7,
       "domains": {
         "chat": 24.6,
         "coding": 4.2,
@@ -3125,7 +15342,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 510.9,
         "ttftMs": 18074.8,
         "tokPerSec": 102,
-        "usdPerMTok": 2.4,
+        "tcoUsdPerMTok": 4.0714,
+        "tcoByDomain": {
+          "chat": 0.9085,
+          "coding": 7.3443,
+          "terminal": 5.7493,
+          "computerUse": 2.2835
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 38.2,
+            "tcoUsdPerMTok": 2.2201
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 306.7,
+            "tcoUsdPerMTok": 0.2765
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 420.1,
+            "tcoUsdPerMTok": 0.2018
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 38.3,
+            "tcoUsdPerMTok": 2.2115
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 136.6,
+            "tcoUsdPerMTok": 0.6209
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 100.9,
+            "tcoUsdPerMTok": 0.8402
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 15.8,
+            "tcoUsdPerMTok": 5.3646
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 11,
+            "tcoUsdPerMTok": 7.7291
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 9.9,
+            "tcoUsdPerMTok": 8.5542
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 14.9,
+            "tcoUsdPerMTok": 5.7024
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 14.4,
+            "tcoUsdPerMTok": 5.872
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 15.3,
+            "tcoUsdPerMTok": 5.5508
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 29.3,
+            "tcoUsdPerMTok": 2.8961
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 41.4,
+            "tcoUsdPerMTok": 2.0492
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 39.6,
+            "tcoUsdPerMTok": 2.1394
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -3146,7 +15491,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 10.4,
-      "cost": 10.5,
       "domains": {
         "chat": 31.2,
         "coding": 1,
@@ -3157,7 +15501,135 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 447.3,
         "ttftMs": 14161.9,
         "tokPerSec": 87.6,
-        "usdPerMTok": 25.23,
+        "tcoUsdPerMTok": 30.4422,
+        "tcoByDomain": {
+          "chat": 0.9886,
+          "coding": 14.9783,
+          "terminal": 100.2713,
+          "computerUse": 5.5305
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 49.3,
+            "tcoUsdPerMTok": 2.3718
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 249.4,
+            "tcoUsdPerMTok": 0.4684
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 440,
+            "tcoUsdPerMTok": 0.2656
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 48.5,
+            "tcoUsdPerMTok": 2.4067
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 163.5,
+            "tcoUsdPerMTok": 0.7148
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 234.6,
+            "tcoUsdPerMTok": 0.4981
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 14.9,
+            "tcoUsdPerMTok": 7.8221
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 5.5,
+            "tcoUsdPerMTok": 21.1899
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 12,
+            "tcoUsdPerMTok": 9.7114
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 0.3,
+            "tcoUsdPerMTok": 343.7094
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 4.6,
+            "tcoUsdPerMTok": 25.1412
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 16.5,
+            "tcoUsdPerMTok": 7.0934
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 22,
+            "tcoUsdPerMTok": 5.311
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 15.1,
+            "tcoUsdPerMTok": 7.7428
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 88.1,
+            "tcoUsdPerMTok": 1.3254
+          }
+        ],
         "loadsUsed": [
           1,
           40,
@@ -3177,7 +15649,6 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
       "quant": "BF16",
       "provenance": "verified",
       "efficiency": 8.5,
-      "cost": 39.9,
       "domains": {
         "chat": 11.1,
         "coding": 4.4,
@@ -3188,7 +15659,127 @@ export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
         "tpotMs": 441.7,
         "ttftMs": 13233,
         "tokPerSec": 56.6,
-        "usdPerMTok": 4.32,
+        "tcoUsdPerMTok": 4.4105,
+        "tcoByDomain": {
+          "chat": 1.3783,
+          "coding": 7.3167,
+          "terminal": 6.1346,
+          "computerUse": 2.8126
+        },
+        "costCells": [
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 125.9,
+            "tcoUsdPerMTok": 0.6734
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-singleturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 140.6,
+            "tcoUsdPerMTok": 0.6032
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 15.5,
+            "tcoUsdPerMTok": 5.4576
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 89.9,
+            "tcoUsdPerMTok": 0.9429
+          },
+          {
+            "domain": "chat",
+            "profile": "chat-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 78.3,
+            "tcoUsdPerMTok": 1.0828
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 10.4,
+            "tcoUsdPerMTok": 8.1504
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 13.2,
+            "tcoUsdPerMTok": 6.4475
+          },
+          {
+            "domain": "coding",
+            "profile": "swebench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 10.3,
+            "tcoUsdPerMTok": 8.2214
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 11.1,
+            "tcoUsdPerMTok": 7.6383
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 15.8,
+            "tcoUsdPerMTok": 5.3815
+          },
+          {
+            "domain": "terminal",
+            "profile": "terminalbench-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 120,
+            "tokPerSec": 13.8,
+            "tcoUsdPerMTok": 6.1373
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 1,
+            "actualConcurrency": 1,
+            "tokPerSec": 17.8,
+            "tcoUsdPerMTok": 4.7702
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 40,
+            "actualConcurrency": 40,
+            "tokPerSec": 38.4,
+            "tcoUsdPerMTok": 2.2104
+          },
+          {
+            "domain": "computerUse",
+            "profile": "osworld-multiturn-synth",
+            "targetLoad": 160,
+            "actualConcurrency": 160,
+            "tokPerSec": 41.2,
+            "tcoUsdPerMTok": 2.0593
+          }
+        ],
         "loadsUsed": [
           1,
           40,

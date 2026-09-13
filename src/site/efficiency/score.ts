@@ -1,5 +1,5 @@
 /**
- * QuettaBench Efficiency Index and Cost Index.
+ * QuettaBench serving measurements used by the Hardware Cost Index.
  *
  * Modelled on Artificial Analysis's composite index: one 0–100 score,
  * equal-weight subdomains, equation published. Raw serving metrics are
@@ -16,16 +16,17 @@
  *   1 / median TPOT,  1 / median TTFT,  output tok/s.
  * Missing loads fall back to the nearest concurrency in a documented band.
  *
- * Cost Index (separate): tokens per dollar at concurrency 40, same
- * percentile scaling. GPU-hour rates are a dated assumption table, not
- * a quote. Higher cost score = cheaper.
+ * Ownership cost is computed from the measured throughput cells with the
+ * single three-year TCO model in tco.ts. There is no rental-price score.
  *
  * Provenance: a row is `verified` when every number came from a measured
  * QuettaBench run. `estimated` is reserved for analytical (QuettaSim)
  * rows that have not been executed.
  */
 
-export const INDEX_VERSION = '1.1';
+import { tcoUsdPerMTok } from './tco';
+
+export const INDEX_VERSION = '1.4';
 
 export const CANONICAL_PROFILES = [
   'chat-singleturn-synth',
@@ -70,18 +71,6 @@ export const MIN_DOMAINS = 3;
 export type HardwareFamily = 'H100' | 'A100' | '3090' | '2080 Ti';
 export type Provenance = 'verified' | 'estimated';
 
-/**
- * Assumed $/GPU-hour for the cost index. Datacentre figures are Lambda
- * public list (Sep 2026). Workstation figures are a marketplace midpoint
- * in the published Sep 2026 range — labelled as assumptions, not quotes.
- */
-export const GPU_USD_PER_HOUR: Record<HardwareFamily, { usd: number; source: string }> = {
-  H100: { usd: 3.99, source: 'Lambda H100 SXM list, Sep 2026' },
-  A100: { usd: 1.99, source: 'Lambda A100 40GB list, Sep 2026' },
-  '3090': { usd: 0.22, source: 'Marketplace midpoint (Vast/RunPod range ~0.07–0.28), Sep 2026' },
-  '2080 Ti': { usd: 0.1, source: 'Marketplace midpoint for ageing cards, Sep 2026' },
-};
-
 export interface CellMetrics {
   tpotMs: number;
   ttftMs: number;
@@ -104,7 +93,15 @@ export interface DomainScales {
   coding: Scale;
   terminal: Scale;
   computerUse: Scale;
-  cost: Scale;
+}
+
+export interface WorkloadCostCell {
+  domain: Domain;
+  profile: (typeof CANONICAL_PROFILES)[number];
+  targetLoad: Load;
+  actualConcurrency: number;
+  tokPerSec: number;
+  tcoUsdPerMTok: number;
 }
 
 export interface IndexRow {
@@ -117,13 +114,14 @@ export interface IndexRow {
   quant: string;
   provenance: Provenance;
   efficiency: number;
-  cost: number | null;
   domains: Record<Domain, number | null>;
   raw: {
     tpotMs: number | null;
     ttftMs: number | null;
     tokPerSec: number | null;
-    usdPerMTok: number | null;
+    tcoUsdPerMTok: number;
+    tcoByDomain: Record<Domain, number | null>;
+    costCells: WorkloadCostCell[];
     loadsUsed: number[];
     domainCount: number;
     runCount: number;
@@ -206,23 +204,6 @@ export function clamp100(n: number): number {
 
 export function round1(n: number): number {
   return Math.round(n * 10) / 10;
-}
-
-export function usdPerHour(family: HardwareFamily, gpus: number): number {
-  return GPU_USD_PER_HOUR[family].usd * gpus;
-}
-
-export function usdPerMTok(tokPerSec: number, family: HardwareFamily, gpus: number): number | null {
-  if (!(tokPerSec > 0)) return null;
-  const tokPerHour = tokPerSec * 3600;
-  const usd = usdPerHour(family, gpus);
-  return (usd / tokPerHour) * 1e6;
-}
-
-export function tokensPerDollar(tokPerSec: number, family: HardwareFamily, gpus: number): number | null {
-  const usd = usdPerMTok(tokPerSec, family, gpus);
-  if (usd == null || !(usd > 0)) return null;
-  return 1e6 / usd;
 }
 
 interface ConfigAccum {
@@ -350,14 +331,83 @@ function servingLatencies(acc: ConfigAccum): { tpotMs: number; ttftMs: number } 
   return { tpotMs: mean(tpot), ttftMs: mean(ttft) };
 }
 
+function workloadCostCells(acc: ConfigAccum): WorkloadCostCell[] {
+  const cells: WorkloadCostCell[] = [];
+  for (const domain of DOMAINS) {
+    for (const profile of DOMAIN_PROFILES[domain]) {
+      const available = availableConcurrencies(acc, profile);
+      for (const targetLoad of LOADS) {
+        const actualConcurrency = pickConcurrency(available, targetLoad);
+        if (actualConcurrency == null) continue;
+        const measured = acc.cells.get(cellKey(profile, actualConcurrency));
+        if (!measured || measured.length === 0) continue;
+        const tokPerSec = medianCell(measured).tokPerSec;
+        const usd = tcoUsdPerMTok(tokPerSec, acc.hw.family, acc.hw.gpus);
+        if (usd == null) continue;
+        cells.push({
+          domain,
+          profile: profile as WorkloadCostCell['profile'],
+          targetLoad,
+          actualConcurrency,
+          tokPerSec,
+          tcoUsdPerMTok: usd,
+        });
+      }
+    }
+  }
+  return cells;
+}
+
+function mixedTco(cells: WorkloadCostCell[]): {
+  total: number;
+  byDomain: Record<Domain, number | null>;
+} | null {
+  const byDomain = {
+    chat: null,
+    coding: null,
+    terminal: null,
+    computerUse: null,
+  } as Record<Domain, number | null>;
+
+  for (const domain of DOMAINS) {
+    const profileCosts: number[] = [];
+    for (const profile of DOMAIN_PROFILES[domain]) {
+      const profileCells = cells.filter((c) => c.profile === profile);
+      let weighted = 0;
+      let weight = 0;
+      for (const cell of profileCells) {
+        const w = LOAD_WEIGHTS[cell.targetLoad];
+        weighted += cell.tcoUsdPerMTok * w;
+        weight += w;
+      }
+      if (weight > 0) profileCosts.push(weighted / weight);
+    }
+    if (profileCosts.length > 0) {
+      byDomain[domain] = profileCosts.reduce((a, b) => a + b, 0) / profileCosts.length;
+    }
+  }
+
+  const present = DOMAINS.map((d) => byDomain[d]).filter(
+    (n): n is number => n != null && Number.isFinite(n),
+  );
+  if (present.length === 0) return null;
+  return {
+    total: present.reduce((a, b) => a + b, 0) / present.length,
+    byDomain,
+  };
+}
+
 interface PreparedConfig {
   acc: ConfigAccum;
   domainRaw: Record<Domain, number | null>;
   loadsUsed: number[];
   tokPerSec: number | null;
   lat: { tpotMs: number; ttftMs: number } | null;
-  costRaw: number | null;
-  usdPerMTok: number | null;
+  costCells: WorkloadCostCell[];
+  tco: {
+    total: number;
+    byDomain: Record<Domain, number | null>;
+  };
 }
 
 function prepare(acc: ConfigAccum): PreparedConfig | null {
@@ -380,18 +430,17 @@ function prepare(acc: ConfigAccum): PreparedConfig | null {
   // Serving-point metrics (concurrency 40, or the 20–80 band) are required
   // so a sparse cell with only c=1 / c=200 cannot land on the board.
   if (tokPerSec == null || lat == null) return null;
-  const costRaw =
-    tokPerSec != null ? tokensPerDollar(tokPerSec, acc.hw.family, acc.hw.gpus) : null;
-  const usd =
-    tokPerSec != null ? usdPerMTok(tokPerSec, acc.hw.family, acc.hw.gpus) : null;
+  const costCells = workloadCostCells(acc);
+  const tco = mixedTco(costCells);
+  if (tco == null) return null;
   return {
     acc,
     domainRaw: domainRawMap,
     loadsUsed: [...loads].sort((a, b) => a - b),
     tokPerSec,
     lat,
-    costRaw,
-    usdPerMTok: usd,
+    costCells,
+    tco,
   };
 }
 
@@ -407,7 +456,6 @@ export function buildScales(prepared: PreparedConfig[]): DomainScales {
     coding: collect(of('coding')),
     terminal: collect(of('terminal')),
     computerUse: collect(of('computerUse')),
-    cost: collect(prepared.map((p) => p.costRaw).filter((n): n is number => n != null && n > 0)),
   };
 }
 
@@ -437,7 +485,6 @@ export function scoreCorpus(
           : null,
     };
     const efficiency = round1(meanPresent(DOMAINS.map((d) => domains[d])) ?? NaN);
-    const cost = p.costRaw != null ? round1(scaledScore(p.costRaw, scales.cost)) : null;
     return {
       id: `${p.acc.model}|${p.acc.hardware}|${p.acc.engine}|${p.acc.quant}`,
       model: p.acc.model,
@@ -448,13 +495,25 @@ export function scoreCorpus(
       quant: p.acc.quant,
       provenance,
       efficiency,
-      cost,
       domains,
       raw: {
         tpotMs: p.lat ? Math.round(p.lat.tpotMs * 10) / 10 : null,
         ttftMs: p.lat ? Math.round(p.lat.ttftMs * 10) / 10 : null,
         tokPerSec: p.tokPerSec != null ? Math.round(p.tokPerSec * 10) / 10 : null,
-        usdPerMTok: p.usdPerMTok != null ? Math.round(p.usdPerMTok * 100) / 100 : null,
+        tcoUsdPerMTok: Math.round(p.tco.total * 10000) / 10000,
+        tcoByDomain: Object.fromEntries(
+          DOMAINS.map((d) => [
+            d,
+            p.tco.byDomain[d] == null
+              ? null
+              : Math.round((p.tco.byDomain[d] as number) * 10000) / 10000,
+          ]),
+        ) as Record<Domain, number | null>,
+        costCells: p.costCells.map((c) => ({
+          ...c,
+          tokPerSec: Math.round(c.tokPerSec * 10) / 10,
+          tcoUsdPerMTok: Math.round(c.tcoUsdPerMTok * 10000) / 10000,
+        })),
         loadsUsed: p.loadsUsed,
         domainCount: DOMAINS.filter((d) => domains[d] != null).length,
         runCount: p.acc.runCount,
@@ -474,9 +533,6 @@ export function assertIndexInvariants(rows: IndexRow[]): string[] {
     if (!(r.efficiency >= 0 && r.efficiency <= 100)) {
       failures.push(`${r.id}: efficiency ${r.efficiency} out of range`);
     }
-    if (r.cost != null && !(r.cost >= 0 && r.cost <= 100)) {
-      failures.push(`${r.id}: cost ${r.cost} out of range`);
-    }
     for (const d of DOMAINS) {
       const v = r.domains[d];
       if (v != null && !(v >= 0 && v <= 100)) failures.push(`${r.id}: ${d} ${v} out of range`);
@@ -486,7 +542,10 @@ export function assertIndexInvariants(rows: IndexRow[]): string[] {
     for (const d of DOMAINS) {
       if (r.domains[d] === 0) failures.push(`${r.id}: ${d} is 0 — scale should start at 1`);
     }
-    if (r.cost === 0) failures.push(`${r.id}: cost is 0 — scale should start at 1`);
+    if (!(r.raw.tcoUsdPerMTok > 0)) {
+      failures.push(`${r.id}: invalid TCO $/MTok ${r.raw.tcoUsdPerMTok}`);
+    }
+    if (r.raw.costCells.length === 0) failures.push(`${r.id}: no workload cost cells`);
     if (r.raw.tpotMs == null || r.raw.ttftMs == null || r.raw.tokPerSec == null) {
       failures.push(`${r.id}: missing serving-point raw metrics`);
     }

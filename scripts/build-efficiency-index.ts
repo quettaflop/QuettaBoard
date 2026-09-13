@@ -136,10 +136,15 @@ function main(): void {
     emitSnapshot(rows, scales, 'json/current/data.synthetic_distributional.json', '2026-08-30'),
   );
   const top = rows[0];
-  const cheap = [...rows].filter((r) => r.cost != null).sort((a, b) => (b.cost ?? 0) - (a.cost ?? 0))[0];
+  const cheap = [...rows].sort((a, b) => a.raw.tcoUsdPerMTok - b.raw.tcoUsdPerMTok)[0];
   console.log(`wrote ${rows.length} rows → ${snapshotPath}`);
   console.log(`top efficiency  ${top.efficiency}  ${top.model} ${top.hardware} ${top.engine}`);
-  if (cheap) console.log(`top cost        ${cheap.cost}  ${cheap.model} ${cheap.hardware} ${cheap.engine}`);
+  if (cheap) {
+    console.log(
+      `lowest TCO      $${cheap.raw.tcoUsdPerMTok.toFixed(4)}/M  ` +
+      `${cheap.model} ${cheap.hardware} ${cheap.engine}`,
+    );
+  }
 }
 
 main();
