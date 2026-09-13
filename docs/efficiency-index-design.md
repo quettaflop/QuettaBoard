@@ -99,8 +99,9 @@ configurations that exist on both sides. `indexes.ts` → `matchedPanel()`.
 
 Per matched config: load-weighted geometric mean of cell ratios
 `$_ref(cell) / $_group(cell)` using the published load weights 25 / 50 / 25 for
-concurrency 1 / 40 / 160. Then an equal-weight geometric mean over configs within a model,
-then over models. `> 1` means better value than the reference.
+concurrency 1 / 40 / 160. Profiles are averaged inside each domain (so the two Chat
+profiles do not double-weight Chat), then domains, configs within a model, and models
+receive equal weight. `> 1` means better value than the reference.
 
 - A group matched on fewer than `MIN_MATCHED_MODELS = 3` models is **listed but not
   ranked** and its ratio is not published ("Not yet ranked" divider). The reference is
@@ -117,8 +118,8 @@ it reduces to this method.
 
 ### D4. The absolute dollar figure is the geo-mean over the same matched cells
 
-**Decision.** The "Typical $ / M" column is the load-weighted geometric mean $/MTok over
-exactly the matched cells, reported for both the group and the reference, so
+**Decision.** The "Typical $ / M" column uses the same load/profile/domain-balanced
+geometric reduction over exactly the matched cells, reported for both sides, so
 `ref ÷ group` equals the published ratio and the two columns cannot contradict each other.
 The arithmetic mean over everything a group ever ran is kept (`usdPerMTok`) but appears
 only inside the expanded row, labelled coverage-dependent and not comparable across rows.
@@ -178,26 +179,26 @@ we do not have; the values are read from the rendered pages.
 
 | Hardware | Rank | Value vs H100 | Typical $/M (same cells) | Evidence |
 |---|---|---|---|---|
-| A100 40GB | 1 | 1.64× | $0.70 vs $1.14 | 9 matched models, better on 9, 30 configs, 441 cells |
-| RTX 3090 | 2 | 1.17× | $0.60 vs $0.70 | 5 matched models, better on 3, 20 configs, 295 cells |
-| H100 | 3 | 1.00× (reference) | $1.12 | 9 models, 40 configs, 590 cells |
+| A100 40GB | 1 | 1.53× | $0.90 vs $1.37 | 9 matched models, better on 8, 30 configs, 441 cells |
+| RTX 3090 | 2 | 1.10× | $0.74 vs $0.81 | 5 matched models, better on 2, 20 configs, 295 cells |
+| H100 | 3 | 1.00× (reference) | $1.39 | 9 models, 40 configs, 590 cells |
 | RTX 2080 Ti | — | not ranked | — | 2 of 3 required models |
 
 | Engine | Rank | Value vs vLLM | Typical $/M | Evidence |
 |---|---|---|---|---|
-| vLLM 0.19 | 1 | 1.00× (reference) | $0.61 | 10 models, 50 configs, 744 cells |
-| SGLang 0.5.9 | 2 | 0.54× | $1.12 vs $0.60 | 10 matched models, better on 0, 44 configs, 643 cells |
+| vLLM 0.19 | 1 | 1.00× (reference) | $0.74 | 10 models, 50 configs, 744 cells |
+| SGLang 0.5.9 | 2 | 0.52× | $1.43 vs $0.74 | 10 matched models, better on 0, 44 configs, 643 cells |
 
 Pinned in `indexes.test.ts` (±0.02); a regenerated snapshot may legitimately move them.
 
 ## 5. Known sensitivities (read before quoting the A100 result)
 
 The A100 lead is mechanically correct and is the DumpsterCluster thesis: H100 costs 5.7×
-as much per GPU-hour on these inputs but delivers ~3.5× the tokens on the matched cells.
+as much per GPU-hour on these inputs but delivers ~3.7× the tokens on the matched cells.
 It is also fragile:
 
-- **Price.** Break-even used A100 price is **$3,855** (assumed $1,900); the 3090 ties at
-  **$1,665** (assumed $1,275); alternatively H100 would need to fall to **$10,350** used.
+- **Price.** Break-even used A100 price is **$3,515** (assumed $1,900); the 3090 ties at
+  **$1,508** (assumed $1,275); alternatively H100 would need to fall to **$11,278** used.
   Doubling the A100 price erases the result.
 - **Load ceiling.** Workloads cap at 160 concurrent requests and configs are matched on
   GPU count, so the H100's larger memory and batching headroom are never exercised. The
@@ -207,7 +208,7 @@ It is also fragile:
   is 38 % of the A100's hourly cost against 12 % for H100.
 
 Recommended next page change: publish the break-even price on each ranked row so the
-claim reads "1.64× at $1,900 a card; ties at about $3,850".
+claim reads "1.53× at $1,900 a card; ties at about $3,515".
 
 ## 6. Not done / follow-ups
 
