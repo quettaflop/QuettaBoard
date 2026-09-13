@@ -79,14 +79,14 @@ async function checkViewport(browser, width, height, theme) {
     'true',
   );
   const hardwareTab = page.getByRole('tab', { name: 'Hardware' });
-  const enginesTab = page.getByRole('tab', { name: 'Engines' });
+  const configsTab = page.getByRole('tab', { name: 'Configs' });
   assert.equal(await hardwareTab.getAttribute('tabindex'), '0');
-  assert.equal(await enginesTab.getAttribute('tabindex'), '-1');
+  assert.equal(await configsTab.getAttribute('tabindex'), '-1');
   await hardwareTab.focus();
   await hardwareTab.press('ArrowRight');
-  assert.equal(await enginesTab.getAttribute('aria-selected'), 'true');
-  assert.equal(await enginesTab.evaluate((element) => element === document.activeElement), true);
-  await enginesTab.press('ArrowLeft');
+  assert.equal(await configsTab.getAttribute('aria-selected'), 'true');
+  assert.equal(await configsTab.evaluate((element) => element === document.activeElement), true);
+  await configsTab.press('ArrowLeft');
   assert.equal(await hardwareTab.getAttribute('aria-selected'), 'true');
   assert.equal(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),

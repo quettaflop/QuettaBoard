@@ -37,8 +37,8 @@ type Board = 'hardware' | 'engines' | 'configs';
 type EngineFilter = 'all' | 'vllm' | 'sglang';
 const BOARDS: ReadonlyArray<readonly [Board, string]> = [
   ['hardware', 'Hardware'],
-  ['engines', 'Engines'],
   ['configs', 'Configs'],
+  ['engines', 'Engines'],
 ];
 
 const DOMAIN_LABEL: Record<Domain, string> = {
