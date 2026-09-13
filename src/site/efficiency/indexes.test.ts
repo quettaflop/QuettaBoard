@@ -24,6 +24,21 @@ function cell(usd: number, targetLoad: WorkloadCostCell['targetLoad'] = 40): Wor
   };
 }
 
+function profileCell(
+  usd: number,
+  domain: WorkloadCostCell['domain'],
+  profile: WorkloadCostCell['profile'],
+): WorkloadCostCell {
+  return {
+    domain,
+    profile,
+    targetLoad: 40,
+    actualConcurrency: 40,
+    tokPerSec: 100,
+    tcoUsdPerMTok: usd,
+  };
+}
+
 function row(partial: RowSeed): IndexRow {
   const usd = partial.raw?.tcoUsdPerMTok ?? 1;
   const raw: IndexRow['raw'] = {
@@ -183,6 +198,47 @@ test('cell ratios are combined with the published load weights', () => {
   close(panel.typicalRefUsd, Math.pow(10, 1 / 3));
 });
 
+test('chat profiles are averaged inside an equal-weight domain mix', () => {
+  const refCells = [
+    profileCell(4, 'chat', 'chat-singleturn-synth'),
+    profileCell(4, 'chat', 'chat-multiturn-synth'),
+    profileCell(1, 'coding', 'swebench-multiturn-synth'),
+  ];
+  const groupCells = [
+    profileCell(1, 'chat', 'chat-singleturn-synth'),
+    profileCell(1, 'chat', 'chat-multiturn-synth'),
+    profileCell(1, 'coding', 'swebench-multiturn-synth'),
+  ];
+  const rows = [
+    row({
+      id: 'h',
+      model: 'M',
+      hardwareFamily: 'H100',
+      gpus: 1,
+      engine: 'vllm',
+      raw: { costCells: refCells },
+    }),
+    row({
+      id: 'x',
+      model: 'M',
+      hardwareFamily: 'A100',
+      gpus: 1,
+      engine: 'vllm',
+      raw: { costCells: groupCells },
+    }),
+  ];
+  const panel = matchedPanel(
+    rows,
+    (r) => r.hardwareFamily,
+    'A100',
+    'H100',
+    (r) => `${r.model}|${r.engine}|${r.quant}|${r.gpus}`,
+  );
+  close(panel.ratio, 2);
+  assert.ok((panel.ratio as number) < Math.pow(4, 2 / 3), 'chat must not receive double weight');
+  assert.equal(panel.nCells, 3);
+});
+
 test('configs and cells without a counterpart do not move the ratio', () => {
   const base = [
     row({ id: 'h', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 2 } }),
@@ -285,11 +341,11 @@ test('snapshot: hardware index ranks A100, 3090, H100 and leaves 2080 Ti unranke
   assert.equal(h100.nModelsBetter, 0);
   const a100 = hw[0];
   assert.ok(a100.nMatchedModels >= MIN_MATCHED_MODELS);
-  assert.equal(a100.nModelsBetter, a100.nMatchedModels, 'A100 beats H100 on every matched model');
+  assert.equal(a100.nModelsBetter, 8);
   close((a100.typicalRefUsdPerMTok as number) / (a100.typicalUsdPerMTok as number), a100.vsH100 as number, 1e-9);
   // pinned to the 2026-08-30 snapshot; a regenerated snapshot may legitimately move these
-  close(a100.vsH100, 1.64, 0.02);
-  close(hw[1].vsH100, 1.17, 0.02);
+  close(a100.vsH100, 1.53, 0.02);
+  close(hw[1].vsH100, 1.1, 0.02);
   assert.equal(hw[3].nMatchedModels, 2);
 });
 
@@ -299,6 +355,6 @@ test('snapshot: engine index keeps vLLM as reference and ranks SGLang below it',
   assert.equal(en[0].vsRef, 1);
   assert.ok((en[1].vsRef as number) < 1);
   assert.ok(en[1].nMatchedModels >= MIN_MATCHED_MODELS);
-  close(en[1].vsRef, 0.54, 0.02);
+  close(en[1].vsRef, 0.52, 0.02);
   assert.equal(en[1].nModelsBetter, 0);
 });

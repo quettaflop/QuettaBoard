@@ -951,9 +951,10 @@ function Methodology() {
             A config on family F is compared with the H100 config of the same
             model, engine, quantization and GPU count, cell by cell, and only
             on cells both have. Cells use the {LOAD_WEIGHTS[1]}/{LOAD_WEIGHTS[40]}/
-            {LOAD_WEIGHTS[160]} load weights; configs and models are equal-weight
-            geometric means. Fewer than {MIN_MATCHED_MODELS} matched models: listed,
-            not ranked, ratio not published. Score = 100 · v<sub>F</sub> / best v.
+            {LOAD_WEIGHTS[160]} load weights; profiles are averaged inside each
+            domain, then domains, configs and models receive equal weight.
+            Fewer than {MIN_MATCHED_MODELS} matched models: listed, not ranked,
+            ratio not published. Score = 100 · v<sub>F</sub> / best v.
           </p>
         </div>
         <div>

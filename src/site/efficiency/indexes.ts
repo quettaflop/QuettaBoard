@@ -5,9 +5,10 @@
  * engine) is compared with a reference group only on configurations that
  * exist on both sides with the same model, quantization, GPU width and
  * counterpart, and only on workload cells (profile × target load) measured
- * on both. Within a config the cell cost ratios are combined with the
- * published load weights; configs are then geo-averaged within a model and
- * models are geo-averaged with equal weight. A model that was measured on
+ * on both. Within a config, load weights are applied inside each profile,
+ * chat profiles are averaged inside their domain, and domains are equally
+ * weighted. Configs are then geo-averaged within a model and models are
+ * geo-averaged with equal weight. A model that was measured on
  * only one side therefore cannot move the ratio, and a family measured on
  * ten cheap small models does not look better than one measured on three
  * 70B models.
@@ -22,7 +23,14 @@
  * is still computed (`usdPerMTok`) but only as coverage-dependent context.
 
  */
-import { LOAD_WEIGHTS, weightedGeoMean, type HardwareFamily, type IndexRow } from './score';
+import {
+  DOMAINS,
+  LOAD_WEIGHTS,
+  weightedGeoMean,
+  type Domain,
+  type HardwareFamily,
+  type IndexRow,
+} from './score';
 import { ENGINE_REFERENCE } from './engines';
 
 export const MIN_MATCHED_MODELS = 3;
@@ -136,6 +144,66 @@ function cellKey(cell: { profile: string; targetLoad: number }): string {
   return `${cell.profile}|${cell.targetLoad}`;
 }
 
+function reduceMatchedConfig(
+  row: IndexRow,
+  refRow: IndexRow,
+): { ratio: number; usd: number; refUsd: number; nCells: number } | null {
+  const refCells = new Map(refRow.raw.costCells.map((c) => [cellKey(c), c]));
+  const byDomain = new Map<
+    Domain,
+    Map<
+      string,
+      {
+        ratio: Array<{ value: number; weight: number }>;
+        usd: Array<{ value: number; weight: number }>;
+        refUsd: Array<{ value: number; weight: number }>;
+      }
+    >
+  >();
+  let nCells = 0;
+
+  for (const cell of row.raw.costCells) {
+    const refCell = refCells.get(cellKey(cell));
+    if (
+      !refCell ||
+      refCell.domain !== cell.domain ||
+      !(refCell.tcoUsdPerMTok > 0) ||
+      !(cell.tcoUsdPerMTok > 0)
+    ) {
+      continue;
+    }
+    const profiles = byDomain.get(cell.domain) ?? new Map();
+    const parts = profiles.get(cell.profile) ?? { ratio: [], usd: [], refUsd: [] };
+    const weight = LOAD_WEIGHTS[cell.targetLoad];
+    parts.ratio.push({ value: refCell.tcoUsdPerMTok / cell.tcoUsdPerMTok, weight });
+    parts.usd.push({ value: cell.tcoUsdPerMTok, weight });
+    parts.refUsd.push({ value: refCell.tcoUsdPerMTok, weight });
+    profiles.set(cell.profile, parts);
+    byDomain.set(cell.domain, profiles);
+    nCells += 1;
+  }
+
+  const reduceMetric = (metric: 'ratio' | 'usd' | 'refUsd'): number | null => {
+    const domains: number[] = [];
+    for (const domain of DOMAINS) {
+      const profiles = byDomain.get(domain);
+      if (!profiles) continue;
+      const profileValues = [...profiles.values()]
+        .map((parts) => weightedGeoMean(parts[metric]))
+        .filter((value): value is number => value != null);
+      const domainValue = geoMean(profileValues);
+      if (domainValue != null) domains.push(domainValue);
+    }
+    return geoMean(domains);
+  };
+
+  const ratio = reduceMetric('ratio');
+  const usd = reduceMetric('usd');
+  const refUsd = reduceMetric('refUsd');
+  if (ratio == null || usd == null || refUsd == null) return null;
+  return { ratio, usd, refUsd, nCells };
+}
+
 /**
  * Compare `group` with `ref` on identical configs and cells.
  * When group === ref every config matches itself and the ratio is exactly 1.
@@ -158,25 +226,11 @@ export function matchedPanel(
     if (groupOf(row) !== group) continue;
     const refRow = refRows.get(matchKey(row));
     if (!refRow) continue;
-    const refCells = new Map(refRow.raw.costCells.map((c) => [cellKey(c), c.tcoUsdPerMTok]));
-    const ratioParts: Array<{ value: number; weight: number }> = [];
-    const usdParts: Array<{ value: number; weight: number }> = [];
-    const refParts: Array<{ value: number; weight: number }> = [];
-    for (const cell of row.raw.costCells) {
-      const refUsd = refCells.get(cellKey(cell));
-      if (refUsd == null || !(refUsd > 0) || !(cell.tcoUsdPerMTok > 0)) continue;
-      const weight = LOAD_WEIGHTS[cell.targetLoad];
-      ratioParts.push({ value: refUsd / cell.tcoUsdPerMTok, weight });
-      usdParts.push({ value: cell.tcoUsdPerMTok, weight });
-      refParts.push({ value: refUsd, weight });
-      nCells += 1;
-    }
-    const ratio = weightedGeoMean(ratioParts);
-    const usd = weightedGeoMean(usdParts);
-    const refUsd = weightedGeoMean(refParts);
-    if (ratio == null || usd == null || refUsd == null) continue;
+    const reduced = reduceMatchedConfig(row, refRow);
+    if (reduced == null) continue;
+    nCells += reduced.nCells;
     const list = perModel.get(row.model) ?? [];
-    list.push({ ratio, usd, refUsd });
+    list.push({ ratio: reduced.ratio, usd: reduced.usd, refUsd: reduced.refUsd });
     perModel.set(row.model, list);
   }
 
