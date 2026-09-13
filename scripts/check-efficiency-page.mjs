@@ -4,11 +4,21 @@ import { chromium } from 'playwright';
 
 const port = 4191;
 const origin = `http://127.0.0.1:${port}`;
+// Detached so the whole npx → vite process group can be killed on exit;
+// killing only the npx wrapper used to leave the preview server running.
 const preview = spawn(
   'npx',
   ['vite', 'preview', '--outDir', 'dist-site', '--host', '127.0.0.1', '--port', String(port)],
-  { stdio: 'ignore' },
+  { stdio: 'ignore', detached: true },
 );
+const stopPreview = () => {
+  try {
+    process.kill(-preview.pid, 'SIGTERM');
+  } catch {
+    // already gone
+  }
+};
+process.on('exit', stopPreview);
 
 // Internal wording that must never reach the public page.
 const FORBIDDEN_TEXT = ['meeting', 'Tom Sawyer', 'Margin at list', 'Withheld', 'full balanced panel', 'Experimental'];
@@ -132,5 +142,5 @@ try {
   console.log('✓ efficiency page: boards ordered, versions shown, no internal wording, themes, responsive overflow');
 } finally {
   await browser?.close();
-  preview.kill('SIGTERM');
+  stopPreview();
 }
