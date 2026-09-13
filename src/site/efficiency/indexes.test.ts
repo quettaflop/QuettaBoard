@@ -4,11 +4,9 @@ import {
   MIN_MATCHED_MODELS,
   buildEngineIndex,
   buildHardwareIndex,
-  buildModelIndex,
   configUsdPerMTok,
   matchedPanel,
 } from './indexes.ts';
-import { MODEL_CATALOG } from './models.ts';
 import type { IndexRow, WorkloadCostCell } from './score.ts';
 import { EFFICIENCY_SNAPSHOT } from './snapshot.ts';
 
@@ -256,27 +254,7 @@ test('selected-model option filters hardware and engine reductions', () => {
   assert.equal(buildEngineIndex(rows, { model: 'B' })[0].nModels, 1);
 });
 
-test('experimental model index is isolated from hardware measurements', () => {
-  const rows = [
-    row({ id: 'small', model: 'Llama-3.1-8B', hardwareFamily: 'H100', gpus: 1, engine: 'vllm' }),
-    row({ id: 'big', model: 'Llama-3.3-70B', hardwareFamily: 'H100', gpus: 1, engine: 'vllm' }),
-  ];
-  const index = buildModelIndex(rows);
-  assert.equal(index[0].model, 'Llama-3.1-8B');
-  assert.equal(index[0].score, 100);
-  assert.ok(index[0].intelPerGflop > index[1].intelPerGflop);
-  assert.ok(index[1].intelligence > index[0].intelligence);
-});
 
-test('every catalog model is a measured snapshot model with a dated AA variant', () => {
-  const snapshotModels = new Set(EFFICIENCY_SNAPSHOT.rows.map((r) => r.model));
-  for (const entry of MODEL_CATALOG) {
-    assert.ok(snapshotModels.has(entry.model), `${entry.model} not in snapshot`);
-    assert.ok(entry.intelligence > 0);
-    assert.ok(entry.variant.length > 0);
-    assert.ok(entry.href.startsWith('https://artificialanalysis.ai/models/'));
-  }
-});
 
 test('snapshot: ranked rows clear the coverage bar and precede unranked rows', () => {
   for (const board of [buildHardwareIndex(EFFICIENCY_SNAPSHOT.rows), buildEngineIndex(EFFICIENCY_SNAPSHOT.rows)]) {

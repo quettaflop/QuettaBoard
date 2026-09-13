@@ -1,16 +1,16 @@
 /**
- * Experimental model-efficiency inputs.
+ * Verified Artificial Analysis scores for the models in the snapshot.
  *
- * Intelligence is the Artificial Analysis Intelligence Index v4.3 as shown
- * on each linked model page, read on AA_RETRIEVED. It is not a QuettaBench
- * measurement. `variant` names the AA page variant the score belongs to
- * (AA scores reasoning and non-reasoning variants separately). Decode
- * FLOPs/token are approximated as 2 × active parameters; MoE uses active,
- * not total, params. A model without a verified AA score is not listed.
+ * Not rendered anywhere at present. Kept as a dated data asset for a
+ * future model-level view (e.g. intelligence per owned-GPU dollar), so the
+ * provenance does not have to be re-established. Intelligence is the AA
+ * Intelligence Index v4.3 as shown on each linked model page, read on
+ * AA_RETRIEVED; `variant` names the AA page variant the score belongs to
+ * (AA scores reasoning and non-reasoning variants separately). A model
+ * without a verified AA score is not listed.
  */
 export const AA_INDEX_VERSION = '4.3';
 export const AA_RETRIEVED = '2026-09-13';
-export const FLOPS_PER_PARAM = 2;
 
 export interface ModelCatalogEntry {
   model: string;
@@ -105,16 +105,4 @@ export const MODEL_CATALOG: readonly ModelCatalogEntry[] = [
   },
 ];
 
-/** The experimental panel is hidden below this many scored models. */
-export const MIN_MODEL_PANEL_ROWS = 5;
-
 export const MODEL_CATALOG_BY_NAME = new Map(MODEL_CATALOG.map((m) => [m.model, m]));
-
-export function gflopPerToken(activeParamsB: number): number {
-  return FLOPS_PER_PARAM * activeParamsB;
-}
-
-export function intelPerGflop(intelligence: number, activeParamsB: number): number {
-  const flop = gflopPerToken(activeParamsB);
-  return intelligence > 0 && flop > 0 ? intelligence / flop : NaN;
-}

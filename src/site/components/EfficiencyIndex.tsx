@@ -13,13 +13,11 @@ import {
   MIN_MATCHED_MODELS,
   buildEngineIndex,
   buildHardwareIndex,
-  buildModelIndex,
   configTcoUsdPerMTok,
   modelNames,
   type EngineIndexRow,
   type HardwareIndexRow,
 } from '../efficiency/indexes';
-import { AA_INDEX_VERSION, AA_RETRIEVED, FLOPS_PER_PARAM, MIN_MODEL_PANEL_ROWS } from '../efficiency/models';
 import { ENGINE_REFERENCE, ENGINE_VERSIONS_NOTE, engineLabel } from '../efficiency/engines';
 import { OPENROUTER_LLAMA31_8B, selfHostedToApiRatio } from '../efficiency/market';
 import { EFFICIENCY_SNAPSHOT } from '../efficiency/snapshot';
@@ -32,7 +30,7 @@ import {
   amortSchedule,
   gpuTco,
 } from '../efficiency/tco';
-import { ModelEfficiencyPlot, formatMult, formatUsd } from './IndexPlots';
+import { formatMult, formatUsd } from '../efficiency/format';
 import { SiteNav } from './SiteNav';
 
 type Board = 'hardware' | 'engines' | 'configs';
@@ -104,7 +102,6 @@ export function EfficiencyIndex() {
 
   const hardware = useMemo(() => buildHardwareIndex(snap.rows), [snap.rows]);
   const engines = useMemo(() => buildEngineIndex(snap.rows), [snap.rows]);
-  const modelIndex = useMemo(() => buildModelIndex(snap.rows), [snap.rows]);
   const models = useMemo(() => modelNames(snap.rows), [snap.rows]);
 
   useEffect(() => {
@@ -222,13 +219,6 @@ export function EfficiencyIndex() {
           </div>
         )}
 
-        <ExperimentalModel
-          rows={modelIndex}
-          onSelect={(nextModel) => {
-            setModel(nextModel);
-            setBoard('configs');
-          }}
-        />
         <Methodology />
       </section>
     </>
@@ -646,58 +636,6 @@ function OpenRouterCheck({ llamaTco }: { llamaTco: MarketCheck | null }) {
   );
 }
 
-function ExperimentalModel({
-  rows,
-  onSelect,
-}: {
-  rows: ReturnType<typeof buildModelIndex>;
-  onSelect: (model: string) => void;
-}) {
-  if (rows.length < MIN_MODEL_PANEL_ROWS) return null;
-  return (
-    <details className="idx-experimental">
-      <summary>
-        <span className="idx-experimental-summary-copy">
-          <span className="eyebrow">Experimental · secondary analysis</span>
-          <span className="idx-experimental-summary-title">Model efficiency</span>
-          <span className="idx-experimental-summary-note">
-            Intelligence per approximate decode FLOP. Structurally favors
-            smaller and fewer-active models; never used in Hardware or Engine scoring.
-          </span>
-        </span>
-        <span className="idx-experimental-summary-action" aria-hidden>
-          <span className="idx-experimental-action-label" />
-          <span className="idx-experimental-chevron" />
-        </span>
-      </summary>
-      <div className="idx-experimental-body">
-        <div className="idx-experimental-guardrail">
-          <p className="eyebrow">Interpretation · not a scoring input</p>
-          <p>
-            <strong>Smaller or fewer-active models structurally win this ratio.</strong>
-            {' '}It measures intelligence against approximate decode work, not
-            serving quality or cost. It never affects Hardware or Engine
-            scoring; Artificial Analysis already publishes intelligence per dollar.
-          </p>
-          <p className="idx-experimental-basis mono-nums">
-            I / ({FLOPS_PER_PARAM} × active parameters) · AA Intelligence Index v{AA_INDEX_VERSION}
-            {' '}· read {AA_RETRIEVED}
-          </p>
-        </div>
-        <div className="idx-plots idx-experimental-plots">
-          <ModelEfficiencyPlot rows={rows} onSelect={onSelect} />
-        </div>
-        <p className="idx-experimental-footnote">
-          Scores are read from the linked Artificial Analysis page for the named
-          variant; reasoning models carry the score of their AA-listed setting.
-          Active parameters are used for MoE models. Select any model row to
-          open its measured hardware × engine configurations.
-        </p>
-      </div>
-    </details>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /* Configs                                                              */
 /* ------------------------------------------------------------------ */
@@ -1047,18 +985,6 @@ function Methodology() {
             and median beside dated output-only API list pricing. API pooling
             and provider margin make this a bound on the comparison, not a
             TCO validation and not a price.
-          </p>
-        </div>
-        <div>
-          <h3>9. Experimental models</h3>
-          <p className="idx-formula">
-            I / GFLOP = I / ({FLOPS_PER_PARAM} · N<sub>active</sub>)
-          </p>
-          <p>
-            AA Intelligence Index v{AA_INDEX_VERSION}, read {AA_RETRIEVED} from
-            the linked model pages. Smaller/fewer-active models structurally
-            win; AA already covers intelligence per dollar. This view never
-            affects Hardware or Engine scoring.
           </p>
         </div>
       </div>

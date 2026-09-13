@@ -20,11 +20,9 @@
  *
  * The plain arithmetic mean $/MTok over everything a group was measured on
  * is still computed (`usdPerMTok`) but only as coverage-dependent context.
- *
- * Experimental model efficiency is kept separate from these reductions.
+
  */
 import { LOAD_WEIGHTS, weightedGeoMean, type HardwareFamily, type IndexRow } from './score';
-import { MODEL_CATALOG_BY_NAME, gflopPerToken, intelPerGflop } from './models';
 import { ENGINE_REFERENCE } from './engines';
 
 export const MIN_MATCHED_MODELS = 3;
@@ -83,18 +81,6 @@ export interface EngineIndexRow extends RankedFields {
   tokPerDollar: number;
   nFamilies: number;
   nModels: number;
-  nConfigs: number;
-}
-
-export interface ModelIndexRow {
-  model: string;
-  score: number;
-  intelligence: number;
-  totalParamsB: number;
-  activeParamsB: number;
-  gflopPerTok: number;
-  intelPerGflop: number;
-  href: string;
   nConfigs: number;
 }
 
@@ -370,35 +356,4 @@ export function buildEngineIndex(
 
 export function modelNames(rows: IndexRow[]): string[] {
   return [...new Set(rows.map((r) => r.model))].sort((a, b) => a.localeCompare(b));
-}
-
-export function buildModelIndex(rows: IndexRow[]): ModelIndexRow[] {
-  const counts = new Map<string, number>();
-  for (const row of rows) counts.set(row.model, (counts.get(row.model) ?? 0) + 1);
-  const raw: Array<Omit<ModelIndexRow, 'score'>> = [];
-  for (const [model, nConfigs] of counts) {
-    const catalog = MODEL_CATALOG_BY_NAME.get(model);
-    if (!catalog) continue;
-    const ratio = intelPerGflop(catalog.intelligence, catalog.activeParamsB);
-    if (!(ratio > 0)) continue;
-    raw.push({
-      model,
-      intelligence: catalog.intelligence,
-      totalParamsB: catalog.totalParamsB,
-      activeParamsB: catalog.activeParamsB,
-      gflopPerTok: gflopPerToken(catalog.activeParamsB),
-      intelPerGflop: ratio,
-      href: catalog.href,
-      nConfigs,
-    });
-  }
-  const best = Math.max(...raw.map((r) => r.intelPerGflop));
-  return raw
-    .map((r) => ({ ...r, score: best > 0 ? round1((100 * r.intelPerGflop) / best) : NaN }))
-    .sort(
-      (a, b) =>
-        b.intelPerGflop - a.intelPerGflop ||
-        b.intelligence - a.intelligence ||
-        a.model.localeCompare(b.model),
-    );
 }

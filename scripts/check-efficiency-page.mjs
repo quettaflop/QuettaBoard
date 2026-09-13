@@ -11,7 +11,7 @@ const preview = spawn(
 );
 
 // Internal wording that must never reach the public page.
-const FORBIDDEN_TEXT = ['meeting', 'Tom Sawyer', 'Margin at list', 'Withheld', 'full balanced panel'];
+const FORBIDDEN_TEXT = ['meeting', 'Tom Sawyer', 'Margin at list', 'Withheld', 'full balanced panel', 'Experimental'];
 
 async function waitForPreview() {
   for (let attempt = 0; attempt < 50; attempt += 1) {
@@ -105,12 +105,8 @@ async function checkViewport(browser, width, height, theme) {
   await configRow.click();
   assert.equal(await configRow.getAttribute('aria-expanded'), 'true');
 
-  // Experimental panel closed by default, opens to the model list.
-  const experimental = page.locator('details.idx-experimental');
-  assert.equal(await experimental.getAttribute('open'), null);
-  await experimental.locator('summary').click();
-  assert.notEqual(await experimental.getAttribute('open'), null);
-  assert.equal(await experimental.locator('.idx-plot-svg-model').count(), 1);
+  // The model-efficiency panel was removed; nothing experimental ships.
+  assert.equal(await page.locator('details.idx-experimental').count(), 0);
 
   // Methodology open, then sweep the whole page text for internal wording.
   await page.locator('details.idx-method summary').click();
