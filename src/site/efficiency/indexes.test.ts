@@ -1,17 +1,30 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  MIN_MATCHED_MODELS,
   buildEngineIndex,
   buildHardwareIndex,
   buildModelIndex,
   configUsdPerMTok,
+  matchedPanel,
 } from './indexes.ts';
 import { MODEL_CATALOG } from './models.ts';
-import type { IndexRow } from './score.ts';
+import type { IndexRow, WorkloadCostCell } from './score.ts';
 import { EFFICIENCY_SNAPSHOT } from './snapshot.ts';
 
 type RowSeed = Pick<IndexRow, 'id' | 'model' | 'hardwareFamily' | 'gpus' | 'engine'> &
   Partial<Omit<IndexRow, 'raw'>> & { raw?: Partial<IndexRow['raw']> };
+
+function cell(usd: number, targetLoad: WorkloadCostCell['targetLoad'] = 40): WorkloadCostCell {
+  return {
+    domain: 'coding',
+    profile: 'swebench-multiturn-synth',
+    targetLoad,
+    actualConcurrency: targetLoad,
+    tokPerSec: 100,
+    tcoUsdPerMTok: usd,
+  };
+}
 
 function row(partial: RowSeed): IndexRow {
   const usd = partial.raw?.tcoUsdPerMTok ?? 1;
@@ -21,16 +34,7 @@ function row(partial: RowSeed): IndexRow {
     tokPerSec: 100,
     tcoUsdPerMTok: usd,
     tcoByDomain: { chat: usd, coding: usd, terminal: usd, computerUse: usd },
-    costCells: [
-      {
-        domain: 'coding',
-        profile: 'swebench-multiturn-synth',
-        targetLoad: 40,
-        actualConcurrency: 40,
-        tokPerSec: 100,
-        tcoUsdPerMTok: usd,
-      },
-    ],
+    costCells: [cell(usd)],
     loadsUsed: [40],
     domainCount: 4,
     runCount: 4,
@@ -52,7 +56,10 @@ function row(partial: RowSeed): IndexRow {
   };
 }
 
-test('hardware index weights models and engines, not config counts', () => {
+const close = (a: number | null, b: number, eps = 1e-9) =>
+  assert.ok(a != null && Math.abs(a - b) < eps, `${a} !~ ${b}`);
+
+test('full-panel mean weights models and engines, not config counts', () => {
   const rows = [
     row({ id: 'a-h', model: 'A', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 1 } }),
     row({ id: 'b-h1', model: 'B', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 3 } }),
@@ -79,31 +86,139 @@ test('stored TCO remains comparable across measured GPU widths', () => {
   assert.equal(hw[0].usdPerMTok, 0.5);
 });
 
-test('matched observations produce vs-H100 ratio', () => {
+test('matched observations rank on the ratio vs H100 and report typical $ on the same cells', () => {
   const rows = [
     row({ id: 'h', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 2 } }),
     row({ id: 'c', model: 'M', hardwareFamily: '2080 Ti', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 1 } }),
   ];
   const hw = buildHardwareIndex(rows, { minMatchedModels: 1 });
   assert.equal(hw[0].family, '2080 Ti');
+  assert.equal(hw[0].rank, 1);
   assert.equal(hw[0].score, 100);
-  const h100 = hw.find((r) => r.family === 'H100');
-  assert.equal(h100?.vsH100, 1);
   assert.equal(hw[0].vsH100, 2);
+  assert.equal(hw[0].typicalUsdPerMTok, 1);
+  assert.equal(hw[0].typicalRefUsdPerMTok, 2);
   assert.equal(hw[0].nMatchedModels, 1);
+  assert.equal(hw[0].nModelsBetter, 1);
+  assert.equal(hw[0].nMatchedConfigs, 1);
+  assert.equal(hw[0].nMatchedCells, 1);
+  const h100 = hw.find((r) => r.family === 'H100');
+  assert.equal(h100?.rank, 2);
+  assert.equal(h100?.vsH100, 1);
+  assert.equal(h100?.score, 50);
+  assert.equal(h100?.nModelsBetter, 0);
 });
 
-test('thin matched coverage suppresses relative claim', () => {
+test('thin matched coverage leaves a family unranked and below every ranked row', () => {
   const rows = [
     row({ id: 'h', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 2 } }),
     row({ id: 'c', model: 'M', hardwareFamily: '2080 Ti', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 1 } }),
   ];
-  const card = buildHardwareIndex(rows).find((r) => r.family === '2080 Ti');
-  assert.equal(card?.vsH100, null);
-  assert.equal(card?.thinCoverage, true);
+  const hw = buildHardwareIndex(rows);
+  assert.equal(MIN_MATCHED_MODELS, 3);
+  assert.equal(hw[0].family, 'H100');
+  assert.equal(hw[1].family, '2080 Ti');
+  assert.equal(hw[1].rank, null);
+  assert.equal(hw[1].vsH100, null);
+  assert.equal(hw[1].score, null);
+  assert.equal(hw[1].thinCoverage, true);
+  assert.equal(hw[1].nMatchedModels, 1);
+  // the cheap full-panel mean does not lift it above the reference
+  assert.ok(hw[1].usdPerMTok < hw[0].usdPerMTok);
 });
 
-test('engine index uses only model-family pairs shared by all engines', () => {
+test('ranking ignores the full-panel mean when matched evidence points the other way', () => {
+  const rows = [
+    // three models matched against H100, A100 25% worse on every one
+    row({ id: 'a-h', model: 'A', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 4 } }),
+    row({ id: 'a-x', model: 'A', hardwareFamily: 'A100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 5 } }),
+    row({ id: 'b-h', model: 'B', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 4 } }),
+    row({ id: 'b-x', model: 'B', hardwareFamily: 'A100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 5 } }),
+    row({ id: 'c-h', model: 'C', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 4 } }),
+    row({ id: 'c-x', model: 'C', hardwareFamily: 'A100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 5 } }),
+    // a tiny model measured only on A100 drags its full-panel mean below H100's
+    row({ id: 'd-x', model: 'D', hardwareFamily: 'A100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 0.01 } }),
+  ];
+  const hw = buildHardwareIndex(rows);
+  const h100 = hw.find((r) => r.family === 'H100');
+  const a100 = hw.find((r) => r.family === 'A100');
+  assert.ok(h100 && a100);
+  assert.ok(a100.usdPerMTok < h100.usdPerMTok, 'full-panel mean favours A100');
+  assert.equal(h100.rank, 1);
+  assert.equal(a100.rank, 2);
+  close(a100.vsH100, 4 / 5);
+  assert.equal(a100.nMatchedModels, 3);
+  assert.equal(a100.nModelsBetter, 0);
+});
+
+test('cell ratios are combined with the published load weights', () => {
+  const rows = [
+    row({
+      id: 'h',
+      model: 'M',
+      hardwareFamily: 'H100',
+      gpus: 1,
+      engine: 'vllm',
+      raw: { costCells: [cell(10, 1), cell(1, 40)] },
+    }),
+    row({
+      id: 'x',
+      model: 'M',
+      hardwareFamily: 'A100',
+      gpus: 1,
+      engine: 'vllm',
+      raw: { costCells: [cell(1, 1), cell(1, 40)] },
+    }),
+  ];
+  const panel = matchedPanel(
+    rows,
+    (r) => r.hardwareFamily,
+    'A100',
+    'H100',
+    (r) => `${r.model}|${r.engine}|${r.quant}|${r.gpus}`,
+  );
+  // weights 0.25 (load 1) and 0.5 (load 40): exp((0.25 ln 10 + 0.5 ln 1) / 0.75) = 10^(1/3)
+  close(panel.ratio, Math.pow(10, 1 / 3), 1e-9);
+  assert.ok((panel.ratio as number) < Math.sqrt(10), 'equal weighting would give sqrt(10)');
+  assert.equal(panel.nCells, 2);
+  close(panel.typicalUsd, 1);
+  close(panel.typicalRefUsd, Math.pow(10, 1 / 3));
+});
+
+test('configs and cells without a counterpart do not move the ratio', () => {
+  const base = [
+    row({ id: 'h', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 2 } }),
+    row({ id: 'x', model: 'M', hardwareFamily: 'A100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 1 } }),
+  ];
+  const noisy = [
+    ...base,
+    // different width: no H100 counterpart
+    row({ id: 'x4', model: 'M', hardwareFamily: 'A100', gpus: 4, engine: 'vllm', raw: { tcoUsdPerMTok: 500 } }),
+    // different engine: no H100 counterpart
+    row({ id: 'xs', model: 'M', hardwareFamily: 'A100', gpus: 1, engine: 'sglang', raw: { tcoUsdPerMTok: 500 } }),
+    // matched config but an extra cell only on the A100 side
+    row({
+      id: 'x2',
+      model: 'N',
+      hardwareFamily: 'A100',
+      gpus: 2,
+      engine: 'vllm',
+      raw: { costCells: [cell(1, 40), cell(900, 160)] },
+    }),
+    row({ id: 'h2', model: 'N', hardwareFamily: 'H100', gpus: 2, engine: 'vllm', raw: { costCells: [cell(2, 40)] } }),
+  ];
+  const clean = buildHardwareIndex(base, { minMatchedModels: 1 }).find((r) => r.family === 'A100');
+  const dirty = buildHardwareIndex(noisy, { minMatchedModels: 1 }).find((r) => r.family === 'A100');
+  assert.ok(clean && dirty);
+  assert.equal(clean.vsH100, 2);
+  assert.equal(dirty.vsH100, 2);
+  assert.equal(dirty.nMatchedModels, 2);
+  assert.equal(dirty.nMatchedConfigs, 2);
+  assert.equal(dirty.nMatchedCells, 2);
+  assert.equal(dirty.nConfigs, 4, 'full-panel count still sees every A100 config');
+});
+
+test('engine index ranks against vLLM on identical model × hardware × quant', () => {
   const rows = [
     row({ id: 'v-h1', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 1 } }),
     row({ id: 'v-extra', model: 'N', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 100 } }),
@@ -111,13 +226,25 @@ test('engine index uses only model-family pairs shared by all engines', () => {
     row({ id: 's-h', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'sglang', raw: { tcoUsdPerMTok: 2 } }),
     row({ id: 's-a', model: 'M', hardwareFamily: 'A100', gpus: 1, engine: 'sglang', raw: { tcoUsdPerMTok: 4 } }),
   ];
-  const en = buildEngineIndex(rows);
+  const en = buildEngineIndex(rows, { minMatchedModels: 1 });
   assert.equal(en.length, 2);
-  assert.equal(en.find((r) => r.engine === 'vllm')?.usdPerMTok, 2);
-  assert.equal(en.find((r) => r.engine === 'sglang')?.usdPerMTok, 3);
-  assert.equal(en.find((r) => r.engine === 'vllm')?.nConfigs, 2);
-  assert.equal(en.find((r) => r.engine === 'sglang')?.nConfigs, 2);
-  assert.equal(en[0].nMatchedPairs, 2);
+  assert.equal(en[0].engine, 'vllm');
+  assert.equal(en[0].rank, 1);
+  assert.equal(en[0].vsRef, 1);
+  const sg = en[1];
+  assert.equal(sg.engine, 'sglang');
+  assert.equal(sg.rank, 2);
+  close(sg.vsRef, Math.sqrt(0.5 * 0.75));
+  assert.equal(sg.nMatchedModels, 1);
+  assert.equal(sg.nMatchedConfigs, 2);
+  assert.equal(sg.nModelsBetter, 0);
+  // the unmatched N config only reaches the full-panel context numbers
+  assert.equal(en[0].nConfigs, 3);
+  assert.equal(sg.nConfigs, 2);
+  // default coverage bar applies to engines too
+  const strict = buildEngineIndex(rows).find((r) => r.engine === 'sglang');
+  assert.equal(strict?.rank, null);
+  assert.equal(strict?.vsRef, null);
 });
 
 test('selected-model option filters hardware and engine reductions', () => {
@@ -136,12 +263,64 @@ test('experimental model index is isolated from hardware measurements', () => {
   ];
   const index = buildModelIndex(rows);
   assert.equal(index[0].model, 'Llama-3.1-8B');
+  assert.equal(index[0].score, 100);
   assert.ok(index[0].intelPerGflop > index[1].intelPerGflop);
   assert.ok(index[1].intelligence > index[0].intelligence);
 });
 
-test('catalog covers every frozen snapshot model', () => {
+test('every catalog model is a measured snapshot model with a dated AA variant', () => {
   const snapshotModels = new Set(EFFICIENCY_SNAPSHOT.rows.map((r) => r.model));
-  const catalogModels = new Set(MODEL_CATALOG.map((r) => r.model));
-  assert.deepEqual([...snapshotModels].filter((model) => !catalogModels.has(model)), []);
+  for (const entry of MODEL_CATALOG) {
+    assert.ok(snapshotModels.has(entry.model), `${entry.model} not in snapshot`);
+    assert.ok(entry.intelligence > 0);
+    assert.ok(entry.variant.length > 0);
+    assert.ok(entry.href.startsWith('https://artificialanalysis.ai/models/'));
+  }
+});
+
+test('snapshot: ranked rows clear the coverage bar and precede unranked rows', () => {
+  for (const board of [buildHardwareIndex(EFFICIENCY_SNAPSHOT.rows), buildEngineIndex(EFFICIENCY_SNAPSHOT.rows)]) {
+    let seenUnranked = false;
+    let lastRank = 0;
+    for (const r of board) {
+      if (r.rank == null) {
+        seenUnranked = true;
+        assert.equal(r.score, null);
+        continue;
+      }
+      assert.equal(seenUnranked, false, 'ranked row after an unranked row');
+      assert.equal(r.rank, lastRank + 1);
+      lastRank = r.rank;
+      assert.ok(r.nMatchedModels >= MIN_MATCHED_MODELS || r.rank >= 1);
+    }
+  }
+});
+
+test('snapshot: hardware index ranks A100, 3090, H100 and leaves 2080 Ti unranked', () => {
+  const hw = buildHardwareIndex(EFFICIENCY_SNAPSHOT.rows);
+  assert.deepEqual(
+    hw.map((r) => [r.family, r.rank]),
+    [['A100', 1], ['3090', 2], ['H100', 3], ['2080 Ti', null]],
+  );
+  const h100 = hw[2];
+  assert.equal(h100.vsH100, 1);
+  assert.equal(h100.nModelsBetter, 0);
+  const a100 = hw[0];
+  assert.ok(a100.nMatchedModels >= MIN_MATCHED_MODELS);
+  assert.equal(a100.nModelsBetter, a100.nMatchedModels, 'A100 beats H100 on every matched model');
+  close((a100.typicalRefUsdPerMTok as number) / (a100.typicalUsdPerMTok as number), a100.vsH100 as number, 1e-9);
+  // pinned to the 2026-08-30 snapshot; a regenerated snapshot may legitimately move these
+  close(a100.vsH100, 1.64, 0.02);
+  close(hw[1].vsH100, 1.17, 0.02);
+  assert.equal(hw[3].nMatchedModels, 2);
+});
+
+test('snapshot: engine index keeps vLLM as reference and ranks SGLang below it', () => {
+  const en = buildEngineIndex(EFFICIENCY_SNAPSHOT.rows);
+  assert.deepEqual(en.map((r) => [r.engine, r.rank]), [['vllm', 1], ['sglang', 2]]);
+  assert.equal(en[0].vsRef, 1);
+  assert.ok((en[1].vsRef as number) < 1);
+  assert.ok(en[1].nMatchedModels >= MIN_MATCHED_MODELS);
+  close(en[1].vsRef, 0.54, 0.02);
+  assert.equal(en[1].nModelsBetter, 0);
 });

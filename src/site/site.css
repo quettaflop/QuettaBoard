@@ -496,9 +496,7 @@ h1, h2, h3, h4 {
 .idx-hardware-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(19.5rem, 0.9fr);
-  grid-template-areas:
-    "leaderboard matched"
-    "market engine";
+  grid-template-areas: "leaderboard market";
   gap: 2.5rem clamp(2.5rem, 5vw, 4.5rem);
   align-items: start;
   margin-top: 2rem;
@@ -507,8 +505,6 @@ h1, h2, h3, h4 {
   grid-area: leaderboard;
   min-width: 0;
 }
-.idx-evidence-match { grid-area: matched; }
-.idx-evidence-engine { grid-area: engine; }
 .idx-section-head .eyebrow {
   margin: 0;
 }
@@ -866,6 +862,32 @@ button.idx-rank { cursor: pointer; }
   text-transform: uppercase;
   color: var(--accent);
 }
+.idx-rank-sub {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+.idx-divider {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  padding: 0.85rem 1rem 0.6rem;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink-3) 6%, transparent);
+}
+.idx-divider > span {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.idx-divider small {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-3);
+}
+.idx-row-wrap .idx-divider + .idx-rank { border-top: 1px solid var(--line); }
 .idx-rank-match {
   position: relative;
   display: flex;
@@ -1492,13 +1514,9 @@ button.idx-row[aria-expanded="true"] .idx-chev {
     grid-template-columns: 1fr;
     grid-template-areas:
       "leaderboard"
-      "matched"
-      "market"
-      "engine";
+      "market";
     gap: 2.5rem;
   }
-  .idx-evidence-match,
-  .idx-evidence-engine,
   .idx-check {
     width: 100%;
     max-width: 44rem;

@@ -3,14 +3,12 @@ import { test } from 'node:test';
 import {
   AVG_USD_PER_KWH,
   HARDWARE_PURCHASE,
-  OPENROUTER_LLAMA31_8B,
   TCO_HORIZON_YEARS,
   TCO_HOURS,
   TCO_PUE,
   TCO_UTILIZATION,
   amortSchedule,
   gpuTco,
-  impliedGrossMargin,
   tcoUsdPerMTok,
 } from './tco.ts';
 
@@ -46,19 +44,10 @@ test('more GPUs or fewer tok/s raises $/MTok', () => {
   assert.ok(Math.abs(faster - one / 4) < 1e-9);
 });
 
-test('price assumptions and OpenRouter reference are dated and scoped', () => {
+test('price assumptions are dated and scoped', () => {
   for (const spec of Object.values(HARDWARE_PURCHASE)) {
     assert.match(spec.asOf, /^\d{4}-\d{2}$/);
     assert.ok(spec.basis.length > 0);
     assert.ok(spec.href.startsWith('https://'));
   }
-  assert.equal(OPENROUTER_LLAMA31_8B.usdPerMTokIn, 0.02);
-  assert.equal(OPENROUTER_LLAMA31_8B.usdPerMTokOut, 0.04);
-  assert.equal(OPENROUTER_LLAMA31_8B.asOf, '2026-09-13');
-});
-
-test('implied margin compares a cost floor to market price', () => {
-  assert.ok(Math.abs((impliedGrossMargin(0.03, 0.04) ?? 0) - 0.25) < 1e-12);
-  assert.ok(Math.abs((impliedGrossMargin(0.05, 0.04) ?? 0) + 0.25) < 1e-12);
-  assert.equal(impliedGrossMargin(0.03, 0), null);
 });

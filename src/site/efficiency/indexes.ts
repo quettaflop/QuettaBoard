@@ -1,50 +1,88 @@
 /**
- * Reductions the combined model×hardware×engine board was hiding.
+ * The two published reductions of the model × hardware × engine board.
  *
- * Hardware: for each GPU family, mean $/MTok across models (each
- * model is itself a mean across engines / widths), then a 0–100
- * score against the cheapest family. Per-GPU so 1× and 4× sit in
- * the same class — “is H100 cheaper than A100?”, not “is 4×H100
- * cheaper than 1×A100?”.
+ * Both indices rank on a **matched panel**: a group (GPU family, or serving
+ * engine) is compared with a reference group only on configurations that
+ * exist on both sides with the same model, quantization, GPU width and
+ * counterpart, and only on workload cells (profile × target load) measured
+ * on both. Within a config the cell cost ratios are combined with the
+ * published load weights; configs are then geo-averaged within a model and
+ * models are geo-averaged with equal weight. A model that was measured on
+ * only one side therefore cannot move the ratio, and a family measured on
+ * ten cheap small models does not look better than one measured on three
+ * 70B models.
  *
- * Engine: same TCO, mean $/MTok across families (each family a
- * mean across models) so a corpus that is H100-heavy does not
- * crown an engine.
+ * Hardware: reference H100, match key model|engine|quant|gpus.
+ * Engine:   reference vLLM, match key model|hardware|quant.
+ *
+ * Groups matched on fewer than MIN_MATCHED_MODELS models are listed but not
+ * ranked, and their ratio is not published.
+ *
+ * The plain arithmetic mean $/MTok over everything a group was measured on
+ * is still computed (`usdPerMTok`) but only as coverage-dependent context.
  *
  * Experimental model efficiency is kept separate from these reductions.
  */
-import type { HardwareFamily, IndexRow, Scale } from './score';
+import { LOAD_WEIGHTS, weightedGeoMean, type HardwareFamily, type IndexRow } from './score';
 import { MODEL_CATALOG_BY_NAME, gflopPerToken, intelPerGflop } from './models';
+import { ENGINE_REFERENCE } from './engines';
 
 export const MIN_MATCHED_MODELS = 3;
+export const HARDWARE_REFERENCE: HardwareFamily = 'H100';
 
 export interface IndexOptions {
   model?: string;
   minMatchedModels?: number;
 }
 
-export interface HardwareIndexRow {
-  family: HardwareFamily;
-  score: number;
-  usdPerMTok: number;
-  tokPerDollar: number;
-  vsH100: number | null;
+/** Everything the matched comparison against the reference group yields. */
+export interface MatchedPanel {
+  /** reference $ ÷ group $ on identical cells; > 1 means better value than the reference. */
+  ratio: number | null;
   nModels: number;
-  nMatchedModels: number;
+  nModelsBetter: number;
   nConfigs: number;
-  minGpus: number;
-  maxGpus: number;
+  nCells: number;
+  /** Load-weighted geo-mean $/MTok on the matched cells, group side. */
+  typicalUsd: number | null;
+  /** The same cells, reference side. typicalRefUsd / typicalUsd === ratio. */
+  typicalRefUsd: number | null;
+}
+
+interface RankedFields {
+  rank: number | null;
+  /** 100 × ratio / best ranked ratio. null when unranked. */
+  score: number | null;
+  typicalUsdPerMTok: number | null;
+  typicalRefUsdPerMTok: number | null;
+  nMatchedModels: number;
+  nModelsBetter: number;
+  nMatchedConfigs: number;
+  nMatchedCells: number;
   thinCoverage: boolean;
 }
 
-export interface EngineIndexRow {
+export interface HardwareIndexRow extends RankedFields {
+  family: HardwareFamily;
+  /** Published only when ranked. */
+  vsH100: number | null;
+  /** Full-panel arithmetic mean over models; coverage-dependent, detail only. */
+  usdPerMTok: number;
+  tokPerDollar: number;
+  nModels: number;
+  nConfigs: number;
+  minGpus: number;
+  maxGpus: number;
+}
+
+export interface EngineIndexRow extends RankedFields {
   engine: string;
-  score: number;
+  /** Published only when ranked. */
+  vsRef: number | null;
   usdPerMTok: number;
   tokPerDollar: number;
   nFamilies: number;
   nModels: number;
-  nMatchedPairs: number;
   nConfigs: number;
 }
 
@@ -52,7 +90,6 @@ export interface ModelIndexRow {
   model: string;
   score: number;
   intelligence: number;
-  estimated: boolean;
   totalParamsB: number;
   activeParamsB: number;
   gflopPerTok: number;
@@ -66,18 +103,23 @@ function mean(xs: number[]): number | null {
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
 
-function scoreScale(xs: number[]): Scale {
-  return { min: Math.min(...xs), max: Math.max(...xs) };
+function geoMean(xs: number[]): number | null {
+  const valid = xs.filter((x) => x > 0 && Number.isFinite(x));
+  if (valid.length === 0) return null;
+  return Math.exp(valid.reduce((sum, x) => sum + Math.log(x), 0) / valid.length);
 }
 
-function indexScore(raw: number, scale: Scale): number {
-  if (!(scale.max > 0)) return NaN;
-  return Math.round((100 * raw / scale.max) * 10) / 10;
+function round1(n: number): number {
+  return Math.round(n * 10) / 10;
 }
 
 /** Per-GPU TCO $/MTok for one measured config. */
 export function configUsdPerMTok(row: IndexRow): number | null {
   return row.raw.tcoUsdPerMTok > 0 ? row.raw.tcoUsdPerMTok : null;
+}
+
+export function configTcoUsdPerMTok(row: IndexRow): number | null {
+  return configUsdPerMTok(row);
 }
 
 /** Equal engines within each model; extra widths/configs cannot add weight. */
@@ -104,55 +146,142 @@ function meanUsdByModel(rows: IndexRow[]): Map<string, number> {
   return out;
 }
 
-function geoMean(xs: number[]): number | null {
-  const valid = xs.filter((x) => x > 0 && Number.isFinite(x));
-  if (valid.length === 0) return null;
-  return Math.exp(valid.reduce((sum, x) => sum + Math.log(x), 0) / valid.length);
+function cellKey(cell: { profile: string; targetLoad: number }): string {
+  return `${cell.profile}|${cell.targetLoad}`;
 }
 
-function rowMatchKey(r: IndexRow): string {
-  return `${r.model}|${r.engine}|${r.quant}|${r.gpus}`;
-}
+/**
+ * Compare `group` with `ref` on identical configs and cells.
+ * When group === ref every config matches itself and the ratio is exactly 1.
+ */
+export function matchedPanel(
+  rows: IndexRow[],
+  groupOf: (row: IndexRow) => string,
+  group: string,
+  ref: string,
+  matchKey: (row: IndexRow) => string,
+): MatchedPanel {
+  const refRows = new Map<string, IndexRow>();
+  for (const r of rows) if (groupOf(r) === ref) refRows.set(matchKey(r), r);
 
-function matchedVsH100(rows: IndexRow[], family: HardwareFamily): {
-  ratio: number | null;
-  nModels: number;
-} {
-  if (family === 'H100') {
-    return {
-      ratio: 1,
-      nModels: new Set(rows.filter((r) => r.hardwareFamily === 'H100').map((r) => r.model)).size,
-    };
-  }
-  const h100 = new Map(
-    rows
-      .filter((r) => r.hardwareFamily === 'H100')
-      .map((r) => [rowMatchKey(r), r] as const),
-  );
-  const byModel = new Map<string, number[]>();
-  for (const row of rows.filter((r) => r.hardwareFamily === family)) {
-    const ref = h100.get(rowMatchKey(row));
-    if (!ref) continue;
-    const refCells = new Map(
-      ref.raw.costCells.map((cell) => [
-        `${cell.profile}|${cell.targetLoad}`,
-        cell.tcoUsdPerMTok,
-      ]),
-    );
-    const ratios = byModel.get(row.model) ?? [];
+  // model -> per-config [ratio, usd, refUsd]
+  const perModel = new Map<string, Array<{ ratio: number; usd: number; refUsd: number }>>();
+  let nCells = 0;
+
+  for (const row of rows) {
+    if (groupOf(row) !== group) continue;
+    const refRow = refRows.get(matchKey(row));
+    if (!refRow) continue;
+    const refCells = new Map(refRow.raw.costCells.map((c) => [cellKey(c), c.tcoUsdPerMTok]));
+    const ratioParts: Array<{ value: number; weight: number }> = [];
+    const usdParts: Array<{ value: number; weight: number }> = [];
+    const refParts: Array<{ value: number; weight: number }> = [];
     for (const cell of row.raw.costCells) {
-      const refUsd = refCells.get(`${cell.profile}|${cell.targetLoad}`);
-      if (refUsd == null || !(cell.tcoUsdPerMTok > 0)) continue;
-      ratios.push(refUsd / cell.tcoUsdPerMTok);
+      const refUsd = refCells.get(cellKey(cell));
+      if (refUsd == null || !(refUsd > 0) || !(cell.tcoUsdPerMTok > 0)) continue;
+      const weight = LOAD_WEIGHTS[cell.targetLoad];
+      ratioParts.push({ value: refUsd / cell.tcoUsdPerMTok, weight });
+      usdParts.push({ value: cell.tcoUsdPerMTok, weight });
+      refParts.push({ value: refUsd, weight });
+      nCells += 1;
     }
-    if (ratios.length === 0) continue;
-    byModel.set(row.model, ratios);
+    const ratio = weightedGeoMean(ratioParts);
+    const usd = weightedGeoMean(usdParts);
+    const refUsd = weightedGeoMean(refParts);
+    if (ratio == null || usd == null || refUsd == null) continue;
+    const list = perModel.get(row.model) ?? [];
+    list.push({ ratio, usd, refUsd });
+    perModel.set(row.model, list);
   }
-  const modelRatios = [...byModel.values()]
-    .map((xs) => geoMean(xs))
-    .filter((n): n is number => n != null);
-  return { ratio: geoMean(modelRatios), nModels: modelRatios.length };
+
+  const modelRatios: number[] = [];
+  const modelUsd: number[] = [];
+  const modelRefUsd: number[] = [];
+  let nConfigs = 0;
+  for (const configs of perModel.values()) {
+    const r = geoMean(configs.map((c) => c.ratio));
+    const u = geoMean(configs.map((c) => c.usd));
+    const v = geoMean(configs.map((c) => c.refUsd));
+    if (r == null || u == null || v == null) continue;
+    modelRatios.push(r);
+    modelUsd.push(u);
+    modelRefUsd.push(v);
+    nConfigs += configs.length;
+  }
+
+  return {
+    ratio: geoMean(modelRatios),
+    nModels: modelRatios.length,
+    nModelsBetter: group === ref ? 0 : modelRatios.filter((r) => r > 1).length,
+    nConfigs,
+    nCells,
+    typicalUsd: geoMean(modelUsd),
+    typicalRefUsd: geoMean(modelRefUsd),
+  };
 }
+
+/**
+ * Assign rank / score to groups that clear the coverage bar. The reference
+ * group is always rankable. Returns rows sorted ranked-first (best ratio
+ * first), then unranked by name.
+ */
+function rankGroups<T extends { name: string; panel: MatchedPanel }>(
+  groups: T[],
+  ref: string,
+  minMatched: number,
+): Array<T & RankedFields & { publishedRatio: number | null }> {
+  const eligible = groups.filter(
+    (g) => g.panel.ratio != null && (g.name === ref || g.panel.nModels >= minMatched),
+  );
+  const best = Math.max(...eligible.map((g) => g.panel.ratio as number));
+  const rankOf = new Map<string, number>();
+  [...eligible]
+    .sort((a, b) => (b.panel.ratio as number) - (a.panel.ratio as number) || a.name.localeCompare(b.name))
+    .forEach((g, i) => rankOf.set(g.name, i + 1));
+
+  return groups
+    .map((g) => {
+      const rank = rankOf.get(g.name) ?? null;
+      const ranked = rank != null;
+      return {
+        ...g,
+        rank,
+        score: ranked && best > 0 ? round1((100 * (g.panel.ratio as number)) / best) : null,
+        publishedRatio: ranked ? g.panel.ratio : null,
+        typicalUsdPerMTok: ranked ? g.panel.typicalUsd : null,
+        typicalRefUsdPerMTok: ranked ? g.panel.typicalRefUsd : null,
+        nMatchedModels: g.panel.nModels,
+        nModelsBetter: g.panel.nModelsBetter,
+        nMatchedConfigs: g.panel.nConfigs,
+        nMatchedCells: g.panel.nCells,
+        thinCoverage: !ranked,
+      };
+    })
+    .sort((a, b) => {
+      if (a.rank != null && b.rank != null) return a.rank - b.rank;
+      if (a.rank != null) return -1;
+      if (b.rank != null) return 1;
+      return a.name.localeCompare(b.name);
+    });
+}
+
+/** The ranking fields every published board row carries. */
+function publicFields(g: RankedFields): RankedFields {
+  return {
+    rank: g.rank,
+    score: g.score,
+    typicalUsdPerMTok: g.typicalUsdPerMTok,
+    typicalRefUsdPerMTok: g.typicalRefUsdPerMTok,
+    nMatchedModels: g.nMatchedModels,
+    nModelsBetter: g.nModelsBetter,
+    nMatchedConfigs: g.nMatchedConfigs,
+    nMatchedCells: g.nMatchedCells,
+    thinCoverage: g.thinCoverage,
+  };
+}
+
+const hardwareMatchKey = (r: IndexRow) => `${r.model}|${r.engine}|${r.quant}|${r.gpus}`;
+const engineMatchKey = (r: IndexRow) => `${r.model}|${r.hardware}|${r.quant}`;
 
 export function buildHardwareIndex(
   allRows: IndexRow[],
@@ -161,98 +290,82 @@ export function buildHardwareIndex(
   const rows = options.model ? allRows.filter((r) => r.model === options.model) : allRows;
   const families = [...new Set(rows.map((r) => r.hardwareFamily))];
   const minMatched = options.minMatchedModels ?? (options.model ? 1 : MIN_MATCHED_MODELS);
-  const raw = families
+
+  const groups = families
     .map((family) => {
       const subset = rows.filter((r) => r.hardwareFamily === family);
       const byModel = meanUsdByModel(subset);
       const usdPerMTok = mean([...byModel.values()]);
       if (usdPerMTok == null || !(usdPerMTok > 0)) return null;
-      const matched = matchedVsH100(rows, family);
-      const thinCoverage =
-        family !== 'H100' && matched.nModels < minMatched;
       return {
+        name: family as string,
         family,
+        panel: matchedPanel(rows, (r) => r.hardwareFamily, family, HARDWARE_REFERENCE, hardwareMatchKey),
         usdPerMTok,
         tokPerDollar: 1e6 / usdPerMTok,
-        matchedVsH100: thinCoverage ? null : matched.ratio,
         nModels: byModel.size,
-        nMatchedModels: matched.nModels,
         nConfigs: subset.filter((r) => configUsdPerMTok(r) != null).length,
         minGpus: Math.min(...subset.map((r) => r.gpus)),
         maxGpus: Math.max(...subset.map((r) => r.gpus)),
-        thinCoverage,
       };
     })
-    .filter((r): r is NonNullable<typeof r> => r != null);
+    .filter((g): g is NonNullable<typeof g> => g != null);
 
-  const scale = scoreScale(raw.map((r) => r.tokPerDollar));
-  return raw
-    .map(({ matchedVsH100, ...r }) => ({
-        ...r,
-        score: indexScore(r.tokPerDollar, scale),
-        vsH100: matchedVsH100,
-      }))
-    .sort((a, b) => a.usdPerMTok - b.usdPerMTok || a.family.localeCompare(b.family));
+  return rankGroups(groups, HARDWARE_REFERENCE, minMatched).map((g) => ({
+    ...publicFields(g),
+    family: g.family,
+    vsH100: g.publishedRatio,
+    usdPerMTok: g.usdPerMTok,
+    tokPerDollar: g.tokPerDollar,
+    nModels: g.nModels,
+    nConfigs: g.nConfigs,
+    minGpus: g.minGpus,
+    maxGpus: g.maxGpus,
+  }));
 }
 
 export function buildEngineIndex(
   allRows: IndexRow[],
-  options: Pick<IndexOptions, 'model'> = {},
+  options: IndexOptions = {},
 ): EngineIndexRow[] {
   const rows = options.model ? allRows.filter((r) => r.model === options.model) : allRows;
   const engines = [...new Set(rows.map((r) => r.engine))];
-  const pairsByEngine = new Map<string, Set<string>>();
-  for (const engine of engines) {
-    pairsByEngine.set(
-      engine,
-      new Set(
-        rows
-          .filter((r) => r.engine === engine && configUsdPerMTok(r) != null)
-          .map((r) => `${r.hardwareFamily}|${r.model}`),
-      ),
-    );
-  }
-  const commonPairs = new Set(
-    [...(pairsByEngine.get(engines[0]) ?? [])].filter((pair) =>
-      engines.every((engine) => pairsByEngine.get(engine)?.has(pair)),
-    ),
-  );
-  const raw = engines
+  const minMatched = options.minMatchedModels ?? (options.model ? 1 : MIN_MATCHED_MODELS);
+
+  const groups = engines
     .map((engine) => {
-      const subset = rows.filter(
-        (r) =>
-          r.engine === engine &&
-          commonPairs.has(`${r.hardwareFamily}|${r.model}`),
-      );
+      const subset = rows.filter((r) => r.engine === engine);
       const families = [...new Set(subset.map((r) => r.hardwareFamily))];
       const perFamily: number[] = [];
       for (const family of families) {
-        const byModel = meanUsdByModel(subset.filter((r) => r.hardwareFamily === family));
-        const m = mean([...byModel.values()]);
+        const m = mean([...meanUsdByModel(subset.filter((r) => r.hardwareFamily === family)).values()]);
         if (m != null) perFamily.push(m);
       }
       const usdPerMTok = mean(perFamily);
       if (usdPerMTok == null || !(usdPerMTok > 0)) return null;
       return {
+        name: engine,
         engine,
+        panel: matchedPanel(rows, (r) => r.engine, engine, ENGINE_REFERENCE, engineMatchKey),
         usdPerMTok,
         tokPerDollar: 1e6 / usdPerMTok,
         nFamilies: perFamily.length,
         nModels: new Set(subset.map((r) => r.model)).size,
-        nMatchedPairs: commonPairs.size,
         nConfigs: subset.filter((r) => configUsdPerMTok(r) != null).length,
       };
     })
-    .filter((r): r is NonNullable<typeof r> => r != null);
+    .filter((g): g is NonNullable<typeof g> => g != null);
 
-  const scale = scoreScale(raw.map((r) => r.tokPerDollar));
-
-  return raw
-    .map((r) => ({
-      ...r,
-      score: indexScore(r.tokPerDollar, scale),
-    }))
-    .sort((a, b) => a.usdPerMTok - b.usdPerMTok || a.engine.localeCompare(b.engine));
+  return rankGroups(groups, ENGINE_REFERENCE, minMatched).map((g) => ({
+    ...publicFields(g),
+    engine: g.engine,
+    vsRef: g.publishedRatio,
+    usdPerMTok: g.usdPerMTok,
+    tokPerDollar: g.tokPerDollar,
+    nFamilies: g.nFamilies,
+    nModels: g.nModels,
+    nConfigs: g.nConfigs,
+  }));
 }
 
 export function modelNames(rows: IndexRow[]): string[] {
@@ -271,7 +384,6 @@ export function buildModelIndex(rows: IndexRow[]): ModelIndexRow[] {
     raw.push({
       model,
       intelligence: catalog.intelligence,
-      estimated: catalog.estimated,
       totalParamsB: catalog.totalParamsB,
       activeParamsB: catalog.activeParamsB,
       gflopPerTok: gflopPerToken(catalog.activeParamsB),
@@ -280,17 +392,13 @@ export function buildModelIndex(rows: IndexRow[]): ModelIndexRow[] {
       nConfigs,
     });
   }
-  const scale = scoreScale(raw.map((r) => r.intelPerGflop));
+  const best = Math.max(...raw.map((r) => r.intelPerGflop));
   return raw
-    .map((r) => ({ ...r, score: indexScore(r.intelPerGflop, scale) }))
+    .map((r) => ({ ...r, score: best > 0 ? round1((100 * r.intelPerGflop) / best) : NaN }))
     .sort(
       (a, b) =>
         b.intelPerGflop - a.intelPerGflop ||
         b.intelligence - a.intelligence ||
         a.model.localeCompare(b.model),
     );
-}
-
-export function configTcoUsdPerMTok(row: IndexRow): number | null {
-  return configUsdPerMTok(row);
 }

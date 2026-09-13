@@ -1,5 +1,5 @@
 /**
- * QuettaBench serving measurements used by the Hardware Cost Index.
+ * QuettaBench serving measurements behind the Efficiency Index.
  *
  * Modelled on Artificial Analysis's composite index: one 0–100 score,
  * equal-weight subdomains, equation published. Raw serving metrics are
@@ -26,7 +26,7 @@
 
 import { tcoUsdPerMTok } from './tco';
 
-export const INDEX_VERSION = '1.4';
+export const INDEX_VERSION = '2.0';
 
 export const CANONICAL_PROFILES = [
   'chat-singleturn-synth',

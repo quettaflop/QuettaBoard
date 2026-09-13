@@ -1,44 +1,41 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   DOMAINS,
   INDEX_VERSION,
   LOAD_WEIGHTS,
+  MIN_SUCCESS,
   type Domain,
   type HardwareFamily,
   type IndexRow,
 } from '../efficiency/score';
 import {
+  HARDWARE_REFERENCE,
+  MIN_MATCHED_MODELS,
   buildEngineIndex,
   buildHardwareIndex,
   buildModelIndex,
   configTcoUsdPerMTok,
   modelNames,
+  type EngineIndexRow,
+  type HardwareIndexRow,
 } from '../efficiency/indexes';
-import { AA_INDEX_VERSION, AA_RETRIEVED, FLOPS_PER_PARAM } from '../efficiency/models';
+import { AA_INDEX_VERSION, AA_RETRIEVED, FLOPS_PER_PARAM, MIN_MODEL_PANEL_ROWS } from '../efficiency/models';
+import { ENGINE_REFERENCE, ENGINE_VERSIONS_NOTE, engineLabel } from '../efficiency/engines';
+import { OPENROUTER_LLAMA31_8B, selfHostedToApiRatio } from '../efficiency/market';
 import { EFFICIENCY_SNAPSHOT } from '../efficiency/snapshot';
 import {
   AVG_USD_PER_KWH,
   HARDWARE_PURCHASE,
-  OPENROUTER_LLAMA31_8B,
   TCO_HORIZON_YEARS,
   TCO_PUE,
   TCO_UTILIZATION,
-  TOM_SAWYER_ELECTRICITY_SOURCE,
   amortSchedule,
   gpuTco,
-  impliedGrossMargin,
 } from '../efficiency/tco';
-import {
-  EngineCostPlot,
-  HardwareCostPlot,
-  ModelEfficiencyPlot,
-  engineLabel,
-  formatMult,
-  formatUsd,
-} from './IndexPlots';
+import { ModelEfficiencyPlot, formatMult, formatUsd } from './IndexPlots';
 import { SiteNav } from './SiteNav';
 
-type Board = 'hardware' | 'configs';
+type Board = 'hardware' | 'engines' | 'configs';
 type EngineFilter = 'all' | 'vllm' | 'sglang';
 
 const DOMAIN_LABEL: Record<Domain, string> = {
@@ -50,6 +47,7 @@ const DOMAIN_LABEL: Record<Domain, string> = {
 
 const FAMILIES: HardwareFamily[] = ['H100', 'A100', '3090', '2080 Ti'];
 const PAGE_SIZE = 10;
+const ENGINE_REFERENCE_LABEL = engineLabel(ENGINE_REFERENCE, true);
 
 interface MarketCheck {
   min: number;
@@ -86,12 +84,6 @@ function RankBar({ value }: { value: number }) {
       <span className="idx-rank-fill" style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
     </span>
   );
-}
-
-function formatTokenYield(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}k`;
-  return value.toFixed(0);
 }
 
 function RowChev() {
@@ -161,12 +153,14 @@ export function EfficiencyIndex() {
       <header className="idx-page-head shell shell-wide pb-8 pt-12 sm:pb-10 sm:pt-14">
         <p className="eyebrow">QuettaBench · Index v{INDEX_VERSION}</p>
         <h1 className="mt-3 max-w-[22ch] text-[clamp(1.85rem,3.6vw,2.65rem)] leading-[1.2]">
-          Hardware Cost Index
+          Efficiency Index
         </h1>
-        <p className="mt-5 max-w-[40rem] text-[1.05rem] leading-relaxed">
-          For a fixed workload mix, how many output tokens does each hardware
-          dollar buy over three years? Compare hardware first, then select a
-          model to inspect its measured hardware × engine configurations.
+        <p className="mt-5 max-w-[44rem] text-[1.05rem] leading-relaxed">
+          Two indices from one measured corpus. The Hardware Index asks how many
+          output tokens a dollar of owned GPU buys over three years, compared
+          with H100 on identical configurations. The Engine Index asks the same
+          of vLLM and SGLang on identical hardware. Select a model under Configs
+          to see every measured hardware × engine configuration.
         </p>
         <p className="mt-3 text-[13px] text-[var(--ink-3)]">
           Snapshot {snap.sourceModified} · {snap.n} configs · loads 1 / 40 / 160
@@ -177,6 +171,7 @@ export function EfficiencyIndex() {
         <div className="idx-tabs" role="tablist" aria-label="Index board">
           {([
             ['hardware', 'Hardware'],
+            ['engines', 'Engines'],
             ['configs', 'Configs'],
           ] as const).map(([id, label]) => (
             <button
@@ -194,20 +189,17 @@ export function EfficiencyIndex() {
         </div>
 
         {board === 'hardware' && (
-          <div
-            id="idx-panel-hardware"
-            role="tabpanel"
-            aria-labelledby="idx-tab-hardware"
-          >
-            <HardwareBoard rows={hardware} engines={engines} llamaTco={llamaTco} />
+          <div id="idx-panel-hardware" role="tabpanel" aria-labelledby="idx-tab-hardware">
+            <HardwareBoard rows={hardware} llamaTco={llamaTco} />
+          </div>
+        )}
+        {board === 'engines' && (
+          <div id="idx-panel-engines" role="tabpanel" aria-labelledby="idx-tab-engines">
+            <EngineBoard rows={engines} />
           </div>
         )}
         {board === 'configs' && (
-          <div
-            id="idx-panel-configs"
-            role="tabpanel"
-            aria-labelledby="idx-tab-configs"
-          >
+          <div id="idx-panel-configs" role="tabpanel" aria-labelledby="idx-tab-configs">
             <ConfigBoard
               models={models}
               model={model}
@@ -243,70 +235,380 @@ export function EfficiencyIndex() {
   );
 }
 
-function ExperimentalModel({
+/* ------------------------------------------------------------------ */
+/* Ranked boards                                                        */
+/* ------------------------------------------------------------------ */
+
+interface BoardRow {
+  key: string;
+  name: string;
+  sub?: string;
+  isRef: boolean;
+  rank: number | null;
+  score: number | null;
+  ratio: number | null;
+  typicalUsd: number | null;
+  typicalRefUsd: number | null;
+  nMatchedModels: number;
+  nModelsBetter: number;
+  nMatchedConfigs: number;
+  nMatchedCells: number;
+  detail: ReactNode;
+}
+
+function evidenceText(r: BoardRow): string {
+  if (r.isRef) return `${r.nMatchedModels} models · ${r.nMatchedConfigs} configs`;
+  if (r.rank == null) return `${r.nMatchedModels} of ${MIN_MATCHED_MODELS} matched models required`;
+  return `${r.nMatchedModels} matched models · better on ${r.nModelsBetter} · ${r.nMatchedConfigs} configs`;
+}
+
+function RankedBoard({
+  id,
+  eyebrow,
+  title,
+  lede,
+  nameHeader,
+  refLabel,
+  refHeader = refLabel,
   rows,
-  onSelect,
+  open,
+  setOpen,
 }: {
-  rows: ReturnType<typeof buildModelIndex>;
-  onSelect: (model: string) => void;
+  id: string;
+  eyebrow: string;
+  title: string;
+  lede: string;
+  nameHeader: string;
+  refLabel: string;
+  /** Short form for column headers, e.g. "vLLM" when refLabel is "vLLM 0.19". */
+  refHeader?: string;
+  rows: BoardRow[];
+  open: string | null;
+  setOpen: (key: string | null) => void;
 }) {
+  const firstUnranked = rows.findIndex((r) => r.rank == null);
+
   return (
-    <details className="idx-experimental">
-      <summary>
-        <span className="idx-experimental-summary-copy">
-          <span className="eyebrow">Experimental · secondary analysis</span>
-          <span className="idx-experimental-summary-title">Model efficiency</span>
-          <span className="idx-experimental-summary-note">
-            Intelligence per approximate decode FLOP. Structurally favors
-            smaller and fewer-active models; never used in Hardware scoring.
-          </span>
-        </span>
-        <span className="idx-experimental-summary-action" aria-hidden>
-          <span className="idx-experimental-action-label" />
-          <span className="idx-experimental-chevron" />
-        </span>
-      </summary>
-      <div className="idx-experimental-body">
-        <div className="idx-experimental-guardrail">
-          <p className="eyebrow">Interpretation · not a scoring input</p>
-          <p>
-            <strong>Smaller or fewer-active models structurally win this ratio.</strong>
-            {' '}It measures intelligence against approximate decode work, not
-            serving quality or cost. It never affects Hardware or engine
-            scoring; Artificial Analysis already provides intelligence per dollar.
-          </p>
-          <p className="idx-experimental-basis mono-nums">
-            I / ({FLOPS_PER_PARAM} × active parameters) · AA Index v{AA_INDEX_VERSION}
-            {' '}· retrieved {AA_RETRIEVED}
-          </p>
-        </div>
-        <div className="idx-plots idx-experimental-plots">
-          <ModelEfficiencyPlot rows={rows} onSelect={onSelect} />
-        </div>
-        <p className="idx-experimental-footnote">
-          * AA estimate. Active parameters are used for MoE models. Select any
-          model row to open its measured hardware × engine configurations.
-        </p>
-      </div>
-    </details>
+    <section className="idx-leaderboard" aria-labelledby={`${id}-title`}>
+      <header className="idx-section-head">
+        <p className="eyebrow">{eyebrow}</p>
+        <h2 id={`${id}-title`}>{title}</h2>
+        <p>{lede}</p>
+      </header>
+
+      <ol className="idx-table idx-board">
+        <li className="idx-rank idx-rank-head" aria-hidden>
+          <span className="idx-rank-n"></span>
+          <span className="idx-rank-name">{nameHeader}</span>
+          <span className="idx-rank-usd">Value vs {refHeader}</span>
+          <span className="idx-rank-output">Typical $ / M</span>
+          <span className="idx-rank-match">Matched evidence</span>
+        </li>
+        {rows.map((r, i) => {
+          const expanded = open === r.key;
+          const matchState = r.isRef ? 'baseline' : r.rank == null ? 'withheld' : 'supported';
+          const ariaValue = r.isRef
+            ? `reference, 1.00×`
+            : r.rank == null
+              ? `not yet ranked, ${r.nMatchedModels} of ${MIN_MATCHED_MODELS} matched models`
+              : `${formatMult(r.ratio)} the value of ${refLabel} on identical configurations`;
+          return (
+            <li key={r.key} className="idx-row-wrap">
+              {i === firstUnranked && (
+                <div className="idx-divider" role="presentation">
+                  <span>Not yet ranked</span>
+                  <small>Fewer than {MIN_MATCHED_MODELS} models matched against {refLabel}</small>
+                </div>
+              )}
+              <button
+                type="button"
+                className="idx-rank"
+                data-rank={r.rank ?? ''}
+                data-ratio={r.ratio ?? ''}
+                aria-expanded={expanded}
+                aria-label={`${r.name}${r.rank != null ? `, rank ${r.rank}` : ''}: ${ariaValue}. ${
+                  r.typicalUsd != null
+                    ? `Typical ${formatUsd(r.typicalUsd)} per million output tokens on the matched cells${
+                        r.isRef ? '' : ` against ${formatUsd(r.typicalRefUsd)} for ${refLabel}`
+                      }.`
+                    : ''
+                } ${expanded ? 'Hide' : 'Show'} details`}
+                onClick={() => setOpen(expanded ? null : r.key)}
+              >
+                <span className="idx-rank-n mono-nums">{r.rank ?? '–'}</span>
+                <span className="idx-rank-name">
+                  <span className="idx-rank-title">
+                    <span>{r.name}</span>
+                    {r.rank === 1 && <span className="idx-leader-label">Best value</span>}
+                  </span>
+                  {r.sub && <small className="idx-rank-sub mono-nums">{r.sub}</small>}
+                </span>
+                <span className="idx-rank-usd">
+                  {r.rank != null ? (
+                    <>
+                      <span className="mono-nums">{formatMult(r.ratio)}</span>
+                      <small>{r.isRef ? 'reference' : `vs ${refLabel}`}</small>
+                    </>
+                  ) : (
+                    <>
+                      <span className="mono-nums">—</span>
+                      <small>not ranked</small>
+                    </>
+                  )}
+                </span>
+                <span className="idx-rank-output">
+                  <span className="idx-rank-yield">
+                    <span className="mono-nums">{formatUsd(r.typicalUsd)}</span>
+                    <small>
+                      {r.typicalUsd == null
+                        ? 'no ranked figure'
+                        : r.isRef
+                          ? '/ M · all its configs'
+                          : `vs ${formatUsd(r.typicalRefUsd)} ${refLabel}`}
+                    </small>
+                  </span>
+                  <RankBar value={r.score ?? 0} />
+                </span>
+                <span className="idx-rank-match" data-state={matchState}>
+                  <span>{r.isRef ? 'Reference' : r.rank == null ? 'Not yet ranked' : 'Matched'}</span>
+                  <small>{evidenceText(r)}</small>
+                </span>
+                <RowChev />
+              </button>
+              <div className="expand" data-open={expanded ? 'true' : 'false'}>
+                <div>
+                  <div className="expand-inner idx-detail">{r.detail}</div>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
 
-function OpenRouterCheck({
+function MatchedBasis({
+  r,
+  refLabel,
+  fullPanel,
+}: {
+  r: BoardRow;
+  refLabel: string;
+  fullPanel: ReactNode;
+}) {
+  return (
+    <div className="idx-detail-basis">
+      <div data-state={r.isRef ? 'baseline' : r.rank == null ? 'withheld' : 'supported'}>
+        <span>Matched panel</span>
+        <strong>
+          {r.isRef
+            ? `${refLabel} reference`
+            : r.rank == null
+              ? 'Not yet ranked'
+              : `${formatMult(r.ratio)} ${refLabel} value`}
+        </strong>
+        <small>
+          {r.isRef
+            ? `${r.nMatchedModels} models · ${r.nMatchedConfigs} configs · ${r.nMatchedCells} workload cells define the reference.`
+            : r.rank == null
+              ? `${r.nMatchedModels} of ${MIN_MATCHED_MODELS} models matched against ${refLabel}; the ratio is not published until three are.`
+              : `${r.nMatchedModels} models · ${r.nMatchedConfigs} configs · ${r.nMatchedCells} workload cells. Better value than ${refLabel} on ${r.nModelsBetter} of ${r.nMatchedModels} models.`}
+        </small>
+      </div>
+      <div>
+        <span>Measured mean, everything it ran</span>
+        {fullPanel}
+      </div>
+    </div>
+  );
+}
+
+function HardwareBoard({
+  rows,
   llamaTco,
 }: {
+  rows: HardwareIndexRow[];
   llamaTco: MarketCheck | null;
 }) {
+  const [open, setOpen] = useState<string | null>(null);
+
+  const boardRows: BoardRow[] = rows.map((r) => {
+    const t = gpuTco(r.family);
+    const spec = HARDWARE_PURCHASE[r.family];
+    const row: BoardRow = {
+      key: r.family,
+      name: r.family,
+      isRef: r.family === HARDWARE_REFERENCE,
+      rank: r.rank,
+      score: r.score,
+      ratio: r.vsH100,
+      typicalUsd: r.typicalUsdPerMTok,
+      typicalRefUsd: r.typicalRefUsdPerMTok,
+      nMatchedModels: r.nMatchedModels,
+      nModelsBetter: r.nModelsBetter,
+      nMatchedConfigs: r.nMatchedConfigs,
+      nMatchedCells: r.nMatchedCells,
+      detail: null,
+    };
+    row.detail = (
+      <>
+        <MatchedBasis
+          r={row}
+          refLabel={HARDWARE_REFERENCE}
+          fullPanel={
+            <>
+              <strong className="mono-nums">{formatUsd(r.usdPerMTok)} / M</strong>
+              <small>
+                {r.nModels} models · {r.nConfigs} configs · {r.minGpus}–{r.maxGpus} GPUs.
+                Depends on which models were measured; not comparable across rows.
+              </small>
+            </>
+          }
+        />
+        <p className="idx-detail-tco-label">3-year GPU ownership basis</p>
+        <dl>
+          <div>
+            <dt>Purchase</dt>
+            <dd className="mono-nums">{formatUsd(t.purchaseUsd, 0)}</dd>
+          </div>
+          <div>
+            <dt>Residual @ 3y</dt>
+            <dd className="mono-nums">{formatUsd(t.residualUsd, 0)}</dd>
+          </div>
+          <div>
+            <dt>Amort / year</dt>
+            <dd className="mono-nums">{formatUsd(t.amortUsdPerYear, 0)}</dd>
+          </div>
+          <div>
+            <dt>Electricity / year</dt>
+            <dd className="mono-nums">{formatUsd(t.electricUsdPerYear, 0)}</dd>
+          </div>
+          <div>
+            <dt>3-year GPU TCO</dt>
+            <dd className="mono-nums">{formatUsd(t.tcoUsd, 0)}</dd>
+          </div>
+          <div>
+            <dt>TCO / GPU-hr</dt>
+            <dd className="mono-nums">{formatUsd(t.usdPerHour, 3)}</dd>
+          </div>
+          <div>
+            <dt>Board power</dt>
+            <dd className="mono-nums">{t.tdpW} W</dd>
+          </div>
+        </dl>
+        <p className="idx-detail-source">
+          Purchase basis ·{' '}
+          <a href={spec.href} className="underline-offset-2 hover:underline">
+            {spec.source}
+          </a>
+        </p>
+      </>
+    );
+    return row;
+  });
+
+  return (
+    <div className="idx-hardware-layout">
+      <RankedBoard
+        id="idx-hardware"
+        eyebrow="Hardware Index · matched against H100"
+        title="Value per owned-GPU dollar, on identical configurations"
+        lede="Each GPU is compared with H100 only where the same model, engine, quantization and GPU count were measured on both. Higher is better. Open a row for the ownership cost basis."
+        nameHeader="GPU"
+        refLabel={HARDWARE_REFERENCE}
+        rows={boardRows}
+        open={open}
+        setOpen={setOpen}
+      />
+      <OpenRouterCheck llamaTco={llamaTco} />
+    </div>
+  );
+}
+
+function EngineBoard({ rows }: { rows: EngineIndexRow[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+
+  const boardRows: BoardRow[] = rows.map((r) => {
+    const row: BoardRow = {
+      key: r.engine,
+      name: engineLabel(r.engine),
+      sub: engineLabel(r.engine, true).slice(engineLabel(r.engine).length).trim() || undefined,
+      isRef: r.engine === ENGINE_REFERENCE,
+      rank: r.rank,
+      score: r.score,
+      ratio: r.vsRef,
+      typicalUsd: r.typicalUsdPerMTok,
+      typicalRefUsd: r.typicalRefUsdPerMTok,
+      nMatchedModels: r.nMatchedModels,
+      nModelsBetter: r.nModelsBetter,
+      nMatchedConfigs: r.nMatchedConfigs,
+      nMatchedCells: r.nMatchedCells,
+      detail: null,
+    };
+    row.detail = (
+      <MatchedBasis
+        r={row}
+        refLabel={ENGINE_REFERENCE_LABEL}
+        fullPanel={
+          <>
+            <strong className="mono-nums">{formatUsd(r.usdPerMTok)} / M</strong>
+            <small>
+              {r.nFamilies} GPU families · {r.nModels} models · {r.nConfigs} configs.
+              Depends on which hardware and models were measured; not comparable across rows.
+            </small>
+          </>
+        }
+      />
+    );
+    return row;
+  });
+
+  return (
+    <div className="idx-hardware-layout">
+      <RankedBoard
+        id="idx-engines"
+        eyebrow={`Engine Index · matched against ${ENGINE_REFERENCE_LABEL}`}
+        title="Value per dollar by serving engine, on identical hardware"
+        lede="Each engine is compared with vLLM only where the same model, GPU configuration and quantization were measured on both, with the same ownership cost. Higher is better."
+        nameHeader="Engine"
+        refLabel={ENGINE_REFERENCE_LABEL}
+        refHeader={engineLabel(ENGINE_REFERENCE)}
+        rows={boardRows}
+        open={open}
+        setOpen={setOpen}
+      />
+      <aside className="idx-check">
+        <header>
+          <p className="eyebrow">What is being compared</p>
+          <h3>Engine builds in this snapshot</h3>
+          <p>Same GPUs, same models, same TCO per GPU-hour</p>
+        </header>
+        <p className="idx-check-note">{ENGINE_VERSIONS_NOTE}</p>
+        <p className="idx-check-note">
+          The index compares these builds as measured, not the projects in
+          general. Runs completing fewer than {Math.round(MIN_SUCCESS * 100)}% of
+          requests are excluded before scoring, so a build that failed a
+          workload is absent from that cell rather than penalised for it.
+        </p>
+      </aside>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Side panels                                                          */
+/* ------------------------------------------------------------------ */
+
+function OpenRouterCheck({ llamaTco }: { llamaTco: MarketCheck | null }) {
   if (llamaTco == null) return null;
   const market = OPENROUTER_LLAMA31_8B.usdPerMTokOut;
-  const margin = impliedGrossMargin(llamaTco.min, market);
+  const ratio = selfHostedToApiRatio(llamaTco.min, market);
   return (
     <aside className="idx-check">
       <header>
         <p className="eyebrow">External market signal</p>
-        <h3>
-          Llama-3.1-8B on OpenRouter
-        </h3>
+        <h3>{OPENROUTER_LLAMA31_8B.model} on OpenRouter</h3>
         <p>Listed output price · {OPENROUTER_LLAMA31_8B.asOf}</p>
       </header>
       <dl className="idx-check-grid">
@@ -321,10 +623,8 @@ function OpenRouterCheck({
           </dd>
         </div>
         <div>
-          <dt>Margin at list</dt>
-          <dd className="mono-nums">
-            {margin == null ? '—' : `${(margin * 100).toFixed(0)}%`}
-          </dd>
+          <dt>Self-hosted ÷ API</dt>
+          <dd className="mono-nums">{ratio == null ? '—' : `${ratio.toFixed(1)}×`}</dd>
         </div>
       </dl>
       <p className="idx-check-range">
@@ -337,197 +637,70 @@ function OpenRouterCheck({
         </span>
       </p>
       <p className="idx-check-note">
-        A dated market sanity check only. API pooling and provider margin make
-        this non-comparable to self-hosted TCO and not a sale price.
+        The floor is one node of one to four GPUs serving up to 160 concurrent
+        requests, costed at full utilisation. API providers pool demand across
+        many customers and batch far more aggressively, so the ratio bounds the
+        comparison; it is not a margin and not a price.
       </p>
     </aside>
   );
 }
 
-function HardwareBoard({
+function ExperimentalModel({
   rows,
-  engines,
-  llamaTco,
+  onSelect,
 }: {
-  rows: ReturnType<typeof buildHardwareIndex>;
-  engines: ReturnType<typeof buildEngineIndex>;
-  llamaTco: MarketCheck | null;
+  rows: ReturnType<typeof buildModelIndex>;
+  onSelect: (model: string) => void;
 }) {
-  const [open, setOpen] = useState<HardwareFamily | null>(null);
-
+  if (rows.length < MIN_MODEL_PANEL_ROWS) return null;
   return (
-    <>
-      <div className="idx-hardware-layout">
-        <section className="idx-leaderboard" aria-labelledby="idx-leaderboard-title">
-          <header className="idx-section-head">
-            <p className="eyebrow">Absolute ranking · full balanced panel</p>
-            <h2 id="idx-leaderboard-title">Output tokens bought per dollar</h2>
-            <p>
-              Lower $/M and higher token yield are better. Open a row for panel
-              coverage and ownership cost basis.
-            </p>
-          </header>
-
-          <ol className="idx-table idx-board">
-            <li className="idx-rank idx-rank-head" aria-hidden>
-              <span className="idx-rank-n"></span>
-              <span className="idx-rank-name">GPU</span>
-              <span className="idx-rank-usd">3-year $ / M</span>
-              <span className="idx-rank-output">Token yield</span>
-              <span className="idx-rank-match">Matched evidence</span>
-            </li>
-            {rows.map((r, i) => {
-              const t = gpuTco(r.family);
-              const spec = HARDWARE_PURCHASE[r.family];
-              const expanded = open === r.family;
-              const matchState = r.family === 'H100'
-                ? 'baseline'
-                : r.vsH100 == null
-                  ? 'withheld'
-                  : 'supported';
-              return (
-                <li key={r.family} className="idx-row-wrap">
-                  <button
-                    type="button"
-                    className="idx-rank"
-                    aria-expanded={expanded}
-                    aria-label={`${r.family}, rank ${i + 1}, ${formatTokenYield(r.tokPerDollar)} output tokens per dollar, ${formatUsd(r.usdPerMTok)} per million output tokens. ${
-                      r.family === 'H100'
-                        ? `H100 reference across ${r.nMatchedModels} models.`
-                        : r.vsH100 == null
-                          ? `Relative comparison withheld with ${r.nMatchedModels} matched models.`
-                          : `${formatMult(r.vsH100)} H100 value across ${r.nMatchedModels} exact-matched models.`
-                    } ${expanded ? 'Hide' : 'Show'} assumptions`}
-                    onClick={() => setOpen(expanded ? null : r.family)}
-                  >
-                    <span className="idx-rank-n mono-nums">{i + 1}</span>
-                    <span className="idx-rank-name">
-                      <span className="idx-rank-title">
-                        <span>{r.family}</span>
-                        {i === 0 && <span className="idx-leader-label">Lowest cost</span>}
-                      </span>
-                    </span>
-                    <span className="idx-rank-usd">
-                      <span className="mono-nums">{formatUsd(r.usdPerMTok)}</span>
-                      <small>/ M output</small>
-                    </span>
-                    <span className="idx-rank-output">
-                      <span className="idx-rank-yield">
-                        <span className="mono-nums">{formatTokenYield(r.tokPerDollar)}</span>
-                        <small>tokens / $</small>
-                      </span>
-                      <RankBar value={r.score} />
-                    </span>
-                    <span className="idx-rank-match" data-state={matchState}>
-                      <span>
-                        {r.family === 'H100'
-                          ? 'Reference'
-                          : r.vsH100 == null
-                            ? 'Withheld'
-                            : 'Supported'}
-                      </span>
-                      <small>
-                        {r.family === 'H100'
-                          ? `${r.nMatchedModels} measured models`
-                          : r.vsH100 == null
-                            ? `${r.nMatchedModels} of 3 required`
-                            : `${r.nMatchedModels} matched models`}
-                      </small>
-                    </span>
-                    <RowChev />
-                  </button>
-                  <div className="expand" data-open={expanded ? 'true' : 'false'}>
-                    <div>
-                      <div className="expand-inner idx-detail">
-                        <div className="idx-detail-basis">
-                          <div>
-                            <span>Full-panel coverage</span>
-                            <strong>
-                              {r.nModels} models · {r.nConfigs} configs
-                            </strong>
-                            <small>{r.minGpus}–{r.maxGpus} GPUs observed</small>
-                          </div>
-                          <div data-state={matchState}>
-                            <span>Separate matched panel</span>
-                            <strong>
-                              {r.family === 'H100'
-                                ? 'H100 reference'
-                                : r.vsH100 == null
-                                  ? 'Relative claim withheld'
-                                  : `${formatMult(r.vsH100)} H100 value`}
-                            </strong>
-                            <small>
-                              {r.family === 'H100'
-                                ? `${r.nMatchedModels} measured models define the reference.`
-                                : r.vsH100 == null
-                                  ? `${r.nMatchedModels} exact-matched models; 3 required to publish.`
-                                  : `${r.nMatchedModels} exact-matched models. Exact model, engine, quantization, GPU-width, workload and load.`}
-                            </small>
-                          </div>
-                        </div>
-                        <p className="idx-detail-tco-label">
-                          3-year GPU ownership basis
-                        </p>
-                        <dl>
-                          <div>
-                            <dt>Purchase</dt>
-                            <dd className="mono-nums">{formatUsd(t.purchaseUsd, 0)}</dd>
-                          </div>
-                          <div>
-                            <dt>Residual @ 3y</dt>
-                            <dd className="mono-nums">{formatUsd(t.residualUsd, 0)}</dd>
-                          </div>
-                          <div>
-                            <dt>Amort / year</dt>
-                            <dd className="mono-nums">{formatUsd(t.amortUsdPerYear, 0)}</dd>
-                          </div>
-                          <div>
-                            <dt>Electricity / year</dt>
-                            <dd className="mono-nums">{formatUsd(t.electricUsdPerYear, 0)}</dd>
-                          </div>
-                          <div>
-                            <dt>3-year GPU TCO</dt>
-                            <dd className="mono-nums">{formatUsd(t.tcoUsd, 0)}</dd>
-                          </div>
-                          <div>
-                            <dt>TCO / GPU-hr</dt>
-                            <dd className="mono-nums">{formatUsd(t.usdPerHour, 3)}</dd>
-                          </div>
-                          <div>
-                            <dt>Board power</dt>
-                            <dd className="mono-nums">{t.tdpW} W</dd>
-                          </div>
-                        </dl>
-                        <p className="idx-detail-source">
-                          Purchase basis ·{' '}
-                          <a href={spec.href} className="underline-offset-2 hover:underline">
-                            {spec.source}
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-
-        <div className="idx-evidence-match">
-          <HardwareCostPlot
-            rows={rows}
-            selected={open}
-            onSelect={(family) => setOpen(open === family ? null : family)}
-          />
+    <details className="idx-experimental">
+      <summary>
+        <span className="idx-experimental-summary-copy">
+          <span className="eyebrow">Experimental · secondary analysis</span>
+          <span className="idx-experimental-summary-title">Model efficiency</span>
+          <span className="idx-experimental-summary-note">
+            Intelligence per approximate decode FLOP. Structurally favors
+            smaller and fewer-active models; never used in Hardware or Engine scoring.
+          </span>
+        </span>
+        <span className="idx-experimental-summary-action" aria-hidden>
+          <span className="idx-experimental-action-label" />
+          <span className="idx-experimental-chevron" />
+        </span>
+      </summary>
+      <div className="idx-experimental-body">
+        <div className="idx-experimental-guardrail">
+          <p className="eyebrow">Interpretation · not a scoring input</p>
+          <p>
+            <strong>Smaller or fewer-active models structurally win this ratio.</strong>
+            {' '}It measures intelligence against approximate decode work, not
+            serving quality or cost. It never affects Hardware or Engine
+            scoring; Artificial Analysis already publishes intelligence per dollar.
+          </p>
+          <p className="idx-experimental-basis mono-nums">
+            I / ({FLOPS_PER_PARAM} × active parameters) · AA Intelligence Index v{AA_INDEX_VERSION}
+            {' '}· read {AA_RETRIEVED}
+          </p>
         </div>
-        <OpenRouterCheck llamaTco={llamaTco} />
-        <div className="idx-evidence-engine">
-          <EngineCostPlot rows={engines} />
+        <div className="idx-plots idx-experimental-plots">
+          <ModelEfficiencyPlot rows={rows} onSelect={onSelect} />
         </div>
+        <p className="idx-experimental-footnote">
+          Scores are read from the linked Artificial Analysis page for the named
+          variant; reasoning models carry the score of their AA-listed setting.
+          Active parameters are used for MoE models. Select any model row to
+          open its measured hardware × engine configurations.
+        </p>
       </div>
-    </>
+    </details>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Configs                                                              */
+/* ------------------------------------------------------------------ */
 
 function ConfigBoard({
   models,
@@ -605,8 +778,8 @@ function ConfigBoard({
         <div className="idx-toolbar-chips" data-label="Engine">
           {([
             ['all', 'All'],
-            ['vllm', 'vLLM'],
-            ['sglang', 'SGLang'],
+            ['vllm', engineLabel('vllm')],
+            ['sglang', engineLabel('sglang')],
           ] as const).map(([id, label]) => (
             <button
               key={id}
@@ -662,7 +835,7 @@ function ConfigBoard({
                   <span className="mono-nums text-[var(--ink-3)]">{rank}</span>
                   <span className="min-w-0 text-left">
                     <span className="block truncate text-[14px] text-[var(--ink)]">
-                      {r.hardwareFamily} · {engineLabel(r.engine)}
+                      {r.hardwareFamily} · {engineLabel(r.engine, true)}
                     </span>
                     <span className="mt-0.5 block truncate text-[12px] text-[var(--ink-3)]">
                       {r.quant} · {r.gpus} GPU{r.gpus === 1 ? '' : 's'}
@@ -768,15 +941,20 @@ function ConfigBoard({
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Methodology                                                          */
+/* ------------------------------------------------------------------ */
+
 function Methodology() {
   return (
     <details className="idx-method mt-16 border-t border-[var(--line)] pt-8">
-      <summary>How the boards are built</summary>
+      <summary>How the indices are built</summary>
       <p>
-        Hardware is the product: secondary-market purchase minus residual,
-        plus three years of electricity, divided by measured output. The
-        reduction order is workload/load → config → engine within model →
-        equal-weight models → hardware family. Config speed remains diagnostic.
+        Both indices are ratios of ownership cost per output token between two
+        groups on identical measured configurations. Hardware compares GPU
+        families against H100; Engines compares serving engines against vLLM.
+        The reduction order is workload/load cell → config → model → group,
+        and only cells present on both sides of a comparison count.
       </p>
 
       <div className="idx-method-grid">
@@ -809,67 +987,78 @@ function Methodology() {
           </p>
           <p>
             P is the secondary purchase. R is the residual after three
-            years. e = {AVG_USD_PER_KWH.toFixed(4)} $/kWh — mean of
-            DumpsterCluster Table 4 (China 0.0556, US 0.12, Brazil 0.125),
-            not a country. Utilization = {(TCO_UTILIZATION * 100).toFixed(0)}%;
-            PUE = {TCO_PUE.toFixed(1)}. Host, networking, cooling and other
-            system costs are excluded. The meeting&apos;s “Tom Sawyer” source
-            {TOM_SAWYER_ELECTRICITY_SOURCE == null
-              ? ' could not be identified and contributes no value.'
-              : '.'}
+            years. e = {AVG_USD_PER_KWH.toFixed(4)} $/kWh, the mean of
+            DumpsterCluster Table 4 industrial rates (China 0.0556, US 0.12,
+            Brazil 0.125) rather than any one country. Utilization ={' '}
+            {(TCO_UTILIZATION * 100).toFixed(0)}%; PUE = {TCO_PUE.toFixed(1)}.
+            Host, networking, cooling and other system costs are excluded.
           </p>
         </div>
         <div>
-          <h3>4. $ / M tok</h3>
+          <h3>4. $ / M tok per cell</h3>
           <p className="idx-formula">
             $ / M<sub>cell</sub> = (r · n<sub>GPU</sub> · 10<sup>6</sup>) / (tok/s<sub>cell</sub> · 3600)
           </p>
           <p>
-            This is frozen for each model × hardware × engine × profile ×
-            target-load cell. Loads use 25/50/25 weights; the two Chat
-            profiles are averaged inside Chat; the four domains are equal.
+            Frozen for each model × hardware × engine × profile × target-load
+            cell. Everything above the cell is a reduction of these numbers.
           </p>
         </div>
         <div>
           <h3>5. Hardware Index</h3>
           <p className="idx-formula">
-            $̄<sub>M</sub> = mean<sub>engine</sub>(mean configs) · $̄ = mean<sub>M</sub> $̄<sub>M</sub>
+            v<sub>F</sub> = geo<sub>models</sub> geo<sub>configs</sub> wgeo<sub>cells</sub>( $<sub>H100,cell</sub> / $<sub>F,cell</sub> )
           </p>
           <p>
-            Extra configurations do not give a model or engine extra weight.
-            “vs H100” uses only exact model, engine, quantization, GPU-width,
-            workload and load matches. Fewer than three matched models
-            suppresses the relative claim; coverage and observed widths show.
+            A config on family F is compared with the H100 config of the same
+            model, engine, quantization and GPU count, cell by cell, and only
+            on cells both have. Cells use the {LOAD_WEIGHTS[1]}/{LOAD_WEIGHTS[40]}/
+            {LOAD_WEIGHTS[160]} load weights; configs and models are equal-weight
+            geometric means. Fewer than {MIN_MATCHED_MODELS} matched models: listed,
+            not ranked, ratio not published. Score = 100 · v<sub>F</sub> / best v.
           </p>
         </div>
         <div>
-          <h3>6. Engines (same TCO)</h3>
+          <h3>6. Engine Index</h3>
           <p className="idx-formula">
-            $̄<sub>F</sub> = mean models on F · $̄ = mean<sub>F</sub> $̄<sub>F</sub>
+            v<sub>E</sub> = geo<sub>models</sub> geo<sub>configs</sub> wgeo<sub>cells</sub>( $<sub>vLLM,cell</sub> / $<sub>E,cell</sub> )
           </p>
           <p>
-            vLLM and SGLang use only model × hardware-family pairs observed
-            on both engines, then equal-weight models and families. This is
-            subordinate to Hardware, not another composite index.
+            Identical construction with vLLM as reference, matching on model,
+            hardware configuration and quantization. Because both sides share
+            the GPU-hour cost, this is a pure throughput comparison of the
+            engine builds recorded in the snapshot.
           </p>
         </div>
         <div>
-          <h3>7. OpenRouter market check</h3>
+          <h3>7. Typical $ / M</h3>
           <p>
-            Matching Llama-3.1-8B configurations report range and median
-            beside dated output-only API pricing. API pooling and provider
-            margin make this a sanity check, not a TCO validation or sale price.
+            The load-weighted geometric mean $/M over exactly the matched
+            cells, reported for both sides; their ratio is the index value.
+            The arithmetic mean over everything a group was run on appears
+            only inside its row, because it depends on which models were
+            measured and is not comparable across rows.
           </p>
         </div>
         <div>
-          <h3>8. Experimental models</h3>
+          <h3>8. OpenRouter market check</h3>
+          <p>
+            Matching {OPENROUTER_LLAMA31_8B.model} configurations report range
+            and median beside dated output-only API list pricing. API pooling
+            and provider margin make this a bound on the comparison, not a
+            TCO validation and not a price.
+          </p>
+        </div>
+        <div>
+          <h3>9. Experimental models</h3>
           <p className="idx-formula">
             I / GFLOP = I / ({FLOPS_PER_PARAM} · N<sub>active</sub>)
           </p>
           <p>
-            AA Intelligence Index v{AA_INDEX_VERSION}, retrieved {AA_RETRIEVED}.
-            Smaller/fewer-active models structurally win; AA already covers
-            intelligence per dollar. This view never affects hardware scoring.
+            AA Intelligence Index v{AA_INDEX_VERSION}, read {AA_RETRIEVED} from
+            the linked model pages. Smaller/fewer-active models structurally
+            win; AA already covers intelligence per dollar. This view never
+            affects Hardware or Engine scoring.
           </p>
         </div>
       </div>

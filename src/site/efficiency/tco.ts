@@ -1,11 +1,11 @@
 /**
  * Ownership TCO for the hardware / engine indexes.
  *
- * Meeting (2026-09): rank hardware on dollars per token if you *buy*
- * the GPU and run it for three years — not on a rental GPU-hour.
- * Purchase from secondary-market listings (DumpsterCluster + eBay
- * trackers). Electricity is the unweighted mean of DumpsterCluster
- * Table 4 industrial rates, not a country. Capex is straight-line
+ * Design: rank hardware on dollars per token when you *own* the GPU and
+ * run it for three years, not on a rental GPU-hour. Purchase prices come
+ * from secondary-market listings (DumpsterCluster + eBay trackers).
+ * Electricity is the unweighted mean of DumpsterCluster Table 4
+ * industrial rates rather than any one country. Capex is straight-line
  * amortised to a residual over the same three years.
  *
  * These figures are dated assumptions, not a quote.
@@ -23,16 +23,13 @@ export const TCO_HOURS = TCO_HORIZON_YEARS * HOURS_PER_YEAR * TCO_UTILIZATION;
 /**
  * DumpsterCluster Table 4 industrial USD/kWh (arxiv:2608.14614).
  * China appears twice at the same price (coal vs renewable mix);
- * counted once. Meeting: use an average, not a country.
+ * counted once. An average is used deliberately, not a country.
  */
 export const DUMPSTER_INDUSTRIAL_USD_PER_KWH = {
   china: 0.0556,
   unitedStates: 0.12,
   brazil: 0.125,
 } as const;
-
-/** Mentioned in the meeting, but no traceable paper/URL was supplied. */
-export const TOM_SAWYER_ELECTRICITY_SOURCE: null = null;
 
 export const AVG_USD_PER_KWH =
   (DUMPSTER_INDUSTRIAL_USD_PER_KWH.china +
@@ -105,18 +102,6 @@ export const HARDWARE_PURCHASE: Record<HardwareFamily, HardwarePurchase> = {
     href: 'https://bestvaluegpu.com/history/new-and-used-rtx-2080-ti-price-history-and-specs/',
   },
 };
-
-/** Dated market reference; never used to score the hardware index. */
-export const OPENROUTER_LLAMA31_8B = {
-  model: 'Llama-3.1-8B',
-  slug: 'meta-llama/llama-3.1-8b-instruct',
-  usdPerMTokIn: 0.02,
-  usdPerMTokOut: 0.04,
-  asOf: '2026-09-13',
-  scope: 'listed API input/output price; output comparison uses output-only price',
-  source: 'OpenRouter listed price, Meta Llama 3.1 8B Instruct',
-  href: 'https://openrouter.ai/meta-llama/llama-3.1-8b-instruct',
-} as const;
 
 export interface GpuTco {
   family: HardwareFamily;
@@ -197,9 +182,4 @@ export function tcoTokensPerDollar(
   const usd = tcoUsdPerMTok(tokPerSec, family, gpus);
   if (usd == null || !(usd > 0)) return null;
   return 1e6 / usd;
-}
-
-export function impliedGrossMargin(cost: number, marketPrice: number): number | null {
-  if (!(cost >= 0) || !(marketPrice > 0)) return null;
-  return (marketPrice - cost) / marketPrice;
 }
