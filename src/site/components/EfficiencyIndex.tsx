@@ -35,6 +35,11 @@ import { SiteNav } from './SiteNav';
 
 type Board = 'hardware' | 'engines' | 'configs';
 type EngineFilter = 'all' | 'vllm' | 'sglang';
+const BOARDS: ReadonlyArray<readonly [Board, string]> = [
+  ['hardware', 'Hardware'],
+  ['engines', 'Engines'],
+  ['configs', 'Configs'],
+];
 
 const DOMAIN_LABEL: Record<Domain, string> = {
   chat: 'Chat',
@@ -166,11 +171,7 @@ export function EfficiencyIndex() {
 
       <section className="shell shell-wide pb-20">
         <div className="idx-tabs" role="tablist" aria-label="Index board">
-          {([
-            ['hardware', 'Hardware'],
-            ['engines', 'Engines'],
-            ['configs', 'Configs'],
-          ] as const).map(([id, label]) => (
+          {BOARDS.map(([id, label], index) => (
             <button
               key={id}
               type="button"
@@ -178,25 +179,53 @@ export function EfficiencyIndex() {
               id={`idx-tab-${id}`}
               aria-controls={`idx-panel-${id}`}
               aria-selected={board === id}
+              tabIndex={board === id ? 0 : -1}
               onClick={() => setBoard(id)}
+              onKeyDown={(event) => {
+                let next = index;
+                if (event.key === 'ArrowRight') next = (index + 1) % BOARDS.length;
+                else if (event.key === 'ArrowLeft') next = (index - 1 + BOARDS.length) % BOARDS.length;
+                else if (event.key === 'Home') next = 0;
+                else if (event.key === 'End') next = BOARDS.length - 1;
+                else return;
+                event.preventDefault();
+                const nextId = BOARDS[next][0];
+                setBoard(nextId);
+                requestAnimationFrame(() => document.getElementById(`idx-tab-${nextId}`)?.focus());
+              }}
             >
               {label}
             </button>
           ))}
         </div>
 
-        {board === 'hardware' && (
-          <div id="idx-panel-hardware" role="tabpanel" aria-labelledby="idx-tab-hardware">
+        <div
+          id="idx-panel-hardware"
+          role="tabpanel"
+          aria-labelledby="idx-tab-hardware"
+          hidden={board !== 'hardware'}
+        >
+          {board === 'hardware' && (
             <HardwareBoard rows={hardware} llamaTco={llamaTco} />
-          </div>
-        )}
-        {board === 'engines' && (
-          <div id="idx-panel-engines" role="tabpanel" aria-labelledby="idx-tab-engines">
+          )}
+        </div>
+        <div
+          id="idx-panel-engines"
+          role="tabpanel"
+          aria-labelledby="idx-tab-engines"
+          hidden={board !== 'engines'}
+        >
+          {board === 'engines' && (
             <EngineBoard rows={engines} />
-          </div>
-        )}
-        {board === 'configs' && (
-          <div id="idx-panel-configs" role="tabpanel" aria-labelledby="idx-tab-configs">
+          )}
+        </div>
+        <div
+          id="idx-panel-configs"
+          role="tabpanel"
+          aria-labelledby="idx-tab-configs"
+          hidden={board !== 'configs'}
+        >
+          {board === 'configs' && (
             <ConfigBoard
               models={models}
               model={model}
@@ -214,10 +243,9 @@ export function EfficiencyIndex() {
               setPage={setPage}
               open={open}
               setOpen={setOpen}
-              llamaTco={llamaTco}
             />
-          </div>
-        )}
+          )}
+        </div>
 
         <Methodology />
       </section>
@@ -296,6 +324,7 @@ function RankedBoard({
         </li>
         {rows.map((r, i) => {
           const expanded = open === r.key;
+          const detailId = `${id}-detail-${i}`;
           const matchState = r.isRef ? 'baseline' : r.rank == null ? 'withheld' : 'supported';
           const ariaValue = r.isRef
             ? `reference, 1.00×`
@@ -316,6 +345,7 @@ function RankedBoard({
                 data-rank={r.rank ?? ''}
                 data-ratio={r.ratio ?? ''}
                 aria-expanded={expanded}
+                aria-controls={detailId}
                 aria-label={`${r.name}${r.rank != null ? `, rank ${r.rank}` : ''}: ${ariaValue}. ${
                   r.typicalUsd != null
                     ? `Typical ${formatUsd(r.typicalUsd)} per million output tokens on the matched cells${
@@ -365,7 +395,12 @@ function RankedBoard({
                 </span>
                 <RowChev />
               </button>
-              <div className="expand" data-open={expanded ? 'true' : 'false'}>
+              <div
+                id={detailId}
+                className="expand"
+                data-open={expanded ? 'true' : 'false'}
+                hidden={!expanded}
+              >
                 <div>
                   <div className="expand-inner idx-detail">{r.detail}</div>
                 </div>
@@ -593,13 +628,16 @@ function EngineBoard({ rows }: { rows: EngineIndexRow[] }) {
 function OpenRouterCheck({ llamaTco }: { llamaTco: MarketCheck | null }) {
   if (llamaTco == null) return null;
   const market = OPENROUTER_LLAMA31_8B.usdPerMTokOut;
-  const ratio = selfHostedToApiRatio(llamaTco.min, market);
+  const ratio = selfHostedToApiRatio(llamaTco.min, market.median);
   return (
     <aside className="idx-check">
       <header>
         <p className="eyebrow">External market signal</p>
         <h3>{OPENROUTER_LLAMA31_8B.model} on OpenRouter</h3>
-        <p>Listed output price · {OPENROUTER_LLAMA31_8B.asOf}</p>
+        <p>
+          {OPENROUTER_LLAMA31_8B.endpointCount} endpoint list prices ·{' '}
+          {OPENROUTER_LLAMA31_8B.asOf}
+        </p>
       </header>
       <dl className="idx-check-grid">
         <div>
@@ -607,13 +645,15 @@ function OpenRouterCheck({ llamaTco }: { llamaTco: MarketCheck | null }) {
           <dd className="mono-nums">{formatUsd(llamaTco.min)}/M</dd>
         </div>
         <div>
-          <dt>API list price</dt>
+          <dt>API output range</dt>
           <dd className="mono-nums">
-            <a href={OPENROUTER_LLAMA31_8B.href}>{formatUsd(market)}/M</a>
+            <a href={OPENROUTER_LLAMA31_8B.href}>
+              {formatUsd(market.min)}–{formatUsd(market.max)}/M
+            </a>
           </dd>
         </div>
         <div>
-          <dt>Self-hosted ÷ API</dt>
+          <dt>Self-hosted ÷ API median</dt>
           <dd className="mono-nums">{ratio == null ? '—' : `${ratio.toFixed(1)}×`}</dd>
         </div>
       </dl>
@@ -657,7 +697,6 @@ function ConfigBoard({
   setPage,
   open,
   setOpen,
-  llamaTco,
 }: {
   models: string[];
   model: string;
@@ -675,8 +714,12 @@ function ConfigBoard({
   setPage: (n: number | ((p: number) => number)) => void;
   open: string | null;
   setOpen: (id: string | null) => void;
-  llamaTco: MarketCheck | null;
 }) {
+  const visibleTco = rows
+    .map((row) => configTcoUsdPerMTok(row))
+    .filter((value): value is number => value != null);
+  const visibleTcoMedian = visibleTco.length > 0 ? median(visibleTco) : null;
+
   return (
     <>
       <div className="idx-toolbar mt-6">
@@ -733,12 +776,13 @@ function ConfigBoard({
 
       <p className="mt-5 text-[12px] text-[var(--ink-3)]">
         {rows.length === 0 ? '0 configs' : `${from}–${to} of ${rows.length}`}
-        {model === OPENROUTER_LLAMA31_8B.model && llamaTco != null && (
+        {model === OPENROUTER_LLAMA31_8B.model && visibleTcoMedian != null && (
           <>
             {' '}
-            · median TCO {formatUsd(llamaTco.median)}/M vs{' '}
+            · filtered median TCO {formatUsd(visibleTcoMedian)}/M vs OpenRouter{' '}
             <a href={OPENROUTER_LLAMA31_8B.href} className="underline-offset-2 hover:underline">
-              OpenRouter {formatUsd(OPENROUTER_LLAMA31_8B.usdPerMTokOut)}/M
+              {formatUsd(OPENROUTER_LLAMA31_8B.usdPerMTokOut.min)}–
+              {formatUsd(OPENROUTER_LLAMA31_8B.usdPerMTokOut.max)}/M
             </a>
           </>
         )}
@@ -761,6 +805,7 @@ function ConfigBoard({
             const rank = pageIndex * PAGE_SIZE + i + 1;
             const expanded = open === r.id;
             const tco = configTcoUsdPerMTok(r);
+            const detailId = `idx-config-detail-${rank}`;
             return (
               <li key={r.id} className="idx-row-wrap">
                 <button
@@ -768,6 +813,7 @@ function ConfigBoard({
                   className="idx-row idx-row-cfg"
                   data-tco={tco ?? undefined}
                   aria-expanded={expanded}
+                  aria-controls={detailId}
                   onClick={() => setOpen(expanded ? null : r.id)}
                 >
                   <span className="mono-nums text-[var(--ink-3)]">{rank}</span>
@@ -786,7 +832,12 @@ function ConfigBoard({
                   <span className="idx-config-gpus mono-nums text-[14px]">{r.gpus}</span>
                   <RowChev />
                 </button>
-                <div className="expand" data-open={expanded ? 'true' : 'false'}>
+                <div
+                  id={detailId}
+                  className="expand"
+                  data-open={expanded ? 'true' : 'false'}
+                  hidden={!expanded}
+                >
                   <div>
                     <div className="expand-inner idx-detail">
                       <dl>

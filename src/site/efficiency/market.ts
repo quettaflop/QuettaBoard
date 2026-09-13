@@ -7,11 +7,44 @@
 export const OPENROUTER_LLAMA31_8B = {
   model: 'Llama-3.1-8B',
   slug: 'meta-llama/llama-3.1-8b-instruct',
-  usdPerMTokIn: 0.05,
-  usdPerMTokOut: 0.08,
+  endpointCount: 5,
+  usdPerMTokIn: {"min":0.02,"median":0.05,"max":0.22},
+  usdPerMTokOut: {"min":0.04,"median":0.08,"max":0.29},
+  endpoints: [
+  {
+    "provider": "DeepInfra",
+    "quantization": "fp8",
+    "usdPerMTokIn": 0.02,
+    "usdPerMTokOut": 0.04
+  },
+  {
+    "provider": "Novita",
+    "quantization": "fp8",
+    "usdPerMTokIn": 0.02,
+    "usdPerMTokOut": 0.05
+  },
+  {
+    "provider": "Groq",
+    "quantization": "unknown",
+    "usdPerMTokIn": 0.05,
+    "usdPerMTokOut": 0.08
+  },
+  {
+    "provider": "Cloudflare",
+    "quantization": "fp8",
+    "usdPerMTokIn": 0.15,
+    "usdPerMTokOut": 0.29
+  },
+  {
+    "provider": "CoreWeave",
+    "quantization": "bf16",
+    "usdPerMTokIn": 0.22,
+    "usdPerMTokOut": 0.22
+  }
+],
   asOf: '2026-09-13',
-  scope: 'OpenRouter listed input/output price; the output price is what self-hosted output cost is compared with',
-  source: 'OpenRouter listed price, Meta Llama 3.1 8B Instruct',
+  scope: 'OpenRouter endpoint input/output list-price range; the output median is used for the summary ratio',
+  source: 'OpenRouter listed price, Meta Llama 3.1 8B Instruct, endpoint list',
   href: 'https://openrouter.ai/meta-llama/llama-3.1-8b-instruct',
 } as const;
 

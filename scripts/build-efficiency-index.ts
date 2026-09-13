@@ -7,7 +7,7 @@
  * --check validates the committed snapshot without touching the network.
  * The site never fetches the corpus; it ships the snapshot as a literal.
  */
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -101,8 +101,22 @@ function checkCommitted(): void {
     console.error('snapshot.ts: could not parse EFFICIENCY_SNAPSHOT');
     process.exit(1);
   }
-  const snap = JSON.parse(match[1]) as { rows: IndexRow[] };
+  const snap = JSON.parse(match[1]) as {
+    version: string;
+    n: number;
+    verified: number;
+    estimated: number;
+    rows: IndexRow[];
+  };
   const failures = assertIndexInvariants(snap.rows);
+  if (snap.version !== INDEX_VERSION) {
+    failures.push(`snapshot version ${snap.version} does not match index version ${INDEX_VERSION}`);
+  }
+  if (snap.n !== snap.rows.length) failures.push(`snapshot n=${snap.n}, rows=${snap.rows.length}`);
+  const verified = snap.rows.filter((r) => r.provenance === 'verified').length;
+  const estimated = snap.rows.filter((r) => r.provenance === 'estimated').length;
+  if (snap.verified !== verified) failures.push(`snapshot verified=${snap.verified}, rows=${verified}`);
+  if (snap.estimated !== estimated) failures.push(`snapshot estimated=${snap.estimated}, rows=${estimated}`);
   if (failures.length) {
     console.error('snapshot check failed:');
     for (const f of failures) console.error(`  · ${f}`);
@@ -117,12 +131,22 @@ function main(): void {
     checkCommitted();
     return;
   }
-  const input = args.find((a) => !a.startsWith('-'));
-  if (!input) {
-    console.error('usage: tsx scripts/build-efficiency-index.ts <data.json> | --check');
+  const input = args[0];
+  if (!input || input.startsWith('-')) {
+    console.error(
+      'usage: tsx scripts/build-efficiency-index.ts <data.json> ' +
+      '[--source <label>] [--source-modified <YYYY-MM-DD>] | --check',
+    );
     process.exit(2);
   }
+  const option = (name: string): string | undefined => {
+    const index = args.indexOf(name);
+    return index >= 0 ? args[index + 1] : undefined;
+  };
   const abs = resolve(input);
+  const source = option('--source') ?? input;
+  const sourceModified =
+    option('--source-modified') ?? new Date(statSync(abs).mtimeMs).toISOString().slice(0, 10);
   const raw = JSON.parse(readFileSync(abs, 'utf8')) as RawRow[];
   const { rows, scales } = scoreCorpus(toRuns(raw), 'verified');
   const failures = assertIndexInvariants(rows);
@@ -133,7 +157,7 @@ function main(): void {
   }
   writeFileSync(
     snapshotPath,
-    emitSnapshot(rows, scales, 'json/current/data.synthetic_distributional.json', '2026-08-30'),
+    emitSnapshot(rows, scales, source, sourceModified),
   );
   const top = rows[0];
   const cheap = [...rows].sort((a, b) => a.raw.tcoUsdPerMTok - b.raw.tcoUsdPerMTok)[0];

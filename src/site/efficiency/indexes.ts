@@ -140,8 +140,12 @@ function meanUsdByModel(rows: IndexRow[]): Map<string, number> {
   return out;
 }
 
-function cellKey(cell: { profile: string; targetLoad: number }): string {
-  return `${cell.profile}|${cell.targetLoad}`;
+function cellKey(cell: {
+  profile: string;
+  targetLoad: number;
+  actualConcurrency: number;
+}): string {
+  return `${cell.profile}|${cell.targetLoad}|${cell.actualConcurrency}`;
 }
 
 function reduceMatchedConfig(

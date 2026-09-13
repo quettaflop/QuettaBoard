@@ -78,6 +78,16 @@ async function checkViewport(browser, width, height, theme) {
     await page.getByRole('tab', { name: 'Hardware' }).getAttribute('aria-selected'),
     'true',
   );
+  const hardwareTab = page.getByRole('tab', { name: 'Hardware' });
+  const enginesTab = page.getByRole('tab', { name: 'Engines' });
+  assert.equal(await hardwareTab.getAttribute('tabindex'), '0');
+  assert.equal(await enginesTab.getAttribute('tabindex'), '-1');
+  await hardwareTab.focus();
+  await hardwareTab.press('ArrowRight');
+  assert.equal(await enginesTab.getAttribute('aria-selected'), 'true');
+  assert.equal(await enginesTab.evaluate((element) => element === document.activeElement), true);
+  await enginesTab.press('ArrowLeft');
+  assert.equal(await hardwareTab.getAttribute('aria-selected'), 'true');
   assert.equal(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     true,
@@ -91,8 +101,11 @@ async function checkViewport(browser, width, height, theme) {
   assert.ok(hw.some((r) => r.name === 'H100' && r.rank !== ''), 'H100 reference is ranked');
   assert.equal(await page.locator('.idx-divider').count(), hw.some((r) => r.rank === '') ? 1 : 0);
   const hardwareRow = page.locator('.idx-board button.idx-rank').first();
+  const hardwareDetail = page.locator(`#${await hardwareRow.getAttribute('aria-controls')}`);
+  assert.equal(await hardwareDetail.getAttribute('hidden'), '');
   await hardwareRow.click();
   assert.equal(await hardwareRow.getAttribute('aria-expanded'), 'true');
+  assert.equal(await hardwareDetail.getAttribute('hidden'), null);
 
   // Engines board: vLLM reference, versions shown.
   await page.getByRole('tab', { name: 'Engines' }).click();
@@ -112,8 +125,19 @@ async function checkViewport(browser, width, height, theme) {
   );
   assert.deepEqual(tco, [...tco].sort((a, b) => a - b));
   const configRow = page.locator('button.idx-row-cfg').first();
+  const configDetail = page.locator(`#${await configRow.getAttribute('aria-controls')}`);
+  assert.equal(await configDetail.getAttribute('hidden'), '');
   await configRow.click();
   assert.equal(await configRow.getAttribute('aria-expanded'), 'true');
+  assert.equal(await configDetail.getAttribute('hidden'), null);
+
+  const allMarketText = await page.locator('#idx-panel-configs > p').textContent();
+  await page
+    .locator('.idx-toolbar-chips[data-label="GPU"]')
+    .getByRole('button', { name: 'H100' })
+    .click();
+  const filteredMarketText = await page.locator('#idx-panel-configs > p').textContent();
+  assert.notEqual(filteredMarketText, allMarketText, 'OpenRouter comparison follows Config filters');
 
   // The model-efficiency panel was removed; nothing experimental ships.
   assert.equal(await page.locator('details.idx-experimental').count(), 0);
@@ -126,6 +150,8 @@ async function checkViewport(browser, width, height, theme) {
     assert.equal(fullText.toLowerCase().includes(needle.toLowerCase()), false, `page text contains "${needle}"`);
   }
   assert.match(fullText, /Self-hosted ÷ API/i);
+  assert.match(fullText, /endpoint list prices/i);
+  assert.match(fullText, /API output range/i);
   assert.doesNotMatch(fullText, /-\d+%/, 'no negative percentage on the page');
   assert.deepEqual(errors, [], 'no page errors');
   await page.close();

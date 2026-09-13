@@ -14,7 +14,7 @@ export interface EfficiencySnapshot {
 }
 
 export const EFFICIENCY_SNAPSHOT: EfficiencySnapshot = {
-  "version": "1.4",
+  "version": "2.0",
   "generatedAt": "2026-09-13",
   "source": "json/current/data.synthetic_distributional.json",
   "sourceModified": "2026-08-30",

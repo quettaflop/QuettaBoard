@@ -272,6 +272,40 @@ test('configs and cells without a counterpart do not move the ratio', () => {
   assert.equal(dirty.nConfigs, 4, 'full-panel count still sees every A100 config');
 });
 
+test('fallback cells at different actual concurrencies do not match', () => {
+  const refCell = cell(2, 40);
+  refCell.actualConcurrency = 20;
+  const groupCell = cell(1, 40);
+  groupCell.actualConcurrency = 40;
+  const rows = [
+    row({
+      id: 'h',
+      model: 'M',
+      hardwareFamily: 'H100',
+      gpus: 1,
+      engine: 'vllm',
+      raw: { costCells: [refCell] },
+    }),
+    row({
+      id: 'x',
+      model: 'M',
+      hardwareFamily: 'A100',
+      gpus: 1,
+      engine: 'vllm',
+      raw: { costCells: [groupCell] },
+    }),
+  ];
+  const panel = matchedPanel(
+    rows,
+    (r) => r.hardwareFamily,
+    'A100',
+    'H100',
+    (r) => `${r.model}|${r.engine}|${r.quant}|${r.gpus}`,
+  );
+  assert.equal(panel.ratio, null);
+  assert.equal(panel.nCells, 0);
+});
+
 test('engine index ranks against vLLM on identical model × hardware × quant', () => {
   const rows = [
     row({ id: 'v-h1', model: 'M', hardwareFamily: 'H100', gpus: 1, engine: 'vllm', raw: { tcoUsdPerMTok: 1 } }),
@@ -345,7 +379,7 @@ test('snapshot: hardware index ranks A100, 3090, H100 and leaves 2080 Ti unranke
   close((a100.typicalRefUsdPerMTok as number) / (a100.typicalUsdPerMTok as number), a100.vsH100 as number, 1e-9);
   // pinned to the 2026-08-30 snapshot; a regenerated snapshot may legitimately move these
   close(a100.vsH100, 1.53, 0.02);
-  close(hw[1].vsH100, 1.1, 0.02);
+  close(hw[1].vsH100, 1.13, 0.02);
   assert.equal(hw[3].nMatchedModels, 2);
 });
 
