@@ -76,7 +76,11 @@ public host. For internal development use `npm run dev:internal`.
 
 ## The marketing site
 
-`src/site/` is the public landing page for quettaflop.ai. It is a **second app in
+`src/site/` is the public landing page for quettaflop.ai. The Efficiency Index page
+(`/efficiency/`) has its own design record in
+[`docs/efficiency-index-design.md`](docs/efficiency-index-design.md): what was asked
+for, every method decision and why, current results, and the sensitivities to read
+before quoting them. It is a **second app in
 this repo**, not a third mode of the dashboard:
 
 | | dashboard | site |
