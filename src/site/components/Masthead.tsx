@@ -37,13 +37,9 @@ export function Masthead() {
                 <defs><path id="contact-circle" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" /></defs>
                 <text><textPath href="#contact-circle" textLength="282">LET’S TALK INFERENCE · GET IN TOUCH · </textPath></text>
               </svg>
-              <span><ArrowRight size={25} /></span>
+              <span><ArrowRight size={20} /></span>
             </a>
-            <div className="hero-contact-copy">
-              <p className="eyebrow">Talk to the team</p>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="hero-contact-email">{CONTACT_EMAIL}</a>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="button-primary">Email us <ArrowRight size={18} /></a>
-            </div>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="hero-contact-email">{CONTACT_EMAIL} <ArrowRight size={14} /></a>
           </div>
           <Partners />
         </div>
