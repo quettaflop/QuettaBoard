@@ -23,6 +23,7 @@ async function page(path: string, title: string, description?: string) {
 await page('', 'Quettaflop AI');
 await page('efficiency', 'Efficiency Index — Quettaflop AI');
 await page('blog', 'Blog — Quettaflop AI', 'Hardware, serving systems, and notes from the Quettaflop inference lab.');
+await page('careers', 'Careers — Quettaflop AI', 'Build tools to measure, model, and run AI inference. Get in touch with Quettaflop about serving systems, GPU performance, and simulation.');
 
 const published = resolve(root, 'src/site/posts/published');
 for (const entry of await readdir(published, { withFileTypes: true })) {
@@ -34,4 +35,4 @@ for (const entry of await readdir(published, { withFileTypes: true })) {
   await page(`blog/${slug}`, `${post.title} — Quettaflop AI`, post.summary);
 }
 // Keep site.html for the existing single-file exporter and dev-style links.
-console.log('✓ static routes: home, efficiency, blog, and published articles');
+console.log('✓ static routes: home, efficiency, blog, careers, and published articles');

@@ -24,6 +24,24 @@ export const SNAPSHOT_DATE = 'May 2026';
 
 export const CONTACT_EMAIL = 'pi@quettaflop.ai';
 
+export const CAREER_AREAS = [
+  {
+    title: 'Serving systems',
+    description: 'Work on the path from a request to its next token: scheduling, model execution, and parallel serving.',
+    tools: 'Rust · Inference engines · Distributed systems',
+  },
+  {
+    title: 'Performance engineering',
+    description: 'Understand where time goes, then improve the kernels, memory movement, and communication behind inference.',
+    tools: 'CUDA · GPU profiling · Kernel optimisation',
+  },
+  {
+    title: 'Measurement & simulation',
+    description: 'Build benchmarks and models that connect hardware decisions to latency on real agentic workloads.',
+    tools: 'Python · Trace replay · Performance modelling',
+  },
+] as const;
+
 /* --------------------------------------------------------------------- cards */
 
 export interface CardFact {

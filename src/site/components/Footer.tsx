@@ -19,6 +19,7 @@ export function Footer() {
       <div className="shell flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
           <a href={sitePageHref('blog')} className="text-[12.5px] text-[var(--ink-2)] hover:text-[var(--ink)]">Blog</a>
+          <a href={sitePageHref('careers')} className="text-[12.5px] text-[var(--ink-2)] hover:text-[var(--ink)]">Careers</a>
           <a
             href={sitePageHref('efficiency')}
             className="text-[12.5px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)]"

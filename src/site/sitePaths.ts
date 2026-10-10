@@ -1,13 +1,15 @@
-export type SitePage = 'home' | 'efficiency' | 'blog';
+export type SitePage = 'home' | 'efficiency' | 'blog' | 'careers';
 
 export function readSitePage(): SitePage {
   if (typeof window === 'undefined') return 'home';
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   if (path.endsWith('/efficiency') || path.endsWith('/efficiency/index.html')) return 'efficiency';
   if (/\/blog(?:\/|$)/.test(path)) return 'blog';
+  if (path.endsWith('/careers') || path.endsWith('/careers/index.html')) return 'careers';
   const hash = window.location.hash.replace(/^#\/?/, '');
   if (hash === 'efficiency') return 'efficiency';
   if (hash === 'blog' || hash.startsWith('blog/')) return 'blog';
+  if (hash === 'careers') return 'careers';
   return 'home';
 }
 

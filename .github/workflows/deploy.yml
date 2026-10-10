@@ -2,7 +2,7 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, kev/portfolio-redesign]
   pull_request:
 
 jobs:
@@ -17,10 +17,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Install browser for site checks
+        run: npx playwright install --with-deps chromium
 
       # Builds the marketing site to the root of dist-web/ and the PUBLIC
-      # dashboard to dist-web/board/, so one Pages project serves
-      # quettaflop.ai and quettaflop.ai/board with no routing rule.
+      # dashboard to dist-web/board/ in the same Pages project.
       # build:web runs scripts/check-site-bundle.mjs itself; the explicit step
       # below re-runs it so a failure is legible as its own red check rather
       # than buried in build output.
@@ -32,4 +33,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: b33fe7347f25479b27ec9680eff19b78
-          command: pages deploy dist-web --project-name=quettaboard --branch=${{ github.head_ref || github.ref_name }}
+          # The redesign goes to dev.quettaboard.pages.dev for review.
+          command: pages deploy dist-web --project-name=quettaboard --branch=${{ (github.head_ref || github.ref_name) == 'kev/portfolio-redesign' && 'dev' || github.head_ref || github.ref_name }}

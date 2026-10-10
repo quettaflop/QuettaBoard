@@ -77,8 +77,28 @@ try {
       }
       await page.goto(new URL('/blog/missing-post/', base).href, { waitUntil: 'networkidle' });
       assert.equal(await page.getByRole('heading', { name: 'This page hasn’t been written.' }).count(), 1);
+
+      await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Careers', exact: true }).click();
+      assert.match(new URL(page.url()).pathname, /\/careers\/$/);
+      await page.reload({ waitUntil: 'networkidle' });
+      assert.equal(await page.title(), 'Careers — Quettaflop AI');
+      assert.equal(await page.locator('h1').count(), 1);
+      assert.equal(await page.locator('.career-area').count(), 3);
+      assert.equal(await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Careers', exact: true }).getAttribute('aria-current'), 'page');
+      const email = new URL(await page.getByRole('link', { name: 'Introduce yourself' }).getAttribute('href'));
+      assert.equal(email.protocol, 'mailto:');
+      assert.equal(email.pathname, 'pi@quettaflop.ai');
+      assert.equal(email.searchParams.get('subject'), 'Careers at Quettaflop');
+      await noOverflow(page, `${width}/${theme} careers`);
+      await page.evaluate(() => document.fonts.ready);
+      if (outDir && (width === 1440 || width === 390)) {
+        await page.screenshot({ path: `${outDir}/careers-${width}-${theme}.png`, fullPage: true });
+      }
+      await page.getByRole('link', { name: 'Explore our work' }).click();
+      assert.equal(new URL(page.url()).hash, '#work');
+      assert.equal(await page.locator('.chapter').count(), 3);
       assert.deepEqual(errors, [], `${width}/${theme}: browser errors`);
-      console.log(`✓ ${width}px ${theme}: layout, notes, theme, blog, ${posts.length} article routes`);
+      console.log(`✓ ${width}px ${theme}: layout, notes, theme, blog, careers, ${posts.length} article routes`);
       await page.close();
     }
   }

@@ -4,6 +4,7 @@ import { CardDeck } from './components/CardDeck';
 import { EfficiencyIndex } from './components/EfficiencyIndex';
 import { Footer } from './components/Footer';
 import { Blog, BlogSection } from './components/Blog';
+import { Careers } from './components/Careers';
 import { POSTS } from './blog';
 import { readBlogSlug, readSitePage, type SitePage } from './sitePaths';
 
@@ -28,6 +29,7 @@ export function App() {
     const post = POSTS.find((p) => p.slug === blogSlug);
     document.title = page === 'efficiency' ? 'Efficiency Index — Quettaflop AI'
       : page === 'blog' ? `${blogSlug ? post?.title ?? 'Post not found' : 'Blog'} — Quettaflop AI`
+      : page === 'careers' ? 'Careers — Quettaflop AI'
       : 'Quettaflop AI';
   }, [page, blogSlug]);
 
@@ -38,6 +40,8 @@ export function App() {
         <EfficiencyIndex />
       ) : page === 'blog' ? (
         <Blog slug={blogSlug} />
+      ) : page === 'careers' ? (
+        <Careers />
       ) : (
         <>
           <Masthead />

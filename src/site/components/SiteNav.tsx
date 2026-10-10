@@ -10,6 +10,7 @@ export function SiteNav({ page }: { page: SitePage }) {
         <a href={siteSectionHref('work', page)} className="nav-link">Work</a>
         <a href={sitePageHref('efficiency')} aria-current={page === 'efficiency' ? 'page' : undefined} className="nav-link">Index</a>
         <a href={sitePageHref('blog')} aria-current={page === 'blog' ? 'page' : undefined} className="nav-link">Blog</a>
+        <a href={sitePageHref('careers')} aria-current={page === 'careers' ? 'page' : undefined} className="nav-link">Careers</a>
       </div>
       <a href={sitePageHref('home')} className="nav-brand" aria-label="Quettaflop AI — home">
         <img src={brandMark} alt="" draggable={false} />
