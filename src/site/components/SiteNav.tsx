@@ -1,17 +1,8 @@
-import type { CSSProperties, PointerEvent } from 'react';
 import brandMark from '../assets/brand-mark.png';
 import { sitePageHref, siteSectionHref, type SitePage } from '../sitePaths';
 import { ThemeToggle } from './ThemeToggle';
 
 export function SiteNav({ page }: { page: SitePage }) {
-  const moveShine = (event: PointerEvent<HTMLAnchorElement>) => {
-    if (event.pointerType !== 'mouse') return;
-    const logo = event.currentTarget;
-    const bounds = logo.getBoundingClientRect();
-    logo.style.setProperty('--logo-x', `${event.clientX - bounds.left}px`);
-    logo.style.setProperty('--logo-y', `${event.clientY - bounds.top}px`);
-  };
-
   return (
     <nav className="site-nav shell" aria-label="Main navigation">
       <div className="nav-pages">
@@ -25,11 +16,11 @@ export function SiteNav({ page }: { page: SitePage }) {
         href={sitePageHref('home')}
         className="nav-brand"
         aria-label="Quettaflop AI — home"
-        onPointerEnter={moveShine}
-        onPointerMove={moveShine}
-        style={{ '--brand-mark': `url("${brandMark}")` } as CSSProperties}
       >
-        <img src={brandMark} alt="" draggable={false} />
+        <span className="brand-coin" aria-hidden="true">
+          <span className="brand-face brand-front"><img src={brandMark} alt="" draggable={false} /></span>
+          <span className="brand-face brand-back"><img src={brandMark} alt="" draggable={false} /></span>
+        </span>
       </a>
       <div className="nav-actions">
         <a href="https://github.com/quettaflop" className="nav-icon" aria-label="Quettaflop on GitHub">
