@@ -12,7 +12,7 @@ function Frame({ children, accent }: { children: React.ReactNode; accent: string
     <div className="glass min-w-0 overflow-hidden rounded-[8px]">
       <div
         className="h-[3px] w-full"
-        style={{ background: `linear-gradient(90deg, ${accent}00, ${accent}aa 45%, ${accent}00)` }}
+        style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 65%, transparent) 45%, transparent)` }}
       />
       {/* Same reasoning as the hero trace: keep the drawing legible on a phone
           and let it scroll rather than shrinking its labels away. */}
@@ -123,11 +123,11 @@ export function SimVisual() {
       {/* ±band tolerance envelope around parity */}
       <path
         d={`M${px(0)},${py(band)} L${px(1 - band)},${py(1)} L${px(1)},${py(1)} L${px(1)},${py(1 - band)} L${px(band)},${py(0)} L${px(0)},${py(0)} Z`}
-        fill="rgba(201,163,106,0.12)"
+        fill="color-mix(in srgb, var(--accent) 12%, transparent)"
       />
-      <line x1={px(0)} y1={py(0)} x2={px(1)} y2={py(1)} stroke="rgba(201,163,106,0.55)" strokeWidth="1.6" strokeDasharray="5 4" />
+      <line x1={px(0)} y1={py(0)} x2={px(1)} y2={py(1)} stroke="color-mix(in srgb, var(--accent) 55%, transparent)" strokeWidth="1.6" strokeDasharray="5 4" />
       {pts.map(([m, p], i) => (
-        <circle key={i} cx={px(m)} cy={py(p)} r="4.2" fill="rgba(201,163,106,0.45)" stroke="var(--accent)" strokeWidth="1.3" />
+        <circle key={i} cx={px(m)} cy={py(p)} r="4.2" fill="color-mix(in srgb, var(--accent) 45%, transparent)" stroke="var(--accent)" strokeWidth="1.3" />
       ))}
       <text x={px(0.52)} y={py(0.62)} fontSize="9.5" fill="var(--accent)" fontFamily="IBM Plex Mono, ui-monospace, monospace" transform={`rotate(-31 ${px(0.52)} ${py(0.62)})`}>
         perfect prediction
@@ -151,7 +151,7 @@ export function BoardVisual() {
       {/* window chrome */}
       <rect x="26" y="22" width="508" height="316" rx="12" fill="var(--cell)" stroke="var(--line)" />
       <line x1="26" y1="52" x2="534" y2="52" stroke="var(--line)" />
-      <rect x="40" y="33" width="18" height="12" rx="4" fill="rgba(201,163,106,0.45)" />
+      <rect x="40" y="33" width="18" height="12" rx="4" fill="color-mix(in srgb, var(--accent) 45%, transparent)" />
       <rect x="64" y="35" width="62" height="8" rx="4" fill="rgba(255,255,255,0.16)" />
       {[0, 1, 2, 3].map((i) => (
         <rect key={i} x={150 + i * 46} y="35" width="36" height="8" rx="4" fill="rgba(255,255,255,0.08)" />
@@ -189,8 +189,8 @@ export function BoardVisual() {
         const h = v * 116;
         return (
           <g key={i}>
-            <rect x={x} y={298 - h} width={bw} height={h} rx="4" fill="rgba(201,163,106,0.18)" stroke="rgba(201,163,106,0.45)" />
-            <rect x={x} y={298 - h * 0.62} width={bw} height={h * 0.62} rx="4" fill="rgba(201,163,106,0.4)" />
+            <rect x={x} y={298 - h} width={bw} height={h} rx="4" fill="color-mix(in srgb, var(--accent) 18%, transparent)" stroke="color-mix(in srgb, var(--accent) 45%, transparent)" />
+            <rect x={x} y={298 - h * 0.62} width={bw} height={h * 0.62} rx="4" fill="color-mix(in srgb, var(--accent) 40%, transparent)" />
           </g>
         );
       })}
@@ -219,7 +219,7 @@ export function ServeVisual() {
       </text>
 
       {/* scheduler */}
-      <rect x="164" y="112" width="232" height="38" rx="10" fill="rgba(201,163,106,0.09)" stroke="rgba(201,163,106,0.32)" />
+      <rect x="164" y="112" width="232" height="38" rx="10" fill="color-mix(in srgb, var(--accent) 9%, transparent)" stroke="color-mix(in srgb, var(--accent) 32%, transparent)" />
       <text x="280" y="136" textAnchor="middle" fontSize="11.5" fill="var(--accent)" fontFamily="IBM Plex Mono, ui-monospace, monospace">
         k8s-operator · placement
       </text>
@@ -231,7 +231,7 @@ export function ServeVisual() {
           key={g.x}
           d={`M280,150 C280,182 ${g.x + 32},182 ${g.x + 32},214`}
           fill="none"
-          stroke={g.state === 'drain' ? 'rgba(125,119,106,0.5)' : 'rgba(201,163,106,0.4)'}
+          stroke={g.state === 'drain' ? 'color-mix(in srgb, var(--ink-3) 50%, transparent)' : 'color-mix(in srgb, var(--accent) 40%, transparent)'}
           strokeWidth="1.6"
           strokeDasharray={g.state === 'drain' ? '4 4' : undefined}
         />
@@ -247,7 +247,7 @@ export function ServeVisual() {
             height="72"
             rx="10"
             fill="var(--cell)"
-            stroke={g.state === 'drain' ? 'rgba(125,119,106,0.45)' : 'rgba(201,163,106,0.35)'}
+            stroke={g.state === 'drain' ? 'color-mix(in srgb, var(--ink-3) 45%, transparent)' : 'color-mix(in srgb, var(--accent) 35%, transparent)'}
           />
           {/* die */}
           <rect x={g.x + 18} y={230} width="28" height="28" rx="4" fill="var(--cell)" stroke={color(g.state)} strokeOpacity="0.6" />

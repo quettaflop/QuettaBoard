@@ -169,7 +169,7 @@ export function EfficiencyIndex() {
         </p>
       </header>
 
-      <section className="shell shell-wide pb-20">
+      <main id="main" className="shell shell-wide pb-20">
         <div className="idx-tabs" role="tablist" aria-label="Index board">
           {BOARDS.map(([id, label], index) => (
             <button
@@ -248,7 +248,7 @@ export function EfficiencyIndex() {
         </div>
 
         <Methodology />
-      </section>
+      </main>
     </>
   );
 }

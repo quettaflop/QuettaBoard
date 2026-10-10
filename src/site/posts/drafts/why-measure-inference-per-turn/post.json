@@ -1,0 +1,7 @@
+{
+  "title": "Why we measure inference per turn",
+  "date": "2026-10-10",
+  "summary": "An agent’s next request depends on everything that came before it. A single-shot benchmark misses that history.",
+  "category": "Benchmarks",
+  "readingMinutes": 3
+}

@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Masthead } from './components/Masthead';
 import { CardDeck } from './components/CardDeck';
-import { CursorGlow } from './components/CursorGlow';
 import { EfficiencyIndex } from './components/EfficiencyIndex';
 import { Footer } from './components/Footer';
-import { readSitePage, type SitePage } from './sitePaths';
+import { Blog, BlogSection } from './components/Blog';
+import { POSTS } from './blog';
+import { readBlogSlug, readSitePage, type SitePage } from './sitePaths';
 
 export function App() {
   const [page, setPage] = useState<SitePage>(() => readSitePage());
+  const [blogSlug, setBlogSlug] = useState(() => readBlogSlug());
 
   useEffect(() => {
-    const sync = () => setPage(readSitePage());
+    const sync = () => {
+      setPage(readSitePage());
+      setBlogSlug(readBlogSlug());
+    };
     window.addEventListener('hashchange', sync);
     window.addEventListener('popstate', sync);
     return () => {
@@ -20,19 +25,25 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    document.title = page === 'efficiency' ? 'Efficiency Index — Quettaflop AI' : 'Quettaflop AI';
-  }, [page]);
+    const post = POSTS.find((p) => p.slug === blogSlug);
+    document.title = page === 'efficiency' ? 'Efficiency Index — Quettaflop AI'
+      : page === 'blog' ? `${blogSlug ? post?.title ?? 'Post not found' : 'Blog'} — Quettaflop AI`
+      : 'Quettaflop AI';
+  }, [page, blogSlug]);
 
   return (
     <div className="min-h-screen">
-      <CursorGlow />
+      <a href="#main" className="skip-link">Skip to content</a>
       {page === 'efficiency' ? (
         <EfficiencyIndex />
+      ) : page === 'blog' ? (
+        <Blog slug={blogSlug} />
       ) : (
         <>
           <Masthead />
-          <main>
+          <main id="main">
             <CardDeck />
+            <BlogSection />
           </main>
         </>
       )}

@@ -35,7 +35,12 @@ export function CardDeck() {
   }, [open]);
 
   return (
-    <div>
+    <section id="work" className="work-section shell" aria-labelledby="work-title">
+      <div className="section-heading">
+        <p className="eyebrow">The Quettaflop stack</p>
+        <h2 id="work-title">Measure. Predict. Serve.</h2>
+        <p>One loop, from real workloads to the hardware that runs them.</p>
+      </div>
       {CARDS.map((card, i) => {
         const isOpen = open === card.id;
         return (
@@ -45,9 +50,8 @@ export function CardDeck() {
             data-open={isOpen ? 'true' : 'false'}
             className="chapter"
           >
-            <div className="shell grid gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-start">
-              <div className="flex gap-5">
-                <div className="chapter-rail hidden w-0.5 shrink-0 self-stretch sm:block" />
+            <div className="chapter-main">
+              <div className="chapter-copy">
                 <div className="min-w-0">
                   <div className="flex items-baseline gap-3">
                     <span className="mono text-[12px] text-[var(--accent)]">
@@ -55,7 +59,7 @@ export function CardDeck() {
                     </span>
                     <span className="eyebrow">{card.kicker}</span>
                   </div>
-                  <h2 className="mt-3 text-[clamp(1.4rem,2.2vw,1.85rem)]">{card.name}</h2>
+                  <h3 className="chapter-title">{card.name}</h3>
                   <p className="mt-3 text-[15px] leading-relaxed">{card.summary}</p>
                   <p className="mt-4 text-[15px] leading-relaxed">{card.detail.lead}</p>
                   <button
@@ -85,7 +89,7 @@ export function CardDeck() {
             >
               <div>
                 <div className="expand-inner">
-                  <div className="shell pb-14">
+                  <div className="chapter-notes">
                     <CardDetail card={card} />
                   </div>
                 </div>
@@ -94,6 +98,6 @@ export function CardDeck() {
           </article>
         );
       })}
-    </div>
+    </section>
   );
 }

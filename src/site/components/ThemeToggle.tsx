@@ -5,7 +5,7 @@ type Theme = 'dark' | 'light';
 type ViewTransition = { ready: Promise<void> };
 
 function readTheme(): Theme {
-  if (typeof document === 'undefined') return 'dark';
+  if (typeof document === 'undefined') return 'light';
   return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 
@@ -13,7 +13,7 @@ function applyTheme(theme: Theme) {
   document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.style.colorScheme = theme;
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f1ea' : '#0b0e12');
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#f6f5f2' : '#191919');
   try {
     localStorage.setItem('qf-theme', theme);
   } catch {
@@ -101,7 +101,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="flex items-center text-[var(--ink-2)] transition-colors hover:text-[var(--accent)]"
+      className="nav-icon theme-toggle"
     >
       {theme === 'dark' ? <Sun /> : <Moon />}
     </button>

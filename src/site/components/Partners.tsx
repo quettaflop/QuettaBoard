@@ -13,10 +13,10 @@ const GROUPS: PartnerGroup[] = [
   },
 ];
 
-/** Slim hero row — Hacktron's "trusted by" position, not a footer block. */
+/** Keep the two relationships distinct and use the official logo colours. */
 export function Partners() {
   return (
-    <section className="mt-10 border-t border-[var(--line)] pt-5">
+    <section className="partners" aria-label="Partners">
       <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-10 sm:gap-y-5">
         {GROUPS.map((g) => (
           <div key={g.label} className="flex flex-wrap items-center gap-3">
