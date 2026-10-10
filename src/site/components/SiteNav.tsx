@@ -1,8 +1,17 @@
+import type { CSSProperties, PointerEvent } from 'react';
 import brandMark from '../assets/brand-mark.png';
 import { sitePageHref, siteSectionHref, type SitePage } from '../sitePaths';
 import { ThemeToggle } from './ThemeToggle';
 
 export function SiteNav({ page }: { page: SitePage }) {
+  const moveShine = (event: PointerEvent<HTMLAnchorElement>) => {
+    if (event.pointerType !== 'mouse') return;
+    const logo = event.currentTarget;
+    const bounds = logo.getBoundingClientRect();
+    logo.style.setProperty('--logo-x', `${event.clientX - bounds.left}px`);
+    logo.style.setProperty('--logo-y', `${event.clientY - bounds.top}px`);
+  };
+
   return (
     <nav className="site-nav shell" aria-label="Main navigation">
       <div className="nav-pages">
@@ -12,7 +21,14 @@ export function SiteNav({ page }: { page: SitePage }) {
         <a href={sitePageHref('blog')} aria-current={page === 'blog' ? 'page' : undefined} className="nav-link">Blog</a>
         <a href={sitePageHref('careers')} aria-current={page === 'careers' ? 'page' : undefined} className="nav-link">Careers</a>
       </div>
-      <a href={sitePageHref('home')} className="nav-brand" aria-label="Quettaflop AI — home">
+      <a
+        href={sitePageHref('home')}
+        className="nav-brand"
+        aria-label="Quettaflop AI — home"
+        onPointerEnter={moveShine}
+        onPointerMove={moveShine}
+        style={{ '--brand-mark': `url("${brandMark}")` } as CSSProperties}
+      >
         <img src={brandMark} alt="" draggable={false} />
       </a>
       <div className="nav-actions">
