@@ -23,9 +23,9 @@ export function HardwareIllustration() {
       <circle cx="280" cy="275" r="220" fill="url(#hardware-dots)" />
       <path d="m50 351 225 132 237-137" stroke="var(--ink)" strokeWidth="1.5" strokeDasharray="5 7" opacity=".35" />
       <path d="m57 364 219 127 241-138" stroke="var(--ink)" strokeWidth="1.5" opacity=".15" />
-      <use href="#gpu-board" transform="translate(0 110)" />
-      <use href="#gpu-board" transform="translate(0 40)" />
-      <use href="#gpu-board" transform="translate(0 -30)" />
+      <g className="hardware-layer hardware-layer-bottom"><use href="#gpu-board" transform="translate(0 110)" /></g>
+      <g className="hardware-layer hardware-layer-middle"><use href="#gpu-board" transform="translate(0 40)" /></g>
+      <g className="hardware-layer hardware-layer-top"><use href="#gpu-board" transform="translate(0 -30)" /></g>
       <g stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round">
         <path d="M80 132v-25m-12 12h25M450 398v-20m-10 10h20" />
         <circle cx="445" cy="109" r="7" fill="var(--art-chip)" />

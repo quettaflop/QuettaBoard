@@ -125,11 +125,15 @@ h1, h2, h3, h4 {
 .brand-coin { display: block; position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateY(var(--coin-turn)); transition: transform .65s cubic-bezier(.22, .7, .25, 1); pointer-events: none; }
 .brand-face { position: absolute; inset: 0; display: grid; place-items: center; border: 1px solid var(--ink); border-radius: 50%; backface-visibility: hidden; }
 .brand-front { background: #1b1b1b; transform: translateZ(2px); }
-.brand-back { background: linear-gradient(135deg, #f199bd, #b8245f); transform: rotateY(180deg) translateZ(2px); }
-.brand-coin::before { content: ""; position: absolute; top: 2px; bottom: 2px; left: calc(50% - 2px); width: 4px; border-radius: 2px; background: #b8245f; transform: rotateY(90deg); }
+.brand-back { overflow: hidden; border-color: #96703a; background: linear-gradient(135deg, #a97740, #d8b16d 20%, #fff0ba 38%, #b98b48 55%, #edd29a 80%, #c79a57); box-shadow: inset 0 0 0 1px rgb(255 244 209 / .45); transform: rotateY(180deg) translateZ(2px); }
+.brand-back img { position: relative; z-index: 1; filter: brightness(.16); }
+.brand-back::after { content: ""; position: absolute; inset: -35% -70%; background: linear-gradient(110deg, transparent 35%, rgb(255 248 220 / .15) 42%, rgb(255 255 255 / .75) 49%, rgb(255 248 220 / .15) 56%, transparent 64%); transform: translateX(-65%); opacity: 0; pointer-events: none; }
+.brand-coin::before { content: ""; position: absolute; top: 2px; bottom: 2px; left: calc(50% - 2px); width: 4px; border-radius: 2px; background: linear-gradient(90deg, #8b6334, #efd595, #986c36); transform: rotateY(90deg); }
 .nav-brand:focus-visible { --coin-turn: 180deg; }
+.nav-brand:focus-visible .brand-back::after { animation: coin-shine 1.4s .2s ease-out both; }
 @media (hover: hover) and (pointer: fine) {
   .nav-brand:hover { --coin-turn: 180deg; }
+  .nav-brand:hover .brand-back::after { animation: coin-shine 1.4s .2s ease-out both; }
 }
 .nav-icon { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink); border: 0; border-radius: 50%; cursor: pointer; background: transparent; transition: background .2s, transform .2s; }
 .nav-icon:hover { background: var(--well); transform: translateY(-2px); }
@@ -138,6 +142,9 @@ h1, h2, h3, h4 {
 .hero { display: grid; grid-template-columns: 1fr 1.05fr; align-items: center; gap: 3.5rem; min-height: 620px; padding-block: 3rem 1.5rem; }
 .hero-art { position: relative; min-width: 0; }
 .hardware-illustration { display: block; width: 100%; max-width: 560px; margin-inline: auto; }
+.hardware-layer { animation: hardware-float 6s ease-in-out infinite; }
+.hardware-layer-middle { animation-duration: 6.8s; animation-delay: -2.1s; }
+.hardware-layer-top { animation-duration: 7.4s; animation-delay: -4.3s; }
 .hero-art-caption { display: block; text-align: center; font-size: 11px; color: var(--ink-3); margin-top: -1rem; }
 .hero-copy { padding-bottom: 1rem; }
 .hero-copy .eyebrow { margin-bottom: 1.5rem; }
@@ -270,6 +277,8 @@ h1, h2, h3, h4 {
 ::view-transition-old(root) { z-index: 1; }
 ::view-transition-new(root) { z-index: 2147483646; }
 @keyframes orbit { to { transform: rotate(360deg); } }
+@keyframes coin-shine { 0% { opacity: 0; transform: translateX(-65%); } 20%, 80% { opacity: 1; } 100% { opacity: 0; transform: translateX(65%); } }
+@keyframes hardware-float { 0%, 100% { transform: translateY(4px); } 50% { transform: translateY(-10px); } }
 @keyframes contact-check { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
 @keyframes contact-title-flash { 0% { background-position: 100% 0; } 45% { text-shadow: 0 0 24px rgb(37 99 235 / .25); transform: translateY(-2px); } 100% { background-position: 0% 0; } }
 @keyframes contact-flash { 0%, 20% { background: var(--accent-wash); border-color: var(--accent); } }
