@@ -1,12 +1,63 @@
+import { useEffect, useState, type MouseEvent } from 'react';
 import { Partners } from './Partners';
 import { SiteNav } from './SiteNav';
 import { ToolStack } from './ToolStack';
 import { HardwareIllustration } from './HardwareIllustration';
-import { ArrowRight } from './icons';
-import { CONTACT_EMAIL } from '../siteData';
+import { ArrowRight, Check } from './icons';
 import { sitePageHref } from '../sitePaths';
 
 export function Masthead() {
+  const [contactClick, setContactClick] = useState(0);
+  const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (!contactClick) return;
+    const heading = document.getElementById('contact-title');
+    let observer: IntersectionObserver | undefined;
+    let arrivalTimer: number | undefined;
+    let flashTimer: number | undefined;
+
+    const highlight = () => {
+      observer?.disconnect();
+      heading?.focus({ preventScroll: true });
+      heading?.classList.add('contact-title-flash');
+      flashTimer = window.setTimeout(() => heading?.classList.remove('contact-title-flash'), 1250);
+    };
+
+    const scrollTimer = window.setTimeout(() => {
+      setConfirmed(false);
+      if (!heading) return;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        heading.scrollIntoView({ behavior: 'instant', block: 'center' });
+        highlight();
+      } else {
+        // Start the heading's shimmer when it arrives, not while it is offscreen.
+        observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting && entry.intersectionRatio === 1) highlight();
+        }, { threshold: 1 });
+        observer.observe(heading);
+        heading.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        arrivalTimer = window.setTimeout(() => observer?.disconnect(), 3000);
+      }
+    }, 1000);
+
+    return () => {
+      window.clearTimeout(scrollTimer);
+      window.clearTimeout(arrivalTimer);
+      window.clearTimeout(flashTimer);
+      observer?.disconnect();
+      heading?.classList.remove('contact-title-flash');
+    };
+  }, [contactClick]);
+
+  const goToContact = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    setConfirmed(true);
+    setContactClick((n) => n + 1);
+  };
+
   return (
     <header>
       <SiteNav page="home" />
@@ -31,16 +82,13 @@ export function Masthead() {
           </div>
         </div>
         <div className="hero-bottom">
-          <div className="hero-contact">
-            <a href={`mailto:${CONTACT_EMAIL}`} className="contact-orbit" aria-label="Get in touch with Quettaflop">
-              <svg viewBox="0 0 120 120" aria-hidden="true">
-                <defs><path id="contact-circle" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" /></defs>
-                <text><textPath href="#contact-circle" textLength="282">LET’S TALK INFERENCE · GET IN TOUCH · </textPath></text>
-              </svg>
-              <span><ArrowRight size={20} /></span>
-            </a>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="hero-contact-email">{CONTACT_EMAIL} <ArrowRight size={14} /></a>
-          </div>
+          <a href="#contact-title" onClick={goToContact} className={`contact-orbit${confirmed ? ' is-confirmed' : ''}`} aria-label="Get in touch with Quettaflop">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <defs><path id="contact-circle" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" /></defs>
+              <text><textPath href="#contact-circle" textLength="282">LET’S TALK INFERENCE · GET IN TOUCH · </textPath></text>
+            </svg>
+            <span>{confirmed ? <Check size={20} /> : <ArrowRight size={20} />}</span>
+          </a>
           <Partners />
         </div>
         <ToolStack />

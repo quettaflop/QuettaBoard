@@ -24,6 +24,38 @@ async function noOverflow(page, label) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `${label}: horizontal overflow`);
 }
 
+async function checkContact(page, label, keyboard = false) {
+  const orbit = page.getByRole('link', { name: 'Get in touch with Quettaflop' });
+  assert.equal(await orbit.getAttribute('href'), '#contact-title');
+  await orbit.scrollIntoViewIfNeeded();
+  if (keyboard) await orbit.focus();
+  const startY = await page.evaluate(() => scrollY);
+  if (keyboard) await orbit.press('Enter');
+  else await orbit.locator('span').click();
+  await page.waitForFunction(() => document.querySelector('.contact-orbit')?.classList.contains('is-confirmed'));
+  assert.equal(await orbit.locator('span svg path').getAttribute('d'), 'M20 6 9 17l-5-5', `${label}: tick`);
+  await page.waitForTimeout(700);
+  assert.equal(await orbit.evaluate((el) => el.classList.contains('is-confirmed')), true, `${label}: one-second feedback`);
+  assert.equal(await orbit.locator('span').evaluate((el) => getComputedStyle(el).backgroundColor), 'rgb(37, 99, 235)', `${label}: blue circle`);
+  assert.ok(Math.abs(await page.evaluate(() => scrollY) - startY) < 2, `${label}: feedback before scroll`);
+  await page.waitForFunction(() => {
+    const heading = document.getElementById('contact-title');
+    const rect = heading?.getBoundingClientRect();
+    return heading?.classList.contains('contact-title-flash') && document.activeElement === heading
+      && rect.top >= 0 && rect.bottom <= innerHeight;
+  });
+  const heading = page.locator('#contact-title');
+  const reduced = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  assert.equal(await heading.evaluate((el) => getComputedStyle(el).animationName), reduced ? 'none' : 'contact-title-flash', `${label}: motion preference`);
+  if (outDir && !reduced) {
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: `${outDir}/contact-${label}.png`, clip: await heading.boundingBox() });
+  }
+  await page.waitForFunction(() => !document.getElementById('contact-title')?.classList.contains('contact-title-flash'));
+  assert.equal(await orbit.evaluate((el) => el.classList.contains('is-confirmed')), false, `${label}: feedback resets`);
+  await noOverflow(page, `${label} contact`);
+}
+
 const browser = await chromium.launch();
 try {
   for (const width of [1440, 1024, 768, 390, 320]) {
@@ -40,6 +72,7 @@ try {
       assert.equal(await page.locator('h1').count(), 1);
       assert.equal(await page.locator('.chapter').count(), 3);
       await noOverflow(page, `${width}/${theme} home`);
+      await checkContact(page, `${width}-${theme}`);
 
       for (const id of ['measure', 'predict', 'run']) {
         const button = page.locator(`#${id} .notes-btn`);
@@ -107,6 +140,27 @@ try {
   assert.equal(await page.locator('#predict .notes-btn').getAttribute('aria-expanded'), 'true', 'product deep link');
   assert.equal(await page.locator('.contact-orbit > svg').evaluate((el) => getComputedStyle(el).animationName), 'none', 'reduced motion');
   await page.close();
+  for (const width of [1440, 390]) {
+    for (const theme of ['light', 'dark']) {
+      const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: 'no-preference' });
+      const errors = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+      await page.addInitScript((t) => localStorage.setItem('qf-theme', t), theme);
+      await page.goto(base, { waitUntil: 'networkidle' });
+      await checkContact(page, `${width}-${theme}`);
+      // Keyboard activation also replays the animation after a completed click.
+      await checkContact(page, `${width}-${theme}-keyboard`, true);
+      const orbit = page.locator('.contact-orbit');
+      await orbit.scrollIntoViewIfNeeded();
+      await orbit.click();
+      await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Careers', exact: true }).click();
+      await page.waitForTimeout(1300);
+      assert.equal(await page.locator('#contact-title').count(), 0, 'navigation cancels contact effect');
+      assert.deepEqual(errors, [], `${width}/${theme}: contact browser errors`);
+      await page.close();
+      console.log(`✓ ${width}px ${theme}: contact click, keyboard, repeat, animation, navigation cleanup`);
+    }
+  }
 } finally {
   await browser.close();
 }

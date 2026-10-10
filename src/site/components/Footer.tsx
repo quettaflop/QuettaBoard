@@ -10,7 +10,7 @@ export function Footer() {
         <section className="contact-section shell" aria-labelledby="contact-title">
           <p className="eyebrow">Build with us</p>
           <div className="contact-heading">
-            <h2 id="contact-title">Let’s talk inference.</h2>
+            <h2 id="contact-title" tabIndex={-1}>Let’s talk inference.</h2>
             <a href={`mailto:${CONTACT_EMAIL}`} className="button-primary">Say hello <span aria-hidden="true">↗</span></a>
           </div>
           <ContactCard />
