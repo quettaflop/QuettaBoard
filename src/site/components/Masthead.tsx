@@ -31,13 +31,20 @@ export function Masthead() {
           </div>
         </div>
         <div className="hero-bottom">
-          <a href={`mailto:${CONTACT_EMAIL}`} className="contact-orbit" aria-label="Get in touch with Quettaflop">
-            <svg viewBox="0 0 120 120" aria-hidden="true">
-              <defs><path id="contact-circle" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" /></defs>
-              <text><textPath href="#contact-circle" textLength="282">LET’S TALK INFERENCE · GET IN TOUCH · </textPath></text>
-            </svg>
-            <span><ArrowRight size={25} /></span>
-          </a>
+          <div className="hero-contact">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="contact-orbit" aria-label="Get in touch with Quettaflop">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <defs><path id="contact-circle" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" /></defs>
+                <text><textPath href="#contact-circle" textLength="282">LET’S TALK INFERENCE · GET IN TOUCH · </textPath></text>
+              </svg>
+              <span><ArrowRight size={25} /></span>
+            </a>
+            <div className="hero-contact-copy">
+              <p className="eyebrow">Talk to the team</p>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="hero-contact-email">{CONTACT_EMAIL}</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="button-primary">Email us <ArrowRight size={18} /></a>
+            </div>
+          </div>
           <Partners />
         </div>
         <ToolStack />
