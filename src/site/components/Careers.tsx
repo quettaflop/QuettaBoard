@@ -22,7 +22,6 @@ export function Careers() {
             <h2 id="careers-invite-title">Show us what<br />you’ve built.</h2>
             <p>Tell us what you’d like to work on. Share a CV or links to code, papers, or experiments. A short note is enough to start.</p>
             <a href={emailHref} className="button-primary">Introduce yourself <ArrowRight size={18} /></a>
-            <a href={emailHref} className="careers-email">{CONTACT_EMAIL}</a>
           </aside>
         </header>
 

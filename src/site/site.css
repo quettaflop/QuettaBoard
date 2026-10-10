@@ -231,8 +231,6 @@ h1, h2, h3, h4 {
 .careers-invite { min-width: 0; padding: clamp(1.5rem, 3vw, 2.5rem); border: 2px solid var(--ink); border-radius: 20px; box-shadow: 6px 6px 0 var(--ink); background: var(--raise); }
 .careers-invite h2 { font-size: clamp(1.8rem, 3vw, 2.7rem); margin-top: 1rem; }
 .careers-invite > p:not(.eyebrow) { margin-block: 1.5rem; font-size: 14px; }
-.careers-email { display: block; width: fit-content; margin-top: 1rem; color: var(--ink-2); font-family: var(--mono); font-size: 12px; text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
-.careers-email:hover { color: var(--accent); }
 .careers-work { margin-top: 6rem; }
 .career-areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem; border-top: 1px solid var(--ink); padding-top: 2rem; }
 .career-area { min-width: 0; }
