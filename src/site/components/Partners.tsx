@@ -5,11 +5,13 @@ import commonaiLogo from '../assets/partners/commonai.png';
 const GROUPS: PartnerGroup[] = [
   {
     label: 'Trusted by',
-    members: [{ name: 'Advanced Research + Invention Agency', logo: ariaLogo, h: 28 }],
+    members: [
+      { name: 'Advanced Research + Invention Agency', logo: ariaLogo, h: 28, href: 'https://aria.org.uk/' },
+    ],
   },
   {
     label: 'Compute partner',
-    members: [{ name: 'CommonAI', logo: commonaiLogo, h: 18 }],
+    members: [{ name: 'CommonAI', logo: commonaiLogo, h: 18, href: 'https://commonai.org/' }],
   },
 ];
 
@@ -23,17 +25,19 @@ export function Partners() {
             <div className="eyebrow shrink-0">{g.label}</div>
             <ul className="flex flex-wrap items-center gap-3">
               {g.members.map((m) => (
-                <li
-                  key={m.name}
-                  className="flex h-10 items-center rounded-[4px] bg-white px-3 ring-1 ring-inset ring-[var(--line)]"
-                >
-                  <img
-                    src={m.logo}
-                    alt={m.name}
-                    style={{ height: `${m.h}px` }}
-                    className="w-auto"
-                    draggable={false}
-                  />
+                <li key={m.name}>
+                  <a
+                    href={m.href}
+                    className="flex h-10 items-center rounded-[4px] bg-white px-3 ring-1 ring-inset ring-[var(--line)] transition-shadow hover:ring-[var(--ink)]"
+                  >
+                    <img
+                      src={m.logo}
+                      alt={m.name}
+                      style={{ height: `${m.h}px` }}
+                      className="w-auto"
+                      draggable={false}
+                    />
+                  </a>
                 </li>
               ))}
             </ul>

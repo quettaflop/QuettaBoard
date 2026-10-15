@@ -231,5 +231,5 @@ export const FOOTER_LINKS = [
 
 export interface PartnerGroup {
   label: string;
-  members: { name: string; logo: string; h: number }[];
+  members: { name: string; logo: string; h: number; href: string }[];
 }

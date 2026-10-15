@@ -170,7 +170,7 @@ h1, h2, h3, h4 {
 .contact-orbit.is-confirmed > span { background: #2563eb; color: #fff; box-shadow: 0 0 0 6px rgb(37 99 235 / .12); }
 .contact-orbit.is-confirmed > span svg { transform: none; animation: contact-check .3s ease-out; }
 .partners { padding: 1rem 0; }
-.partners li { border-radius: 0; }
+.partners a { border-radius: 0; }
 .tool-stack { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--line); }
 .tool-stack-cell { display: flex; align-items: center; gap: 1.2rem; padding: 1.8rem 1.3rem; color: var(--ink); text-decoration: none; }
 .tool-stack-cell + .tool-stack-cell { border-left: 1px solid var(--line); }
