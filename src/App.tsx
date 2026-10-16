@@ -11,7 +11,7 @@ import { ComparisonChart } from './components/charts/ComparisonChart';
 import { PerTurnChart } from './components/charts/PerTurnChart';
 import { DataTable } from './components/DataTable';
 import { simulatorV2SimPredictionsJsonUrl } from './dataUrls';
-import { INTERNAL } from './env';
+import { GPU_ONLY, INTERNAL } from './env';
 import type { TabId } from './types';
 import { normalizeDataScope, type DataScope } from './profileMeta';
 import './index.css';
@@ -56,9 +56,11 @@ const CoveragePage = INTERNAL
   : null;
 
 type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
-const PAGE_IDS: PageId[] = INTERNAL
-  ? ['benchmark', 'matrix', 'simulator_v2', 'gpu', 'coverage']
-  : ['benchmark'];
+const PAGE_IDS: PageId[] = GPU_ONLY
+  ? ['gpu']
+  : INTERNAL
+    ? ['benchmark', 'matrix', 'simulator_v2', 'gpu', 'coverage']
+    : ['benchmark'];
 const DATA_SCOPE_STORAGE_KEY = 'inference-dashboard-data-scope';
 
 function initialDataScope(): DataScope {
@@ -75,6 +77,7 @@ function hashPage(): PageId | null {
 }
 
 function initialPage(): PageId {
+  if (GPU_ONLY) return 'gpu';
   return hashPage() ?? 'benchmark';
 }
 
@@ -89,14 +92,18 @@ function App() {
   const [activePage, setActivePageState] = useState<PageId>(initialPage);
   const [activeTab, setActiveTab] = useState<TabId>('latency');
   const [scopePending, startScopeTransition] = useTransition();
+  // The authoritative page shown: in a GPU_ONLY build this is always 'gpu',
+  // regardless of hash, nav clicks, or any other activePage state change — the
+  // single lockdown point so nothing else can ever render on this deployment.
+  const effectivePage: PageId = GPU_ONLY ? 'gpu' : activePage;
   // The coverage page on the synthetic scope is driven by the compact coverage
   // artifact + sweep-state and does NOT need the (large) benchmark data.json;
   // other scopes fall back to benchmark rows. Only the benchmark page derives
   // filter options / series.
   const needsBenchmarkData =
-    activePage === 'benchmark' ||
-    (activePage === 'coverage' && dataScope !== 'synthetic_distributional');
-  const deriveBenchmarkData = activePage === 'benchmark';
+    effectivePage === 'benchmark' ||
+    (effectivePage === 'coverage' && dataScope !== 'synthetic_distributional');
+  const deriveBenchmarkData = effectivePage === 'benchmark';
   const {
     allData,
     data,
@@ -123,8 +130,9 @@ function App() {
         setActivePageState(nextPage);
         return;
       }
-      setActivePageState('benchmark');
-      window.history.replaceState(null, '', pageUrl('benchmark'));
+      const fallback: PageId = GPU_ONLY ? 'gpu' : 'benchmark';
+      setActivePageState(fallback);
+      window.history.replaceState(null, '', pageUrl(fallback));
     };
     window.addEventListener('hashchange', onHashChange);
     onHashChange();
@@ -151,7 +159,7 @@ function App() {
       <Layout
         totalRuns={0}
         loading={false}
-        activePage={activePage}
+        activePage={effectivePage}
         onPageChange={setActivePage}
         dataScope={dataScope}
         onDataScopeChange={setDataScope}
@@ -171,13 +179,13 @@ function App() {
     <Layout
       totalRuns={allData.length}
       loading={needsBenchmarkData ? loading : false}
-      activePage={activePage}
+      activePage={effectivePage}
       onPageChange={setActivePage}
       dataScope={dataScope}
       onDataScopeChange={setDataScope}
       scopePending={scopePending}
     >
-      {INTERNAL && CoveragePage && activePage === 'coverage' ? (
+      {INTERNAL && CoveragePage && effectivePage === 'coverage' ? (
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">
@@ -192,7 +200,7 @@ function App() {
             dataScope={dataScope}
           />
         </Suspense>
-      ) : INTERNAL && GpuStatePage && activePage === 'gpu' ? (
+      ) : INTERNAL && GpuStatePage && effectivePage === 'gpu' ? (
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">
@@ -202,7 +210,7 @@ function App() {
         >
           <GpuStatePage />
         </Suspense>
-      ) : INTERNAL && PredictionsMatrixPage && activePage === 'matrix' ? (
+      ) : INTERNAL && PredictionsMatrixPage && effectivePage === 'matrix' ? (
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">
@@ -212,7 +220,7 @@ function App() {
         >
           <PredictionsMatrixPage dataScope={dataScope} predictionsUrl={simulatorV2SimPredictionsJsonUrl} />
         </Suspense>
-      ) : INTERNAL && ServingPredictionsPage && activePage === 'simulator_v2' ? (
+      ) : INTERNAL && ServingPredictionsPage && effectivePage === 'simulator_v2' ? (
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">

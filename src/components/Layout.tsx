@@ -4,7 +4,7 @@ import {
   DATA_SCOPE_OPTIONS,
   type DataScope,
 } from '../profileMeta';
-import { INTERNAL } from '../env';
+import { GPU_ONLY, INTERNAL } from '../env';
 import brandMark from '../assets/quettaflop-icon-white.png';
 
 type PageId = 'benchmark' | 'matrix' | 'simulator_v2' | 'gpu' | 'coverage';
@@ -21,77 +21,84 @@ interface LayoutProps {
   scopePending?: boolean;
 }
 
-const NAV_PAGES: NavPage[] = [
-  {
-    id: 'benchmark',
-    label: 'Home',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
-  // Internal-only nav entries. In a public build `INTERNAL` folds to a
-  // compile-time `false`, so these are dropped and the site shows no dead links.
-  ...(INTERNAL
-    ? ([
-        {
-          id: 'matrix',
-          label: 'Matrix',
-          icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M3 9h18" />
-              <path d="M3 15h18" />
-              <path d="M9 3v18" />
-              <path d="M15 3v18" />
-            </svg>
-          ),
-        },
-        {
-          id: 'simulator_v2',
-          label: 'Simulator v2',
-          icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2 2 7l10 5 10-5-10-5Z" />
-              <path d="m2 17 10 5 10-5" />
-              <path d="m2 12 10 5 10-5" />
-            </svg>
-          ),
-        },
-        {
-          id: 'gpu',
-          label: 'GPU',
-          icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="4" y="4" width="16" height="16" rx="2" />
-              <rect x="9" y="9" width="6" height="6" />
-              <path d="M9 2v2" />
-              <path d="M15 2v2" />
-              <path d="M9 20v2" />
-              <path d="M15 20v2" />
-              <path d="M2 9h2" />
-              <path d="M2 15h2" />
-              <path d="M20 9h2" />
-              <path d="M20 15h2" />
-            </svg>
-          ),
-        },
-        {
-          id: 'coverage',
-          label: 'Coverage',
-          icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <path d="m14 16 2 2 4-4" />
-            </svg>
-          ),
-        },
-      ] satisfies NavPage[])
-    : []),
-];
+const GPU_NAV_PAGE: NavPage = {
+  id: 'gpu',
+  label: 'GPU',
+  icon: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <rect x="9" y="9" width="6" height="6" />
+      <path d="M9 2v2" />
+      <path d="M15 2v2" />
+      <path d="M9 20v2" />
+      <path d="M15 20v2" />
+      <path d="M2 9h2" />
+      <path d="M2 15h2" />
+      <path d="M20 9h2" />
+      <path d="M20 15h2" />
+    </svg>
+  ),
+};
+
+// GPU_ONLY deployments show ONLY the GPU entry — no Home, no other internal
+// pages — since this build has nothing else to show (see App.tsx's effectivePage
+// lockdown, which this backs up so no nav link even suggests otherwise).
+const NAV_PAGES: NavPage[] = GPU_ONLY
+  ? [GPU_NAV_PAGE]
+  : [
+      {
+        id: 'benchmark',
+        label: 'Home',
+        icon: (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+        ),
+      },
+      // Internal-only nav entries. In a public build `INTERNAL` folds to a
+      // compile-time `false`, so these are dropped and the site shows no dead links.
+      ...(INTERNAL
+        ? ([
+            {
+              id: 'matrix',
+              label: 'Matrix',
+              icon: (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18" />
+                  <path d="M3 15h18" />
+                  <path d="M9 3v18" />
+                  <path d="M15 3v18" />
+                </svg>
+              ),
+            },
+            {
+              id: 'simulator_v2',
+              label: 'Simulator v2',
+              icon: (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                  <path d="m2 17 10 5 10-5" />
+                  <path d="m2 12 10 5 10-5" />
+                </svg>
+              ),
+            },
+            GPU_NAV_PAGE,
+            {
+              id: 'coverage',
+              label: 'Coverage',
+              icon: (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <path d="m14 16 2 2 4-4" />
+                </svg>
+              ),
+            },
+          ] satisfies NavPage[])
+        : []),
+    ];
 
 export function Layout({
   children,
