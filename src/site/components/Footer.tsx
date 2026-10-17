@@ -21,10 +21,10 @@ export function Footer() {
           <a href={sitePageHref('blog')} className="text-[12.5px] text-[var(--ink-2)] hover:text-[var(--ink)]">Blog</a>
           <a href={sitePageHref('careers')} className="text-[12.5px] text-[var(--ink-2)] hover:text-[var(--ink)]">Careers</a>
           <a
-            href={sitePageHref('efficiency')}
+            href="/quettabench/"
             className="text-[12.5px] text-[var(--ink-2)] transition-colors hover:text-[var(--ink)]"
           >
-            Index
+            QuettaBench
           </a>
           <a
             href={siteContactHref(page)}

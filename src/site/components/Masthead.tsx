@@ -77,7 +77,7 @@ export function Masthead() {
             </p>
             <div className="hero-actions">
               <a href="#work" className="button-primary">Explore the stack <ArrowRight size={20} /></a>
-              <a href={sitePageHref('efficiency')} className="text-link">Efficiency Index <span aria-hidden="true">↗</span></a>
+              <a href={sitePageHref('efficiency')} className="button-primary button-outline">Efficiency index</a>
             </div>
           </div>
         </div>

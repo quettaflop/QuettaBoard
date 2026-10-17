@@ -197,19 +197,15 @@ export const VALIDATION = {
   note: 'Scored continuously against new benchmark runs.',
 } as const;
 
-/* --------------------------------------------------------------- turn trace
-   One measured agentic trace: Llama-3.3-70B on 4×H100, vLLM, swebench-multiturn
-   at concurrency 20 — an 88-turn SWE-bench trajectory, six turns sampled.
-   Context grows 25× over the conversation while measured TTFT grows 1.3×.
-   -------------------------------------------------------------------------- */
-
+/* Measured trace retained from production deployment 99d2cb4 (2026-10-16).
+   DeepSeek-V4.1-Flash, 2×B200, vLLM0.31.0, SWE-bench, concurrency16. */
 export const TURN_TRACE = [
-  { turn: 0, context: 1310, cacheHit: 0.0, ttft: 173.4 },
-  { turn: 4, context: 2354, cacheHit: 0.95, ttft: 228.8 },
-  { turn: 12, context: 6992, cacheHit: 0.97, ttft: 344.2 },
-  { turn: 28, context: 12505, cacheHit: 0.99, ttft: 428.1 },
-  { turn: 52, context: 22851, cacheHit: 0.99, ttft: 434.6 },
-  { turn: 87, context: 32101, cacheHit: 0.97, ttft: 227.0 },
+  { turn: 0, context: 1129, cacheHit: 0.79, ttft: 281.1 },
+  { turn: 6, context: 4743, cacheHit: 0.43, ttft: 530.8 },
+  { turn: 12, context: 20087, cacheHit: 0.86, ttft: 396.7 },
+  { turn: 17, context: 24590, cacheHit: 0.99, ttft: 283.9 },
+  { turn: 23, context: 36849, cacheHit: 0.98, ttft: 290.9 },
+  { turn: 29, context: 43642, cacheHit: 0.95, ttft: 284.4 },
 ] as const;
 
 /* ------------------------------------------------------------------- footer */

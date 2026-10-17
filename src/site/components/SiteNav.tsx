@@ -1,5 +1,5 @@
 import brandMark from '../assets/brand-mark.png';
-import { sitePageHref, siteSectionHref, type SitePage } from '../sitePaths';
+import { sitePageHref, type SitePage } from '../sitePaths';
 import { ThemeToggle } from './ThemeToggle';
 
 export function SiteNav({ page }: { page: SitePage }) {
@@ -7,8 +7,7 @@ export function SiteNav({ page }: { page: SitePage }) {
     <nav className="site-nav shell" aria-label="Main navigation">
       <div className="nav-pages">
         <a href={sitePageHref('home')} aria-current={page === 'home' ? 'page' : undefined} className="nav-link">Home</a>
-        <a href={siteSectionHref('work', page)} className="nav-link">Work</a>
-        <a href={sitePageHref('efficiency')} aria-current={page === 'efficiency' ? 'page' : undefined} className="nav-link">Index</a>
+        <a href="/quettabench/" className="nav-link">QuettaBench</a>
         <a href={sitePageHref('blog')} aria-current={page === 'blog' ? 'page' : undefined} className="nav-link">Blog</a>
         <a href={sitePageHref('careers')} aria-current={page === 'careers' ? 'page' : undefined} className="nav-link">Careers</a>
       </div>

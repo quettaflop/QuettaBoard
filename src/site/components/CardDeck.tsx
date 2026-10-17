@@ -3,6 +3,7 @@ import { CARDS, type Card } from '../siteData';
 import { CardDetail } from './CardDetail';
 import { TurnTraceChart } from './TurnTraceChart';
 import { VISUALS } from './visuals';
+import { ArrowRight } from './icons';
 
 function Figure({ card }: { card: Card }) {
   if (card.figure === 'trace') return <TurnTraceChart />;
@@ -62,6 +63,8 @@ export function CardDeck() {
                   <h3 className="chapter-title">{card.name}</h3>
                   <p className="mt-3 text-[15px] leading-relaxed">{card.summary}</p>
                   <p className="mt-4 text-[15px] leading-relaxed">{card.detail.lead}</p>
+                  <div className="chapter-actions">
+                  {card.id === 'measure' && <a className="button-primary chapter-cta" href="/quettabench/">Open QuettaBench <ArrowRight size={18} /></a>}
                   <button
                     type="button"
                     onClick={() => toggle(card.id)}
@@ -72,6 +75,7 @@ export function CardDeck() {
                     {isOpen ? 'Hide notes' : 'Read notes'}
                     <span aria-hidden="true">{isOpen ? '↑' : '↓'}</span>
                   </button>
+                  </div>
                 </div>
               </div>
               <div className="min-w-0">
