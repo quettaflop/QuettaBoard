@@ -1,7 +1,0 @@
-{
-  "title": "From benchmark runs to serving decisions",
-  "date": "2026-10-17",
-  "summary": "How we connect QuettaBench measurements to Serving Lab while keeping workload differences, missing data and pricing assumptions visible.",
-  "category": "Engineering",
-  "readingMinutes": 5
-}
